@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 02/10/2023
+    Last Modified: 09/10/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -17,25 +17,35 @@ public class PlayerControls : MonoBehaviour
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
     GameObject m_ball = null;
+    byte m_ballCount = 0;
 
     [Header("Time Scale")]
     [HideInInspector] public float m_timeScale;
     public float m_spedUpTimeScale = 5.0f;
     GameObject Shoot()
     {
-        // create the a copy of the ball prefab
+        // create a copy of the ball prefab
         GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
         // set its position to be the same as this game object
         Ball.transform.position = transform.position;
         // apply the launch speed force to the ball, in the direction this gameobject is facing
         Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
+        // reduce the ball count by one as a ball has been expended
+        --m_ballCount;
         // return the ball gameobject
         return Ball;
     }
 
+    public void FreeBall()
+    {
+        // increase the ball count by 1 as a ball has been gained
+        ++m_ballCount;
+    }
+
     void Start()
     {
-
+        // initialise the ball count
+        m_ballCount = m_startingBallCount;
     }
 
     void Update()
@@ -51,6 +61,7 @@ public class PlayerControls : MonoBehaviour
             {
                 // destroy it
                 Destroy(m_ball);
+
             }
         }
         // if there is not a ball in play
