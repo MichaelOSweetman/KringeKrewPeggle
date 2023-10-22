@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 16/10/2023
+    Last Modified: 23/10/2023
 */
+
 public class PegManager : MonoBehaviour
 {
     public enum PegType
@@ -18,6 +20,7 @@ public class PegManager : MonoBehaviour
         Green,
     }
 
+    [Header("Peg Colours")]
     public Color m_bluePegColor;
     public Color m_hitBluePegColor;
     public Color m_orangePegColor;
@@ -27,8 +30,23 @@ public class PegManager : MonoBehaviour
     public Color m_greenPegColor;
     public Color m_hitGreenPegColor;
 
+    [Header("Starting Pegs")]
     public int m_startingOrangePegCount = 6;
     public int m_startingGreenPegCount = 2;
+
+    [Header("Score")]
+    public Text m_scoreText;
+    public int m_baseBluePegScore = 10;
+    public int m_baseOrangePegScore = 100;
+    public int m_basePurplePegScore = 500;
+    public int m_baseGreenPegScore = 10;
+    int[] m_scoreMultipliers;
+    int[] m_multiplierIncreaseThresholds;
+    int m_hitOrangePegs = 0;
+    int m_scoreMultiplierIndex = 0;
+    int m_currentShootPhaseScore = 0;
+    int m_score = 0;
+
     Peg[] m_activePegs;
     Queue<Peg> m_hitPegs;
     List<Peg> m_activeBluePegs;
@@ -38,7 +56,7 @@ public class PegManager : MonoBehaviour
     bool m_clearHitPegQueue = false;
     float m_clearHitPegQueueTimer = 0.0f;
 
-    public void SetPegType(Peg a_peg, PegType a_pegType, bool a_hit)
+    void SetPegType(Peg a_peg, PegType a_pegType, bool a_hit)
     {
         // set the peg's pegtype
         a_peg.m_pegType = a_pegType;
@@ -85,7 +103,19 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    public void ReplacePurplePeg()
+    void EndShootPhase()
+    {
+        // add the score earned this shoot phase to the total for the level
+        m_score += m_currentShootPhaseScore;
+        // update the score text
+        m_scoreText.text = m_score.ToString();
+        // reset the current shoot phase score tracker
+        m_currentShootPhaseScore = 0;
+        // assign a random blue peg to be purple
+        ReplacePurplePeg();
+    }
+
+    void ReplacePurplePeg()
     {
         // if there are active blue pegs remaining
         if (m_activeBluePegs.Count > 0)
@@ -124,13 +154,39 @@ public class PegManager : MonoBehaviour
 
             // set the peg's colour to the hit version of its colour
             SetPegType(m_activePegs[a_pegID], m_activePegs[a_pegID].m_pegType, true);
-            
+
+            // add the score given by this peg and the current score multiplier to the current shoot phase score tracker
+            switch (m_activePegs[a_pegID].m_pegType)
+            {
+                case PegType.Blue:
+                    m_currentShootPhaseScore += m_baseBluePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    break;
+                case PegType.Orange:
+                    m_currentShootPhaseScore += m_baseOrangePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    // increase the hit orange pegs tracker
+                    ++m_hitOrangePegs;
+                    break;
+                case PegType.Purple:
+                    m_currentShootPhaseScore += m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    break;
+                case PegType.Green:
+                    m_currentShootPhaseScore += m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    break;
+
+            }
+
+            // if the threshold for increasing the multiplier has been reached
+            if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
+            {
+                // increase the multiplier
+                ++m_scoreMultiplierIndex;
+            }
+
             // remove the peg from the list of active blue pegs if it was in it
             m_activeBluePegs.Remove(m_activePegs[a_pegID]);
 
             // remove the peg from the active peg array
             m_activePegs[a_pegID] = null;
-
         }
     }
 
@@ -147,6 +203,12 @@ public class PegManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // create an array to store the different score multipliers
+        m_scoreMultipliers = new int[4] { 1, 2, 5, 10 };
+        // create an array to store the orange peg thresholds at which the score multiplier will increase
+        // TEMP { 10, 15, 19, 22 }
+        m_multiplierIncreaseThresholds = new int[4] { 2, 3, 4, 5 };
+
         // create an array the size of the amount of children the peg manager has
         m_activePegs = new Peg[transform.childCount];
         // create a list to store all active blue pegs
@@ -158,8 +220,7 @@ public class PegManager : MonoBehaviour
         HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
         // create an integer variable to store the ID for the peg to be added to the hash set
         int randomPegID = 0;
-        // create an integer to act as a tracker for how many orange pegs have been added
-        
+                
         // loop for each starting orange and green peg
         for (int i = 0; i < m_startingOrangePegCount + m_startingGreenPegCount; ++i)
         {
@@ -198,12 +259,6 @@ public class PegManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TEMP
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            ClearHitPegs();
-        }
-
         // if the hit peg queue should be cleared
         if (m_clearHitPegQueue)
         {
@@ -223,10 +278,13 @@ public class PegManager : MonoBehaviour
                 {
                     // set the clear hit peg queue flag to false
                     m_clearHitPegQueue = false;
-                    // assign a random blue peg to be purple
-                    ReplacePurplePeg();
+                    // prepare for a new ball to be shot
+                    EndShootPhase();
                 }
             }
         }
+
+        // TEMP
+        Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
