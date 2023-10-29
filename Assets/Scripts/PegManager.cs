@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 23/10/2023
+    Last Modified: 30/10/2023
 */
 
 public class PegManager : MonoBehaviour
@@ -19,6 +19,9 @@ public class PegManager : MonoBehaviour
         Purple,
         Green,
     }
+
+    [Header("Player Controls")]
+    public PlayerControls m_playerControls;
 
     [Header("Peg Colours")]
     public Color m_bluePegColor;
@@ -171,6 +174,8 @@ public class PegManager : MonoBehaviour
                     break;
                 case PegType.Green:
                     m_currentShootPhaseScore += m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    // trigger the player's current power
+                    m_playerControls.m_triggerPower(m_activePegs[a_pegID].transform.position);
                     break;
 
             }
@@ -190,14 +195,18 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    public void ClearHitPegs()
+    public bool ClearHitPegs()
     {
         // if at least 1 peg was hit
         if (m_hitPegs.Count > 0)
         {
             // set the clear hit peg queue flag to true so the queue starts emptying
             m_clearHitPegQueue = true;
+            // return true, as there were pegs to clear
+            return true;
         }
+        // return false, as there were no pegs to clear
+        return false;
     }
 
     // Start is called before the first frame update
@@ -285,6 +294,6 @@ public class PegManager : MonoBehaviour
         }
 
         // TEMP
-        Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
+        //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
