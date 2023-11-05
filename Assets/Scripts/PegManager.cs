@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 30/10/2023
+    Last Modified: 06/11/2023
 */
 
 public class PegManager : MonoBehaviour
@@ -38,6 +38,9 @@ public class PegManager : MonoBehaviour
     public int m_startingGreenPegCount = 2;
 
     [Header("Score")]
+    public GameObject m_pegScoreTextPrefab;
+    public Camera m_camera;
+    public GameObject m_canvas;
     public Text m_scoreText;
     public int m_baseBluePegScore = 10;
     public int m_baseOrangePegScore = 100;
@@ -45,10 +48,15 @@ public class PegManager : MonoBehaviour
     public int m_baseGreenPegScore = 10;
     int[] m_scoreMultipliers;
     int[] m_multiplierIncreaseThresholds;
-    int m_hitOrangePegs = 0;
+    int m_hitPegScore;
+    public int m_hitOrangePegs = 0;
     int m_scoreMultiplierIndex = 0;
     int m_currentShootPhaseScore = 0;
     int m_score = 0;
+
+    [Header("Victory")]
+    public GameObject m_bucket;
+    public GameObject m_victoryBuckets;
 
     Peg[] m_activePegs;
     Queue<Peg> m_hitPegs;
@@ -106,12 +114,18 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    void EndShootPhase()
+    public void AddScore(int a_scoreIncrease)
     {
-        // add the score earned this shoot phase to the total for the level
-        m_score += m_currentShootPhaseScore;
+        // increase the score
+        m_score += a_scoreIncrease;
         // update the score text
         m_scoreText.text = m_score.ToString();
+    }
+
+    void EndShootPhase()
+    {
+        // add the score gained in this shoot phase to the total score
+        AddScore(m_currentShootPhaseScore);
         // reset the current shoot phase score tracker
         m_currentShootPhaseScore = 0;
         // assign a random blue peg to be purple
@@ -130,7 +144,7 @@ public class PegManager : MonoBehaviour
 
             // set the purple peg to be a random blue peg
             m_purplePeg = m_activeBluePegs[randomBluePegID];
-            // remove the peg from this list of blue pegs
+            // remove the peg from the list of blue pegs
             m_activeBluePegs.RemoveAt(randomBluePegID);
 
             // if there was a previous purple peg and it is still active
@@ -158,37 +172,55 @@ public class PegManager : MonoBehaviour
             // set the peg's colour to the hit version of its colour
             SetPegType(m_activePegs[a_pegID], m_activePegs[a_pegID].m_pegType, true);
 
-            // add the score given by this peg and the current score multiplier to the current shoot phase score tracker
+
+            // determine the points gained from hitting this peg with the current score multiplier
             switch (m_activePegs[a_pegID].m_pegType)
             {
                 case PegType.Blue:
-                    m_currentShootPhaseScore += m_baseBluePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    m_hitPegScore = m_baseBluePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    // remove the peg from the list of active blue pegs
+                    m_activeBluePegs.Remove(m_activePegs[a_pegID]);
                     break;
                 case PegType.Orange:
-                    m_currentShootPhaseScore += m_baseOrangePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    m_hitPegScore = m_baseOrangePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // increase the hit orange pegs tracker
                     ++m_hitOrangePegs;
+                    // if this was the last orange peg
+                    if (m_hitOrangePegs == m_startingOrangePegCount)
+                    {
+                        // replace the bucket with the victory buckets
+                        m_bucket.SetActive(false);
+                        m_victoryBuckets.SetActive(true);
+                    }
+                    // otherwise, if the threshold for increasing the multiplier has been reached
+                    else if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
+                    {
+                        // increase the multiplier
+                        ++m_scoreMultiplierIndex;
+                    }
                     break;
                 case PegType.Purple:
-                    m_currentShootPhaseScore += m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     break;
                 case PegType.Green:
-                    m_currentShootPhaseScore += m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // trigger the player's current power
                     m_playerControls.m_triggerPower(m_activePegs[a_pegID].transform.position);
                     break;
 
             }
 
-            // if the threshold for increasing the multiplier has been reached
-            if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
-            {
-                // increase the multiplier
-                ++m_scoreMultiplierIndex;
-            }
-
-            // remove the peg from the list of active blue pegs if it was in it
-            m_activeBluePegs.Remove(m_activePegs[a_pegID]);
+            // instantiate the peg score text prefab
+            GameObject scoreText = Instantiate(m_pegScoreTextPrefab) as GameObject;
+            // set the text's parent to be the canvas
+            scoreText.transform.SetParent(m_canvas.transform, false);
+            // set the text to display the score gained for hitting the peg
+            scoreText.GetComponent<Text>().text = m_hitPegScore.ToString();
+            // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
+            scoreText.transform.position = m_camera.WorldToScreenPoint(m_activePegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
+            
+            // add the score given by this peg to the current shoot phase score tracker
+            m_currentShootPhaseScore += m_hitPegScore;
 
             // remove the peg from the active peg array
             m_activePegs[a_pegID] = null;
@@ -213,7 +245,7 @@ public class PegManager : MonoBehaviour
     void Start()
     {
         // create an array to store the different score multipliers
-        m_scoreMultipliers = new int[4] { 1, 2, 5, 10 };
+        m_scoreMultipliers = new int[5] { 1, 2, 3, 5, 10 };
         // create an array to store the orange peg thresholds at which the score multiplier will increase
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[4] { 2, 3, 4, 5 };
