@@ -7,10 +7,22 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 30/10/2023
+    Last Modified: 12/11/2023
 */
 public class PlayerControls : MonoBehaviour
 {
+    public enum GameState
+    {
+        TurnSetUp,
+        Shoot,
+        BallInPlay,
+        ResolveTurn,
+        LevelOver,
+        Paused
+    }
+
+    [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
+
     [Header("Peg Manager")]
     public PegManager m_pegManager;
 
@@ -29,6 +41,8 @@ public class PlayerControls : MonoBehaviour
     public Text m_PowerChargesText;
     public delegate void GreenPegPower(Vector3 a_greenPegPosition);
     public GreenPegPower m_triggerPower;
+    public delegate void PowerRoundSetUp();
+    public PowerRoundSetUp m_setUpPower;
     int m_powerCharges = 0;
 
     [Header("Daniel Power")]
@@ -92,6 +106,11 @@ public class PlayerControls : MonoBehaviour
         ModifyPowerCharges(m_sweetsPowerChargesGained);
     }
 
+    void SweetsPowerSetUp()
+    {
+
+    }
+
     void PhoebePower(Vector3 a_greenPegPosition)
     {
         // TEMP
@@ -120,6 +139,8 @@ public class PlayerControls : MonoBehaviour
         --m_ballCount;
         // update the ball count text
         m_ballCountText.text = m_ballCount.ToString();
+        // set the game state to Ball In Play
+        m_currentGameState = GameState.BallInPlay;
         // return the ball gameobject
         return Ball;
     }
@@ -128,6 +149,8 @@ public class PlayerControls : MonoBehaviour
     {
         // destroy the ball
         Destroy(m_ball);
+        // set the game state to Resolve Turn
+        m_currentGameState = GameState.ResolveTurn;
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
         {
@@ -150,6 +173,7 @@ public class PlayerControls : MonoBehaviour
 
         // TEMP
         m_triggerPower = SweetsPower;
+        m_setUpPower = SweetsPowerSetUp;
     }
 
     void Update()
@@ -168,8 +192,8 @@ public class PlayerControls : MonoBehaviour
 
             }
         }
-        // if there is not a ball in play
-        else
+        // if there is not a ball in play and the current game state is Shoot
+        else if (m_currentGameState == GameState.Shoot)
         {
             // if the Shoot / Use Power input has been detected
             if (Input.GetButtonDown("Shoot / Use Power"))
@@ -185,5 +209,15 @@ public class PlayerControls : MonoBehaviour
                 m_timeScale = m_spedUpTimeScale;
             }
         }
+        else if (m_currentGameState == GameState.TurnSetUp)
+        {
+            // set up the current power if it is active
+            m_setUpPower();
+            // set the current game state to Shoot
+            m_currentGameState = GameState.Shoot;
+        }
+
+        // temp
+        print(m_currentGameState.ToString());
     }
 }

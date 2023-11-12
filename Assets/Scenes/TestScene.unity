@@ -1022,8 +1022,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_maxSpeed: 6
+  m_minSpeed: 0.01
   m_horizontalBounds: 4.4
-  m_speed: 4
+  m_maxSpeedBounds: 1.8
+  m_boundForgivenessThreshold: 0.5
+  m_speed: 0
 --- !u!1 &335005223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,8 +1397,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 430763321}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6677, y: 0.3839, z: 0}
-  m_LocalScale: {x: 0.5051, y: 0.25255, z: 1.0102}
+  m_LocalPosition: {x: 0.7565, y: 0.423, z: 0}
+  m_LocalScale: {x: 0.3431124, y: 0.20515515, z: 1}
   m_Children: []
   m_Father: {fileID: 308680433}
   m_RootOrder: 3
@@ -1464,7 +1468,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
   m_FlipX: 0
@@ -4338,8 +4342,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1328293770}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.65, y: 0.4006, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.25, z: 1}
+  m_LocalPosition: {x: -0.7565, y: 0.423, z: 0}
+  m_LocalScale: {x: 0.3431124, y: 0.20515515, z: 1}
   m_Children: []
   m_Father: {fileID: 308680433}
   m_RootOrder: 1
@@ -4409,7 +4413,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
   m_FlipX: 0
@@ -5838,6 +5842,7 @@ MonoBehaviour:
   m_baseOrangePegScore: 100
   m_basePurplePegScore: 500
   m_baseGreenPegScore: 10
+  m_hitOrangePegs: 0
   m_bucket: {fileID: 308680431}
   m_victoryBuckets: {fileID: 1901099215}
   m_clearHitPegDelay: 0.25

@@ -136,4 +136,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_pegManager: {fileID: 0}
   m_lowestAllowedVelocitySquared: 0.01
-  m_maxLowVelocityDuration: 1
+  m_maxLowVelocityDuration: 0.5

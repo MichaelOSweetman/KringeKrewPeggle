@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 06/11/2023
+    Last Modified: 12/11/2023
 */
 
 public class PegManager : MonoBehaviour
@@ -122,7 +122,7 @@ public class PegManager : MonoBehaviour
         m_scoreText.text = m_score.ToString();
     }
 
-    void EndShootPhase()
+    void ResolveTurn()
     {
         // add the score gained in this shoot phase to the total score
         AddScore(m_currentShootPhaseScore);
@@ -130,6 +130,8 @@ public class PegManager : MonoBehaviour
         m_currentShootPhaseScore = 0;
         // assign a random blue peg to be purple
         ReplacePurplePeg();
+        // set the GameState to Round Set Up as the Turn has resolved
+        m_playerControls.m_currentGameState = PlayerControls.GameState.TurnSetUp;
     }
 
     void ReplacePurplePeg()
@@ -320,7 +322,7 @@ public class PegManager : MonoBehaviour
                     // set the clear hit peg queue flag to false
                     m_clearHitPegQueue = false;
                     // prepare for a new ball to be shot
-                    EndShootPhase();
+                    ResolveTurn();
                 }
             }
         }
