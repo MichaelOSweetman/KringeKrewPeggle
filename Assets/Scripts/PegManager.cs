@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 12/11/2023
+    Last Modified: 20/11/2023
 */
 
 public class PegManager : MonoBehaviour
@@ -122,7 +122,7 @@ public class PegManager : MonoBehaviour
         m_scoreText.text = m_score.ToString();
     }
 
-    void ResolveTurn()
+    public void ResolveTurn()
     {
         // add the score gained in this shoot phase to the total score
         AddScore(m_currentShootPhaseScore);
@@ -207,7 +207,7 @@ public class PegManager : MonoBehaviour
                 case PegType.Green:
                     m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // trigger the player's current power
-                    m_playerControls.m_triggerPower(m_activePegs[a_pegID].transform.position);
+                    m_playerControls.m_greenPegPower(PlayerControls.PowerFunctionMode.Trigger, m_activePegs[a_pegID].transform.position);
                     break;
 
             }
@@ -321,8 +321,6 @@ public class PegManager : MonoBehaviour
                 {
                     // set the clear hit peg queue flag to false
                     m_clearHitPegQueue = false;
-                    // prepare for a new ball to be shot
-                    ResolveTurn();
                 }
             }
         }
