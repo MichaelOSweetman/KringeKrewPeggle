@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 20/11/2023
+    Last Modified: 27/11/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -54,8 +54,8 @@ public class PlayerControls : MonoBehaviour
     bool m_resolvePowerNextTurn = false;
 
     [Header("Daniel Power")]
+    public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
-    public int m_maxPegs = 8;
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
@@ -80,6 +80,31 @@ public class PlayerControls : MonoBehaviour
 
     void DanielPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+        // if the green peg has been triggered
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+        {
+            // get an array of all colliders around the green peg
+            Collider2D[] CollidersInRange = Physics2D.OverlapCircleAll(new Vector2(a_greenPegPosition.x, a_greenPegPosition.y), m_searchRadius);
+
+            // loop for each collider
+            for (int i = 0; i < CollidersInRange.Length; ++i)
+            {
+                Peg peg = CollidersInRange[i].GetComponent<Peg>();
+                // if the collider has the peg component and hasn't been hit
+                if (peg && !peg.m_hit)
+                {
+                    // create a wasp
+                    GameObject wasp = Instantiate(m_wasp) as GameObject;
+                    // position it on the green peg
+                    wasp.transform.position = a_greenPegPosition;
+                    // give the wasp the peg as its target
+                    wasp.GetComponent<Wasp>().m_targetPeg = peg;
+                    // give the wasp this gameobject's PlayerControls script so it can access the current time scale
+                    wasp.GetComponent<Wasp>().m_PlayerControls = this;
+                }
+            }
+        }
+
         // TEMP
         print("DanielPower() called");
     }
@@ -227,7 +252,7 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
 
         // TEMP
-        m_greenPegPower = SweetsPower;
+        m_greenPegPower = DanielPower;
     }
 
     void Update()
@@ -309,6 +334,6 @@ public class PlayerControls : MonoBehaviour
         }
 
         // TEMP
-        print(m_currentGameState.ToString());
+        //print(m_currentGameState.ToString());
     }
 }

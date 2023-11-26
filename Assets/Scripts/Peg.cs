@@ -6,12 +6,21 @@ using UnityEngine;
     File name: Peg.cs
     Summary: Detects if the ball has hit this peg and reports to the peg manager 
     Creation Date: 09/10/2023
-    Last Modified: 09/10/2023
+    Last Modified: 27/11/2023
 */
 public class Peg : MonoBehaviour
 {
     PegManager m_pegManager;
     [HideInInspector] public PegManager.PegType m_pegType = PegManager.PegType.Blue;
+    /*[HideInInspector]*/ public bool m_hit = false;
+
+    public void Hit()
+    {
+        // store that this peg has been hit
+        m_hit = true;
+        // tell the peg manager to resolve the hit with this peg, using the pegs sibling index as an identifier
+        m_pegManager.ResolveHit(transform.GetSiblingIndex());
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -31,8 +40,8 @@ public class Peg : MonoBehaviour
         // if this peg was hit by a ball
         if (a_collision.gameObject.CompareTag("Ball"))
         {
-            // tell the peg manager to resolve the hit with this peg, using the pegs sibling index as an identifier
-            m_pegManager.ResolveHit(transform.GetSiblingIndex());
+            // have this peg be hit
+            Hit();
         }
     }
 }
