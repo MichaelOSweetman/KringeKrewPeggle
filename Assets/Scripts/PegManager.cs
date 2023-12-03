@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 20/11/2023
+    Last Modified: 04/12/2023
 */
 
 public class PegManager : MonoBehaviour
@@ -49,7 +49,7 @@ public class PegManager : MonoBehaviour
     int[] m_scoreMultipliers;
     int[] m_multiplierIncreaseThresholds;
     int m_hitPegScore;
-    public int m_hitOrangePegs = 0;
+    int m_hitOrangePegs = 0;
     int m_scoreMultiplierIndex = 0;
     int m_currentShootPhaseScore = 0;
     int m_score = 0;
@@ -57,6 +57,7 @@ public class PegManager : MonoBehaviour
     [Header("Victory")]
     public GameObject m_bucket;
     public GameObject m_victoryBuckets;
+    public GameObject m_NearVictoryDetectorPrefab;
 
     Peg[] m_activePegs;
     Queue<Peg> m_hitPegs;
@@ -194,11 +195,36 @@ public class PegManager : MonoBehaviour
                         m_bucket.SetActive(false);
                         m_victoryBuckets.SetActive(true);
                     }
-                    // otherwise, if the threshold for increasing the multiplier has been reached
-                    else if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
+                    // if this was not the last orange peg
+                    else
                     {
-                        // increase the multiplier
-                        ++m_scoreMultiplierIndex;
+                        // if this was the second last orange peg
+                        if (m_hitOrangePegs == m_startingOrangePegCount - 1)
+                        {
+                            // loop through the active pegs
+                            for (int i = 0; i < m_activePegs.Length; ++i)
+                            {
+                                // if this is not the peg that was just hit, it is active and it is orange
+                                if (i != a_pegID && m_activePegs[i] != null && m_activePegs[i].m_pegType == PegType.Orange)
+                                {
+                                    // create a near victory detector
+                                    GameObject nearVictoryDetector = Instantiate(m_NearVictoryDetectorPrefab);
+                                    // set the detectors position to the orange pegs position
+                                    nearVictoryDetector.transform.position = m_activePegs[i].transform.position;
+                                    // give the victory detector access to the camera used by Player Controls
+                                    nearVictoryDetector.GetComponent<NearVictoryDetector>().m_cameraZoom = m_playerControls.m_cameraZoom;
+
+                                    // exit the loop as the one unhit orange peg has been found
+                                    break;
+                                }
+                            }
+                        }
+                        // if the threshold for increasing the multiplier has been reached
+                        if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
+                        {
+                            // increase the multiplier
+                            ++m_scoreMultiplierIndex;
+                        }
                     }
                     break;
                 case PegType.Purple:

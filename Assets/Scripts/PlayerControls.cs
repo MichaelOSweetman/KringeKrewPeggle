@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 27/11/2023
+    Last Modified: 04/12/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -31,8 +31,9 @@ public class PlayerControls : MonoBehaviour
 
     [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
 
-    [Header("Peg Manager")]
+    [Header("Other Scripts")]
     public PegManager m_pegManager;
+    public CameraZoom m_cameraZoom;
 
     [Header("UI")]
     public Text m_ballCountText;
@@ -56,6 +57,10 @@ public class PlayerControls : MonoBehaviour
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
+
+    [Header("Kevin Power")]
+    public int m_kevinPowerChargesGained = 2;
+    public GameObject m_scopeOverlay;
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
@@ -100,7 +105,7 @@ public class PlayerControls : MonoBehaviour
                     // give the wasp the peg as its target
                     wasp.GetComponent<Wasp>().m_targetPeg = peg;
                     // give the wasp this gameobject's PlayerControls script so it can access the current time scale
-                    wasp.GetComponent<Wasp>().m_PlayerControls = this;
+                    wasp.GetComponent<Wasp>().m_playerControls = this;
                 }
             }
         }
@@ -123,6 +128,13 @@ public class PlayerControls : MonoBehaviour
 
     void KevinPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+        // if the green peg has been triggered
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+        {
+            // add the charges
+            ModifyPowerCharges(m_kevinPowerChargesGained);
+        }
+
         // TEMP
         print("KevinPower() called");
     }
@@ -252,14 +264,23 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
 
         // TEMP
-        m_greenPegPower = DanielPower;
+        m_greenPegPower = KevinPower;
     }
 
     void Update()
     {
         // reset the time scale
         m_timeScale = 1.0f;
-        
+
+        // if the green peg power is Kevin's and the show sniper scope button has been released
+        if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
+        {
+            // tell the camera to return to its default state
+            m_cameraZoom.ReturnToDefault();
+            // hide the scope overlay
+            m_scopeOverlay.SetActive(false);
+        }
+
         // if the current game state is Turn Set Up
         if (m_currentGameState == GameState.TurnSetUp)
         {
@@ -315,6 +336,15 @@ public class PlayerControls : MonoBehaviour
         // if the current gamestate is Ball In Play
         else if (m_currentGameState == GameState.BallInPlay)
         {
+            // if the green peg power is Kevin's, there are power charges and the show sniper scope button has been pressed
+            if (m_powerCharges > 0 && m_greenPegPower == KevinPower && Input.GetButtonDown("Show Sniper Scope"))
+            {
+                // tell the camera to zoom and track the cursor
+                m_cameraZoom.ZoomAndTrack();
+                // show the scope overlay
+                m_scopeOverlay.SetActive(true);
+            }
+
             // if the ball has fallen low enough (or high enough with the Sweets Power)
             if (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor)
             {

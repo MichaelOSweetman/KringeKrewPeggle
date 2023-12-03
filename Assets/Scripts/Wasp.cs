@@ -6,12 +6,12 @@ using UnityEngine;
     File name: Wasp.cs
     Summary: Manages the movement and behaviour of a wasp created by the Daniel Power
     Creation Date: 27/11/2023
-    Last Modified: 27/11/2023
+    Last Modified: 04/12/2023
 */
 public class Wasp : MonoBehaviour
 {
     [HideInInspector] public Peg m_targetPeg;
-    [HideInInspector] public PlayerControls m_PlayerControls;
+    [HideInInspector] public PlayerControls m_playerControls;
     public float m_speed = 2.0f;
     public float m_bobSpeed = 5.0f;
     public float m_bobAlternateTime = 0.1f;
@@ -30,13 +30,13 @@ public class Wasp : MonoBehaviour
     void Update()
     {
         // move towards the target
-        transform.position = Vector3.MoveTowards(transform.position, m_targetPeg.transform.position, m_speed * Time.deltaTime * m_PlayerControls.m_timeScale);
+        transform.position = Vector3.MoveTowards(transform.position, m_targetPeg.transform.position, m_speed * Time.deltaTime * m_playerControls.m_timeScale);
 
         // bob the wasp
-        transform.position += m_bobDirection * m_bobSpeed * Time.deltaTime * m_PlayerControls.m_timeScale;
+        transform.position += m_bobDirection * m_bobSpeed * Time.deltaTime * m_playerControls.m_timeScale;
 
         // increase the timer
-        m_timer += Time.deltaTime * m_PlayerControls.m_timeScale;
+        m_timer += Time.deltaTime * m_playerControls.m_timeScale;
         // if the timer limit has been reached
         if (m_timer >= m_bobAlternateTime)
         {

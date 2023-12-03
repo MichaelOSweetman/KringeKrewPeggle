@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Peg.cs
     Summary: Detects if the ball has hit this peg and reports to the peg manager 
     Creation Date: 09/10/2023
-    Last Modified: 27/11/2023
+    Last Modified: 04/12/2023
 */
 public class Peg : MonoBehaviour
 {
