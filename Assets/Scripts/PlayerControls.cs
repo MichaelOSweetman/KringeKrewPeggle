@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 04/12/2023
+    Last Modified: 10/12/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -246,6 +246,8 @@ public class PlayerControls : MonoBehaviour
         {
             FreeBall();
         }
+        // tell the camera to return to default in case it had moved while the ball was in play
+        m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn
         m_pegManager.ResolveTurn();
     }

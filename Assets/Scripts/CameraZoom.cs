@@ -6,14 +6,23 @@ using UnityEngine;
     File name: CameraZoom.cs
     Summary: Allows the camera to zoom in and track a target or return to its default state
     Creation Date: 04/12/2023
-    Last Modified: 04/12/2023
+    Last Modified: 10/12/2023
 */
 public class CameraZoom : MonoBehaviour
 {
+    [Header("Zoom")]
     public float m_maxZoom = 2.0f;
     public float m_zoomSpeed = 2.0f;
+
+    [Header("Return To Default Position")]
     public float m_returnMoveSpeed = 5.0f;
     public float m_maxValidSquaredDistanceFromDefaultPosition = 0.05f;
+
+    [Header("Camera Bounds")]
+    public float m_minHorizontalCameraBounds = -5.0f;
+    public float m_maxHorizontalCameraBounds = 5.0f;
+    public float m_minVerticalCameraBounds = -4.0f;
+    public float m_maxVerticalCameraBounds = 4.0f;
 
     GameObject m_target;
     bool m_tracking = false;
@@ -28,21 +37,27 @@ public class CameraZoom : MonoBehaviour
         m_tracking = false;
         // show the cursor if it had been hidden
         Cursor.visible = true;
-
     }
 
     public void ZoomAndTrack(GameObject a_target = null)
     {
         // store that the camera should be tracking
         m_tracking = true;
-
-        // if there is a target provided, track it instead of the cursor
-        if (a_target != null)
+        
+        // if there is not a target provided
+        if (a_target == null)
+        {
+            // set the target to be the current mouse position
+            m_cameraPosition = m_camera.ScreenToWorldPoint(Input.mousePosition);
+            // hide the cursor
+            Cursor.visible = false;
+        }
+        // if there is a target provided
+        else
         {
             // store the target
             m_target = a_target;
         }
-        
     }
 
     // Start is called before the first frame update
@@ -61,9 +76,6 @@ public class CameraZoom : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TEMP
-        //print((Input.mousePosition.x - Screen.width * 0.5f) + ", " + (Input.mousePosition.y - Screen.height * 0.5f));
-
         // if the camera should be tracking a target
         if (m_tracking)
         {
@@ -74,11 +86,12 @@ public class CameraZoom : MonoBehaviour
                 m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize - m_zoomSpeed * Time.deltaTime, m_maxZoom, m_defaultZoom);
             }
 
-            // set the camera's x and y position to the target's position, or the cursor if there is no target object
-            m_cameraPosition.x = (m_target != null) ? m_target.transform.position.x : Input.mousePosition.x - Screen.width * 0.5f;
-            m_cameraPosition.y = (m_target != null) ? m_target.transform.position.y : Input.mousePosition.y - Screen.height * 0.5f;
-            transform.position = m_cameraPosition;
+            // move the camera's x and y coordinates to the target if there is one, or move it based on the mouse movements this frame if there isn't
+            m_cameraPosition.x = Mathf.Clamp((m_target == null) ? m_cameraPosition.x + Input.GetAxis("Mouse X") : m_target.transform.position.x, m_minHorizontalCameraBounds, m_maxHorizontalCameraBounds);
+            m_cameraPosition.y = Mathf.Clamp((m_target == null) ? m_cameraPosition.y + Input.GetAxis("Mouse Y") : m_target.transform.position.y, m_minVerticalCameraBounds, m_maxVerticalCameraBounds);
 
+            // move the camera to its designated position
+            transform.position = m_cameraPosition;
         }
         // if the camera shouldn't be tracking a target
         else
