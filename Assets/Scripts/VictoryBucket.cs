@@ -6,7 +6,7 @@ using UnityEngine;
     File name: VictoryBucket.cs
     Summary: Adds to the player's score when the ball enters its space
     Creation Date: 06/11/2023
-    Last Modified: 06/11/2023
+    Last Modified: 18/12/2023
 */
 
 public class VictoryBucket : MonoBehaviour
@@ -22,8 +22,8 @@ public class VictoryBucket : MonoBehaviour
         {
             // add the score to the peg manager's total score
             m_pegManager.AddScore(m_score);
-            // destroy the ball
-            m_playerControls.DestroyBall();
+            // resolve the turn
+            m_playerControls.ResolveTurn();
         }
     }
 }

@@ -764,6 +764,7 @@ MonoBehaviour:
   m_searchRadius: 5
   m_kevinPowerChargesGained: 2
   m_scopeOverlay: {fileID: 541950793}
+  m_forceToBall: 2000
   m_sweetsPowerChargesGained: 3
   m_bucket: {fileID: 308680431}
   m_victoryBuckets: {fileID: 1901099215}
@@ -1761,9 +1762,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_maxZoom: 2
-  m_zoomSpeed: 2
+  m_zoomSpeed: 20
+  m_atMaxZoom: 0
   m_returnMoveSpeed: 5
   m_maxValidSquaredDistanceFromDefaultPosition: 0.05
+  m_minHorizontalCameraBounds: -5
+  m_maxHorizontalCameraBounds: 5
+  m_minVerticalCameraBounds: -4
+  m_maxVerticalCameraBounds: 4
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -1871,7 +1877,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6044,7 +6050,6 @@ MonoBehaviour:
   m_baseOrangePegScore: 100
   m_basePurplePegScore: 500
   m_baseGreenPegScore: 10
-  m_hitOrangePegs: 0
   m_bucket: {fileID: 308680431}
   m_victoryBuckets: {fileID: 1901099215}
   m_NearVictoryDetectorPrefab: {fileID: 1495688579193153, guid: f0337c8f3cc21cf4ba5fd6bea4759634, type: 3}

@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 10/12/2023
+    Last Modified: 18/12/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class PlayerControls : MonoBehaviour
     {
         Trigger,
         SetUp,
+        OnShoot,
         Resolve
     }
 
@@ -61,6 +62,8 @@ public class PlayerControls : MonoBehaviour
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
     public GameObject m_scopeOverlay;
+    public float m_forceToBall = 2000.0f;
+    public float m_scopedTimeScale = 0.3f;
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
@@ -191,6 +194,18 @@ public class PlayerControls : MonoBehaviour
             // add the charges
             ModifyPowerCharges(m_sweetsPowerChargesGained);
         }
+        // otherwise, if the player has just shot a ball
+        else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
+        {
+            // reduce the power charges by 1
+            ModifyPowerCharges(-1);
+            // if there are now 0 charges
+            if (m_powerCharges == 0)
+            {
+                // have the power resolve at the start of next turn
+                m_resolvePowerNextTurn = true;
+            }
+        }
         // otherwise, if the green peg power is to be set up or resolved
         else
         {
@@ -235,7 +250,7 @@ public class PlayerControls : MonoBehaviour
         return Ball;
     }
 
-    public void DestroyBall()
+    public void ResolveTurn()
     {
         // destroy the ball
         Destroy(m_ball);
@@ -271,9 +286,6 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
-        // reset the time scale
-        m_timeScale = 1.0f;
-
         // if the green peg power is Kevin's and the show sniper scope button has been released
         if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
         {
@@ -281,6 +293,8 @@ public class PlayerControls : MonoBehaviour
             m_cameraZoom.ReturnToDefault();
             // hide the scope overlay
             m_scopeOverlay.SetActive(false);
+            // reset the time scale
+            m_timeScale = 1.0f;
         }
 
         // if the current game state is Turn Set Up
@@ -317,14 +331,8 @@ public class PlayerControls : MonoBehaviour
                 // if there are power charges
                 if (m_powerCharges > 0)
                 {
-                    // reduce the power charges by 1
-                    ModifyPowerCharges(-1);
-                    // if there are now 0 charges
-                    if (m_powerCharges == 0)
-                    {
-                        // have the power resolve at the start of next turn
-                        m_resolvePowerNextTurn = true;
-                    }
+                    // have the power trigger its On Shoot effect
+                    m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
                 }
             }
 
@@ -334,24 +342,60 @@ public class PlayerControls : MonoBehaviour
                 // change the timescale to the sped up timescale
                 m_timeScale = m_spedUpTimeScale;
             }
+            // otherwise, if the Speed Up Time button has been released
+            else if (Input.GetButtonUp("Speed Up Time"))
+            {
+                // reset the timescale
+                m_timeScale = 1.0f;
+            }
         }
         // if the current gamestate is Ball In Play
         else if (m_currentGameState == GameState.BallInPlay)
         {
-            // if the green peg power is Kevin's, there are power charges and the show sniper scope button has been pressed
-            if (m_powerCharges > 0 && m_greenPegPower == KevinPower && Input.GetButtonDown("Show Sniper Scope"))
+            // if there are power charges
+            if (m_powerCharges > 0)
             {
-                // tell the camera to zoom and track the cursor
-                m_cameraZoom.ZoomAndTrack();
-                // show the scope overlay
-                m_scopeOverlay.SetActive(true);
+                // if the green peg power is kevin's
+                if (m_greenPegPower == KevinPower)
+                {
+                    // if the show sniper scope button has been pressed
+                    if (Input.GetButtonDown("Show Sniper Scope"))
+                    {
+                        // tell the camera to zoom and track the cursor
+                        m_cameraZoom.ZoomAndTrack();
+                        // show the scope overlay
+                        m_scopeOverlay.SetActive(true);
+                        // set the time scale to the scoped time scale
+                        m_timeScale = m_scopedTimeScale;
+                    }
+
+                    // if the shoot / use power button has been pressed and the camera is at max zoom
+                    if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
+                    {
+                        // reduce the power charges by 1
+                        ModifyPowerCharges(-1);
+                        // if there are now 0 charges
+                        if (m_powerCharges == 0)
+                        {
+                            // have the power resolve at the start of next turn
+                            m_resolvePowerNextTurn = true;
+                        }
+
+                        // if the camera is looking at a point on the ball
+                        if (m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_ball.transform.position.z)))
+                        {
+                            // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
+                            m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                        }
+                    }
+                }
             }
 
             // if the ball has fallen low enough (or high enough with the Sweets Power)
             if (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor)
             {
-                // destroy it
-                DestroyBall();
+                // resolve the turn
+                ResolveTurn();
             }
         }
         // if the current game state is Level Over
