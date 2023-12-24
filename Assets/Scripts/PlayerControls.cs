@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 18/12/2023
+    Last Modified: 25/12/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -55,6 +55,10 @@ public class PlayerControls : MonoBehaviour
     bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
 
+    [Header("Mat Power")]
+    public GameObject m_matejaPrefab;
+    GameObject m_mateja = null;
+
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
@@ -67,16 +71,18 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
-    public GameObject m_bucket;
-    public GameObject m_victoryBuckets;
     public GameObject m_launcher;
     public GameObject m_topPlayAreaCollider;
     public GameObject m_gameOverlay;
     public GameObject m_hillsideGameOverlay;
 
+    [Header("Buckets")]
+    public GameObject m_bucket;
+    public GameObject m_victoryBuckets;
+
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
-    [HideInInspector] public float m_timeScale;
+    [HideInInspector] public float m_timeScale = 1.0f;
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
@@ -150,6 +156,29 @@ public class PlayerControls : MonoBehaviour
 
     void MatPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+        // if the green peg has been triggered or if the green peg power is to be set up
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger || a_powerFunctionMode == PowerFunctionMode.SetUp)
+        {
+            // if Mateja does not currently exist
+            if (m_mateja == null)
+            {
+                // create the mateja game object
+                m_mateja = Instantiate(m_matejaPrefab) as GameObject;
+                // give it this instance of player controls so it can access the time scale
+                Mateja matejaScript = m_mateja.GetComponent<Mateja>();
+                matejaScript.m_playerControls = this;
+                // give it the bucket and victory bucket game objects
+                matejaScript.m_bucket = m_bucket;
+                matejaScript.m_victoryBuckets = m_victoryBuckets;
+            }
+            // if there is already a Mateja
+            else
+            {
+                // have another Mateja be created next turn
+                m_setUpPowerNextTurn = true;
+            }
+        }
+
         // TEMP
         print("MatPower() called");
     }
@@ -281,11 +310,17 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
 
         // TEMP
-        m_greenPegPower = KevinPower;
+        m_greenPegPower = MatPower;
     }
 
     void Update()
     {
+        // TEMP
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
+        }
+
         // if the green peg power is Kevin's and the show sniper scope button has been released
         if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
         {
