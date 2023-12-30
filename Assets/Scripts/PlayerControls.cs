@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 25/12/2023
+    Last Modified: 31/12/2023
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -281,8 +281,13 @@ public class PlayerControls : MonoBehaviour
 
     public void ResolveTurn()
     {
-        // destroy the ball
-        Destroy(m_ball);
+        // if the ball is in play
+        if (m_ball != null)
+        {
+            // destroy it
+            Destroy(m_ball);
+        }
+
         // set the game state to Resolve Turn
         m_currentGameState = GameState.ResolveTurn;
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
@@ -426,11 +431,23 @@ public class PlayerControls : MonoBehaviour
                 }
             }
 
-            // if the ball has fallen low enough (or high enough with the Sweets Power)
-            if (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor)
+            // if the ball is in play and has fallen low enough (or high enough with the Sweets Power)
+            if (m_ball != null && (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor))
             {
-                // resolve the turn
-                ResolveTurn();
+                // if there is a mateja in play
+                if (m_mateja != null)
+                {
+                    // have mateja launch back up
+                    m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
+                    // destroy the ball
+                    Destroy(m_ball);
+                }
+                // if there is not a mateja in play
+                else
+                {
+                    // resolve the turn
+                    ResolveTurn();
+                }
             }
         }
         // if the current game state is Level Over
