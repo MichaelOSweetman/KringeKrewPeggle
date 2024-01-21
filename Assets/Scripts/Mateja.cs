@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 31/12/2023
+    Last Modified: 22/01/2024
 */
 public class Mateja : MonoBehaviour
 {
@@ -61,18 +61,18 @@ public class Mateja : MonoBehaviour
         // get the rigidbody
         m_rigidbody = GetComponent<Rigidbody2D>();
 
-        // get the collider and turn it off
-        m_collider = GetComponent<Collider2D>();
-        m_collider.enabled = false;
-
         // store the gravity scale
         m_gravityScale = m_rigidbody.gravityScale;
 
         // set the gravity scale to 0
         m_rigidbody.gravityScale = 0.0f;
 
-        // get the mateja body
+        // get the Mateja body
         m_matejaBody = transform.GetChild(0).gameObject;
+
+        // get the collider from Mateja body and turn it off
+        m_collider = m_matejaBody.GetComponent<Collider2D>();
+        m_collider.enabled = false;
 
         // get the first child of Mateja's body as the held ball and turn it off
         m_heldBall = m_matejaBody.transform.GetChild(0).gameObject;
@@ -117,15 +117,15 @@ public class Mateja : MonoBehaviour
         // otherwise, if Mateja has been slammed
         else if (m_matejaState == MatejaState.Slammed)
         {
-            // move Mateja towards the bucket
-            transform.position = Vector3.MoveTowards(transform.position, m_bucket.transform.position, m_slamSpeed * Time.deltaTime * m_playerControls.m_timeScale);
+            // move Mateja towards the active bucket
+            transform.position = Vector3.MoveTowards(transform.position, (m_bucket.activeSelf ? m_bucket : m_victoryBuckets).transform.position, m_slamSpeed * Time.deltaTime * m_playerControls.m_timeScale);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D a_collision)
     {
-        // if Mateja has slammed into the bucket
-        if (m_matejaState == MatejaState.Slammed && a_collision.transform.parent == m_bucket.transform)
+        // if Mateja has slammed into a bucket
+        if (m_matejaState == MatejaState.Slammed && (a_collision.transform.parent == m_bucket.transform || a_collision.transform.parent == m_victoryBuckets.transform))
         {
             // give the player a free ball
             m_playerControls.FreeBall();
@@ -139,7 +139,11 @@ public class Mateja : MonoBehaviour
         {
             // tell the peg that it has been hit
             a_collision.GetComponent<Peg>().Hit();
-            //TEMP don't collide with the peg
+        }
+        // otherwise, if the hit collider is a wall and Mateja has been launched
+        else if (a_collision.CompareTag("Wall") && m_matejaState == MatejaState.Launched)
+        {
+            
         }
     }
 }

@@ -5,21 +5,20 @@ using UnityEngine;
 /*
     File name: MoveToPoints.cs
     Summary: Automatically and repeatedly moves an object between 2 points
-    Creation Date: 02/10/2023
-    Last Modified: 14/01/2024
+    Creation Date: 22/01/2024
+    Last Modified: 22/01/2024
 */
-public class Bucket : MonoBehaviour
+public class MoveToPoints : MonoBehaviour
 {
     public PlayerControls m_playerControls;
     public float m_maxSpeed = 10.0f;
     public float m_minSpeed = 0.01f;
-    public float m_speed;
-
     public Vector3 m_secondPosition = Vector3.zero;
     public float m_maxValidSquaredDistanceFromTarget = 0.05f;
     public float m_minSquareDistanceFromPointForMaxSpeed = 1.5f;
+    float m_speed;
     Vector3 m_firstPosition = Vector3.zero;
-    Vector3 m_targetPosition = Vector3.zero:
+    Vector3 m_targetPosition = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
@@ -41,10 +40,10 @@ public class Bucket : MonoBehaviour
             transform.position = m_targetPosition;
 
             // swap the target position
-            m_targetPosition = (m_targetPosition = m_firstPosition) ? m_secondPosition : m_firstPosition;
+            m_targetPosition = (m_targetPosition == m_firstPosition) ? m_secondPosition : m_firstPosition;
         }
         // otherwise, if the object is far enough from the first and second point
-        else if ((transform.position - m_firstPosition).sqrMagnitude > m_minSquareDistanceFromPointForMaxSpeed && transform.position - m_firstPosition).sqrMagnitude > m_minSquareDistanceFromPointForMaxSpeed)
+        else if ((transform.position - m_firstPosition).sqrMagnitude > m_minSquareDistanceFromPointForMaxSpeed && (transform.position - m_secondPosition).sqrMagnitude > m_minSquareDistanceFromPointForMaxSpeed)
         {
             // set the object's speed to the max
             m_speed = m_maxSpeed;
@@ -52,11 +51,11 @@ public class Bucket : MonoBehaviour
         // if the object is not within the max speed bounds
         else
         {
-            // lerp the object's speed between the max and min speed based on its position between the closest point and the point from which the object should be at max speed
-            m_speed = Mathf.Lerp(m_maxSpeed, m_minSpeed, (transform.position - ((transform.position - m_firstPosition).sqrMagnitude <= transform.position - m_secondPosition).sqrMagnitude) ? m_firstPosition : m_secondPosition).sqrMagnitude / m_minSquareDistanceFromPointForMaxSpeed;
+            // lerp the object's speed between the min and max speed based on its position between the closest point and the point from which the object should be at max speed
+            m_speed = Mathf.Lerp(m_minSpeed, m_maxSpeed, (transform.position - ((transform.position - m_firstPosition).sqrMagnitude <= (transform.position - m_secondPosition).sqrMagnitude ? m_firstPosition : m_secondPosition)).sqrMagnitude / m_minSquareDistanceFromPointForMaxSpeed);
         }
 
         // move the object towards the target position using its speed per second, modified by the player controls time scale and the direction
-        transform.position = Vector3.MoveTowards(transform.position, m_targetPosition, m_speed * Time.deltaTime * m_playerControls.m_timeScale):
+        transform.position = Vector3.MoveTowards(transform.position, m_targetPosition, m_speed * Time.deltaTime * m_playerControls.m_timeScale);
     }
 }
