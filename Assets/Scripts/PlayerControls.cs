@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 31/12/2023
+    Last Modified: 29/01/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -62,6 +62,16 @@ public class PlayerControls : MonoBehaviour
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
+
+    [Header("Ethen Power")]
+    public int m_ethenPowerChargesGained = 2;
+    public GameObject m_line;
+    public GameObject m_endDrawButton;
+    public GameObject m_clearButton;
+    public GameObject m_inkResourceBar;
+    public float m_maxSecondsOfInk = 3.0f;
+    [HideInInspector] public float m_ink = 0.0f;
+    [HideInInspector] public bool m_drawing = false;
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -125,6 +135,37 @@ public class PlayerControls : MonoBehaviour
 
     void EthenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+        // if the green peg has been triggered
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+        {
+            // if there are 0 power charges
+            if (m_powerCharges == 0)
+            {
+                // have the power set up next turn
+                m_setUpPowerNextTurn = true;
+            }
+            // add the charges
+            ModifyPowerCharges(m_ethenPowerChargesGained);
+        }
+
+        else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
+        {
+            // set the UI elements required for drawing to be active
+            m_endDrawButton.SetActive(true);
+            m_clearButton.SetActive(true);
+            m_inkResourceBar.SetActive(true);
+            
+            // make the gameobject that stores the line drawn to be active
+            m_line.SetActive(true);
+            // clear the line
+
+            // reset the ink meter
+            m_ink = m_maxSecondsOfInk;
+
+            // put the player in drawing mode
+            m_drawing = true;
+        }
+
         // TEMP
         print("EthenPower() called");
     }
@@ -315,7 +356,7 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
 
         // TEMP
-        m_greenPegPower = MatPower;
+        m_greenPegPower = EthenPower;
     }
 
     void Update()
@@ -362,31 +403,44 @@ public class PlayerControls : MonoBehaviour
         // if the current game state is Shoot
         else if (m_currentGameState == GameState.Shoot)
         {
-            // if the Shoot / Use Power input has been detected
-            if (Input.GetButtonDown("Shoot / Use Power"))
+            // if the power is Ethen's power and drawing mode is on
+            if (m_drawing && m_greenPegPower == EthenPower)
             {
-                // shoot a ball
-                m_ball = Shoot();
-                
-                // if there are power charges
-                if (m_powerCharges > 0)
+                // if the Shoot / Use Power input is currently pressed
+                if (Input.GetButton("Shoot / Use Power"))
                 {
-                    // have the power trigger its On Shoot effect
-                    m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
+
                 }
             }
+            // if the power is not Ethens or if the drawing mode isn't on
+            else
+            {
+                // if the Shoot / Use Power input has been detected
+                if (Input.GetButtonDown("Shoot / Use Power"))
+                {
+                    // shoot a ball
+                    m_ball = Shoot();
 
-            // if the Speed Up Time input has been detected
-            if (Input.GetButton("Speed Up Time"))
-            {
-                // change the timescale to the sped up timescale
-                m_timeScale = m_spedUpTimeScale;
-            }
-            // otherwise, if the Speed Up Time button has been released
-            else if (Input.GetButtonUp("Speed Up Time"))
-            {
-                // reset the timescale
-                m_timeScale = 1.0f;
+                    // if there are power charges
+                    if (m_powerCharges > 0)
+                    {
+                        // have the power trigger its On Shoot effect
+                        m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
+                    }
+                }
+
+                // if the Speed Up Time input has been detected
+                if (Input.GetButton("Speed Up Time"))
+                {
+                    // change the timescale to the sped up timescale
+                    m_timeScale = m_spedUpTimeScale;
+                }
+                // otherwise, if the Speed Up Time button has been released
+                else if (Input.GetButtonUp("Speed Up Time"))
+                {
+                    // reset the timescale
+                    m_timeScale = 1.0f;
+                }
             }
         }
         // if the current gamestate is Ball In Play
