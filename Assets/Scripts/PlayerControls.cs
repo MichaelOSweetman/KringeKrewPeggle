@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 29/01/2024
+    Last Modified: 05/02/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -51,8 +51,8 @@ public class PlayerControls : MonoBehaviour
     public Text m_PowerChargesText;
     public delegate void GreenPegPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition);
     public GreenPegPower m_greenPegPower;
-    int m_powerCharges = 0;
-    bool m_setUpPowerNextTurn = false;
+    [HideInInspector] public int m_powerCharges = 0;
+    [HideInInspector] public bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
 
     [Header("Mat Power")]
@@ -68,10 +68,14 @@ public class PlayerControls : MonoBehaviour
     public GameObject m_line;
     public GameObject m_endDrawButton;
     public GameObject m_clearButton;
-    public GameObject m_inkResourceBar;
-    public float m_maxSecondsOfInk = 3.0f;
+    public GameObject m_inkResourceBarBackground;
+    public float m_maxInk = 500.0f;
+    public float m_minValidSquareMouseMovement = 0.05f;
     [HideInInspector] public float m_ink = 0.0f;
     [HideInInspector] public bool m_drawing = false;
+    RectTransform m_inkResourceBar;
+    float m_inkResourceBarMaxWidth = 0.0f;
+    Vector3 m_previousMousePosition = Vector3.zero;
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -133,6 +137,11 @@ public class PlayerControls : MonoBehaviour
         print("DanielPower() called");
     }
 
+    public void UpdateInkResourceBar()
+    {
+        m_inkResourceBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Clamp01(m_ink / m_maxInk) * m_inkResourceBarMaxWidth);
+    }
+
     void EthenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
         // if the green peg has been triggered
@@ -147,23 +156,27 @@ public class PlayerControls : MonoBehaviour
             // add the charges
             ModifyPowerCharges(m_ethenPowerChargesGained);
         }
-
+        // otherwise, if the power should be set up
         else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
         {
             // set the UI elements required for drawing to be active
             m_endDrawButton.SetActive(true);
             m_clearButton.SetActive(true);
-            m_inkResourceBar.SetActive(true);
+            m_inkResourceBarBackground.SetActive(true);
             
             // make the gameobject that stores the line drawn to be active
             m_line.SetActive(true);
             // clear the line
 
             // reset the ink meter
-            m_ink = m_maxSecondsOfInk;
+            m_ink = m_maxInk;
+            UpdateInkResourceBar();
 
             // put the player in drawing mode
             m_drawing = true;
+
+            // initialise the previous mouse position variable
+            m_previousMousePosition = Input.mousePosition;
         }
 
         // TEMP
@@ -292,7 +305,7 @@ public class PlayerControls : MonoBehaviour
         print("PhoebePower() called");
     }
 
-    void ModifyPowerCharges(int a_modifier)
+    public void ModifyPowerCharges(int a_modifier)
     {
         // increase the power charges by the modifier
         m_powerCharges += a_modifier;
@@ -355,18 +368,18 @@ public class PlayerControls : MonoBehaviour
         // initialise the ball count
         m_ballCount = m_startingBallCount;
 
+        // get the child of the ink resource bar background as the ink resource bar
+        m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();
+
+        // get the width of the ink resource bar background
+        m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
+
         // TEMP
         m_greenPegPower = EthenPower;
     }
 
     void Update()
     {
-        // TEMP
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
-        }
-
         // if the green peg power is Kevin's and the show sniper scope button has been released
         if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
         {
@@ -406,11 +419,20 @@ public class PlayerControls : MonoBehaviour
             // if the power is Ethen's power and drawing mode is on
             if (m_drawing && m_greenPegPower == EthenPower)
             {
-                // if the Shoot / Use Power input is currently pressed
-                if (Input.GetButton("Shoot / Use Power"))
+                // if there is ink remaining and the Shoot / Use Power input is currently pressed
+                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power"))
                 {
-
+                    // if the mouse has moved enough since last frame
+                    if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
+                    {
+                        // reduce the amount of ink the player has based on the amount the mouse moved
+                        m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
+                        // update the ink resource bar
+                        UpdateInkResourceBar();
+                    }
                 }
+                // store the mouse position for next frame
+                m_previousMousePosition = Input.mousePosition;
             }
             // if the power is not Ethens or if the drawing mode isn't on
             else
@@ -514,8 +536,5 @@ public class PlayerControls : MonoBehaviour
         {
 
         }
-
-        // TEMP
-        //print(m_currentGameState.ToString());
     }
 }
