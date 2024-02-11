@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 05/02/2024
+    Last Modified: 12/02/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -73,9 +73,11 @@ public class PlayerControls : MonoBehaviour
     public float m_minValidSquareMouseMovement = 0.05f;
     [HideInInspector] public float m_ink = 0.0f;
     [HideInInspector] public bool m_drawing = false;
+    [HideInInspector] public List<Vector3> m_linePoints;
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
+
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -135,6 +137,12 @@ public class PlayerControls : MonoBehaviour
 
         // TEMP
         print("DanielPower() called");
+    }
+
+    public void UpdateLine(Vector3 a_newLinePoint)
+    {
+        // add the new line point to the list
+        m_linePoints.Add(a_newLinePoint);
     }
 
     public void UpdateInkResourceBar()
@@ -374,6 +382,9 @@ public class PlayerControls : MonoBehaviour
         // get the width of the ink resource bar background
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
+        // initialise the line points array
+        m_linePoints = new List<Vector3>();
+
         // TEMP
         m_greenPegPower = EthenPower;
     }
@@ -422,15 +433,32 @@ public class PlayerControls : MonoBehaviour
                 // if there is ink remaining and the Shoot / Use Power input is currently pressed
                 if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power"))
                 {
+                    // if this was the first frame that the Shoot / Use Power input was pressed
+                    if (Input.GetButtonDown("Shoot / Use Power"))
+                    {
+                        // Update the line with the new point
+                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                    }
                     // if the mouse has moved enough since last frame
                     if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
                     {
                         // reduce the amount of ink the player has based on the amount the mouse moved
                         m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
+
                         // update the ink resource bar
                         UpdateInkResourceBar();
+
+                        // Update the line with the new point
+                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     }
                 }
+                // otherwise, if a line has been drawn and the Shoot / Use Power input was released
+                else if (m_linePoints.Count > 0 && Input.GetButtonUp("Shoot / Use Power"))
+                {
+                    // add a point with a z value of 1 to denote an empty point, since all valid entries will have a z value of 0
+                    m_linePoints.Add(Vector3.forward);
+                }
+
                 // store the mouse position for next frame
                 m_previousMousePosition = Input.mousePosition;
             }
@@ -535,6 +563,23 @@ public class PlayerControls : MonoBehaviour
         else if (m_currentGameState == GameState.Paused)
         {
 
+        }
+
+
+        // loop from the second item in the line points list to the last
+        for (int i = 1; i < m_linePoints.Count; ++i)
+        {
+            // if the z value of this point is greater than 0, it is to be ignored
+            if (m_linePoints[i].z > 0)
+            {
+                // skip forward 2 indices, as the next point can also not have a connection, since its previous will be with this ignored point
+                ++i;
+            }
+            else
+            {
+                // draw a line from the last point to the current point
+                Debug.DrawLine(m_linePoints[i - 1], m_linePoints[i]);
+            }
         }
     }
 }

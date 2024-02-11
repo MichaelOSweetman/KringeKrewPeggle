@@ -6,7 +6,7 @@ using UnityEngine;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 05/02/2024
+    Last Modified: 12/02/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -51,5 +51,6 @@ public class UIManager : MonoBehaviour
         m_playerControls.m_ink = m_playerControls.m_maxInk;
         m_playerControls.UpdateInkResourceBar();
         // clear the line
+        m_playerControls.m_linePoints.Clear();
     }
 }
