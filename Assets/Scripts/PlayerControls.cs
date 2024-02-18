@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 12/02/2024
+    Last Modified: 19/02/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -65,7 +65,8 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Ethen Power")]
     public int m_ethenPowerChargesGained = 2;
-    public GameObject m_line;
+    public GameObject m_lines;
+    public GameObject m_linePrefab;
     public GameObject m_endDrawButton;
     public GameObject m_clearButton;
     public GameObject m_inkResourceBarBackground;
@@ -73,7 +74,7 @@ public class PlayerControls : MonoBehaviour
     public float m_minValidSquareMouseMovement = 0.05f;
     [HideInInspector] public float m_ink = 0.0f;
     [HideInInspector] public bool m_drawing = false;
-    [HideInInspector] public List<Vector3> m_linePoints;
+    LineRenderer m_currentLineRenderer;
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
@@ -141,13 +142,28 @@ public class PlayerControls : MonoBehaviour
 
     public void UpdateLine(Vector3 a_newLinePoint)
     {
-        // add the new line point to the list
-        m_linePoints.Add(a_newLinePoint);
+        // ensure the z component of the new point is 0
+        a_newLinePoint.z = 0;
+
+        // add the new position to the current line
+        ++m_currentLineRenderer.positionCount;
+        m_currentLineRenderer.SetPosition(m_currentLineRenderer.positionCount - 1, a_newLinePoint);
     }
 
     public void UpdateInkResourceBar()
     {
+        // modify the ink resource bar to be representative of the amount of ink remaining relative to the max ink
         m_inkResourceBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Clamp01(m_ink / m_maxInk) * m_inkResourceBarMaxWidth);
+    }
+
+    public void DestroyLines()
+    {
+        // loop until there are no more lines
+        while (m_lines.transform.childCount > 0)
+        {
+            // destroy the first line
+            DestroyImmediate(m_lines.transform.GetChild(0).gameObject);
+        }
     }
 
     void EthenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
@@ -171,10 +187,6 @@ public class PlayerControls : MonoBehaviour
             m_endDrawButton.SetActive(true);
             m_clearButton.SetActive(true);
             m_inkResourceBarBackground.SetActive(true);
-            
-            // make the gameobject that stores the line drawn to be active
-            m_line.SetActive(true);
-            // clear the line
 
             // reset the ink meter
             m_ink = m_maxInk;
@@ -350,6 +362,9 @@ public class PlayerControls : MonoBehaviour
             Destroy(m_ball);
         }
 
+        // destroy any active lines
+        DestroyLines();
+
         // set the game state to Resolve Turn
         m_currentGameState = GameState.ResolveTurn;
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
@@ -381,9 +396,6 @@ public class PlayerControls : MonoBehaviour
 
         // get the width of the ink resource bar background
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
-
-        // initialise the line points array
-        m_linePoints = new List<Vector3>();
 
         // TEMP
         m_greenPegPower = EthenPower;
@@ -436,11 +448,15 @@ public class PlayerControls : MonoBehaviour
                     // if this was the first frame that the Shoot / Use Power input was pressed
                     if (Input.GetButtonDown("Shoot / Use Power"))
                     {
+                        // create a new line object and make it a child of the lines game object
+                        GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+                        // store the line renderer for the current line
+                        m_currentLineRenderer = line.GetComponent<LineRenderer>();
                         // Update the line with the new point
                         UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     }
-                    // if the mouse has moved enough since last frame
-                    if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
+                    // otherwise, if the mouse has moved enough since last frame
+                    else if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
                     {
                         // reduce the amount of ink the player has based on the amount the mouse moved
                         m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
@@ -452,11 +468,21 @@ public class PlayerControls : MonoBehaviour
                         UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     }
                 }
-                // otherwise, if a line has been drawn and the Shoot / Use Power input was released
-                else if (m_linePoints.Count > 0 && Input.GetButtonUp("Shoot / Use Power"))
+                // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
+                else if (m_currentLineRenderer.positionCount > 0 && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && Input.GetButtonUp("Shoot / Use Power"))
                 {
-                    // add a point with a z value of 1 to denote an empty point, since all valid entries will have a z value of 0
-                    m_linePoints.Add(Vector3.forward);
+                    // add an edge collider to the line
+                    EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
+
+                    // convert the line renderer points to vector2
+                    Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
+                    for (int i = 0; i < points.Length; ++i)
+                    {
+                        points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
+                    }
+
+                    // give the vector2 line points to the collider
+                    collider.points = points;
                 }
 
                 // store the mouse position for next frame
@@ -563,23 +589,6 @@ public class PlayerControls : MonoBehaviour
         else if (m_currentGameState == GameState.Paused)
         {
 
-        }
-
-
-        // loop from the second item in the line points list to the last
-        for (int i = 1; i < m_linePoints.Count; ++i)
-        {
-            // if the z value of this point is greater than 0, it is to be ignored
-            if (m_linePoints[i].z > 0)
-            {
-                // skip forward 2 indices, as the next point can also not have a connection, since its previous will be with this ignored point
-                ++i;
-            }
-            else
-            {
-                // draw a line from the last point to the current point
-                Debug.DrawLine(m_linePoints[i - 1], m_linePoints[i]);
-            }
         }
     }
 }
