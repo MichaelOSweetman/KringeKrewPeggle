@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 19/02/2024
+    Last Modified: 26/02/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -35,6 +35,7 @@ public class PlayerControls : MonoBehaviour
     [Header("Other Scripts")]
     public PegManager m_pegManager;
     public CameraZoom m_cameraZoom;
+    public LookAtCursor m_LauncherLookControls;
 
     [Header("UI")]
     public Text m_ballCountText;
@@ -140,6 +141,41 @@ public class PlayerControls : MonoBehaviour
         print("DanielPower() called");
     }
 
+    public void EndDrawButtonPressed()
+    {
+        // turn off the drawing UI elements
+        m_endDrawButton.SetActive(false);
+        m_clearButton.SetActive(false);
+        m_inkResourceBarBackground.SetActive(false);
+
+        // take the player out of drawing mode
+        m_drawing = false;
+
+        // turn on the LookAtCursor component of the launcher
+        m_LauncherLookControls.enabled = true;
+
+        // reduce the amount of power charges
+        ModifyPowerCharges(-1);
+
+        // if there are still power charges
+        if (m_powerCharges > 0)
+        {
+            // have the drawing power get set up next turn
+            m_setUpPowerNextTurn = true;
+        }
+    }
+
+    public void ClearDrawingButtonPressed()
+    {
+        // reset the amount of ink
+        m_ink = m_maxInk;
+        UpdateInkResourceBar();
+
+        // destroy all lines
+        DestroyLines();
+
+    }
+
     public void UpdateLine(Vector3 a_newLinePoint)
     {
         // ensure the z component of the new point is 0
@@ -156,13 +192,17 @@ public class PlayerControls : MonoBehaviour
         m_inkResourceBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Clamp01(m_ink / m_maxInk) * m_inkResourceBarMaxWidth);
     }
 
-    public void DestroyLines()
+    public void DestroyLines(bool a_onlyDestroyIfHit = false)
     {
-        // loop until there are no more lines
-        while (m_lines.transform.childCount > 0)
+        // loop for each line
+        for (int i = m_lines.transform.childCount - 1; i >= 0; --i)
         {
-            // destroy the first line
-            DestroyImmediate(m_lines.transform.GetChild(0).gameObject);
+            // if the line should be destroyed regardless or if the line has been hit and the only destroy if hit arguement is true
+            if (!a_onlyDestroyIfHit || m_lines.transform.GetChild(i).GetComponent<Line>().m_hit)
+            {
+                // destroy the current line
+                Destroy(m_lines.transform.GetChild(i).gameObject);
+            }
         }
     }
 
@@ -191,6 +231,9 @@ public class PlayerControls : MonoBehaviour
             // reset the ink meter
             m_ink = m_maxInk;
             UpdateInkResourceBar();
+
+            // turn off the LookAtCursor component of the launcher
+            m_LauncherLookControls.enabled = false;
 
             // put the player in drawing mode
             m_drawing = true;
@@ -343,6 +386,8 @@ public class PlayerControls : MonoBehaviour
         Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
         // give the ball the peg manager
         Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
+        // give the ball this component
+        Ball.GetComponent<Ball>().m_playerControls = this;
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;
         // update the ball count text
@@ -362,9 +407,6 @@ public class PlayerControls : MonoBehaviour
             Destroy(m_ball);
         }
 
-        // destroy any active lines
-        DestroyLines();
-
         // set the game state to Resolve Turn
         m_currentGameState = GameState.ResolveTurn;
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
@@ -372,6 +414,10 @@ public class PlayerControls : MonoBehaviour
         {
             FreeBall();
         }
+
+        // destroy any active lines
+        DestroyLines();
+
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn
@@ -450,8 +496,10 @@ public class PlayerControls : MonoBehaviour
                     {
                         // create a new line object and make it a child of the lines game object
                         GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+                        
                         // store the line renderer for the current line
                         m_currentLineRenderer = line.GetComponent<LineRenderer>();
+
                         // Update the line with the new point
                         UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                     }
@@ -469,7 +517,7 @@ public class PlayerControls : MonoBehaviour
                     }
                 }
                 // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
-                else if (m_currentLineRenderer.positionCount > 0 && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && Input.GetButtonUp("Shoot / Use Power"))
+                else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && Input.GetButtonUp("Shoot / Use Power"))
                 {
                     // add an edge collider to the line
                     EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();

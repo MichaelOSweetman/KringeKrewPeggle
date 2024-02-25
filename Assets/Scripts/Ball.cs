@@ -4,13 +4,14 @@ using UnityEngine;
 
 /*
     File name: Ball.cs
-    Summary: Manages the movement of the ball shot by the player
+    Summary: Prevents the ball from getting stuck
     Creation Date: 30/10/2023
-    Last Modified: 30/10/2023
+    Last Modified: 26/02/2024
 */
 public class Ball : MonoBehaviour
 {
     [HideInInspector] public PegManager m_pegManager;
+    [HideInInspector] public PlayerControls m_playerControls;
     Rigidbody2D m_rigidbody;
     public float m_lowestAllowedVelocitySquared = 0.01f;
     public float m_maxLowVelocityDuration = 1.0f;
@@ -35,8 +36,10 @@ public class Ball : MonoBehaviour
             // if the max time that the ball can be low velocity has been reached
             if (m_timer >= m_maxLowVelocityDuration)
             {
-                // have the peg manager clear the hit pegs
+                // have the Peg Manager clear the hit pegs
                 m_pegManager.ClearHitPegs();
+                // have PlayerControls destroy hit lines
+                m_playerControls.DestroyLines(true);
                 // reset the timer
                 m_timer = 0.0f;
             }
