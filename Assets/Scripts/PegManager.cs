@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 04/12/2023
+    Last Modified: 04/03/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -53,6 +53,12 @@ public class PegManager : MonoBehaviour
     int m_scoreMultiplierIndex = 0;
     int m_currentShootPhaseScore = 0;
     int m_score = 0;
+
+    [Header("Free Ball From Score")]
+    public RectTransform m_freeBallProgressBar;
+    float m_freeBallProgressBarHeight = 0.0f;
+    public int[] m_freeBallScores;
+    int m_freeBallsAwarded = 0;
 
     [Header("Victory")]
     public GameObject m_bucket;
@@ -129,10 +135,38 @@ public class PegManager : MonoBehaviour
         AddScore(m_currentShootPhaseScore);
         // reset the current shoot phase score tracker
         m_currentShootPhaseScore = 0;
+        // reset the free balls awarded
+        m_freeBallsAwarded = 0;
+        // reset the free ball progress bar
+        UpdateFreeBallProgressBar();
         // assign a random blue peg to be purple
         ReplacePurplePeg();
         // set the GameState to Round Set Up as the Turn has resolved
         m_playerControls.m_currentGameState = PlayerControls.GameState.TurnSetUp;
+    }
+
+    void UpdateFreeBallProgressBar()
+    {
+        // modify the free ball progress bar to be representative of the score progress of reaching the next free ball milestone
+        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(m_currentShootPhaseScore) / (float)(m_freeBallScores[m_freeBallsAwarded])) * m_freeBallProgressBarHeight);
+    }
+
+    void UpdatePhaseScore(int a_scoreIncrease)
+    {
+        // add the score increase to the phase's total
+        m_currentShootPhaseScore += a_scoreIncrease;
+
+        // if the free ball milestone has been reached
+        if (m_currentShootPhaseScore >= m_freeBallScores[m_freeBallsAwarded])
+        {
+            // give the player a free ball and show the free ball text
+            m_playerControls.FreeBall(true);
+            // switch to the next free ball milestone
+            ++m_freeBallsAwarded;
+        }
+
+        // update the progress bar
+        UpdateFreeBallProgressBar();
     }
 
     void ReplacePurplePeg()
@@ -246,9 +280,9 @@ public class PegManager : MonoBehaviour
             scoreText.GetComponent<Text>().text = m_hitPegScore.ToString();
             // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
             scoreText.transform.position = m_camera.WorldToScreenPoint(m_activePegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
-            
-            // add the score given by this peg to the current shoot phase score tracker
-            m_currentShootPhaseScore += m_hitPegScore;
+
+            // update the score for this shoot phase with the score gained from the hit peg
+            UpdatePhaseScore(m_hitPegScore);
 
             // remove the peg from the active peg array
             m_activePegs[a_pegID] = null;
@@ -272,6 +306,11 @@ public class PegManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // get the current height of the free ball progress bar
+        m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
+        // initialise the progress bar height
+        UpdateFreeBallProgressBar();
+
         // create an array to store the different score multipliers
         m_scoreMultipliers = new int[5] { 1, 2, 3, 5, 10 };
         // create an array to store the orange peg thresholds at which the score multiplier will increase

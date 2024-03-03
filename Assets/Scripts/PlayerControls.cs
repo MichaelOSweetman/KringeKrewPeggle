@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 26/02/2024
+    Last Modified: 04/03/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -39,6 +39,8 @@ public class PlayerControls : MonoBehaviour
 
     [Header("UI")]
     public Text m_ballCountText;
+    public float m_freeBallTextDuration = 2.0f;
+    float m_freeBallTextTimer = 0.0f;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
@@ -75,11 +77,11 @@ public class PlayerControls : MonoBehaviour
     public float m_minValidSquareMouseMovement = 0.05f;
     [HideInInspector] public float m_ink = 0.0f;
     [HideInInspector] public bool m_drawing = false;
+    bool m_lineBegun = false;
     LineRenderer m_currentLineRenderer;
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
-
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -424,12 +426,25 @@ public class PlayerControls : MonoBehaviour
         m_pegManager.ResolveTurn();
     }
 
-    public void FreeBall()
+    public void FreeBall(bool a_showFreeBallText = false)
     {
         // increase the ball count by 1 as a ball has been gained
         ++m_ballCount;
-        // update the ball count text
-        m_ballCountText.text = m_ballCount.ToString();
+
+        // if the free ball text should shown
+        if (a_showFreeBallText)
+        {
+            // update the ball count text with a message denoting that a free ball has been given
+            m_ballCountText.text = "Free Ball!";
+            // start a timer to determine how long the ballCountText should display the "Free Ball!" text
+            m_freeBallTextTimer = m_freeBallTextDuration;
+        }
+        // otherwise, if the Free Ball Text is not currently being shown
+        else if (m_freeBallTextTimer <= 0.0f)
+        {
+            // update the ball count text with the amount of balls available
+            m_ballCountText.text = m_ballCount.ToString();
+        }
     }
 
     void Start()
@@ -444,11 +459,27 @@ public class PlayerControls : MonoBehaviour
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
         // TEMP
-        m_greenPegPower = EthenPower;
+        m_greenPegPower = DanielPower;
     }
 
     void Update()
     {
+        // if the Free Ball Text Timer is active
+        if (m_freeBallTextTimer > 0.0f)
+        {
+            // reduce the timer
+            m_freeBallTextTimer -= Time.deltaTime;
+
+            // if the timer has ran out
+            if (m_freeBallTextTimer <= 0.0f)
+            {
+                // set it to 0
+                m_freeBallTextTimer = 0.0f;
+                // replace the ball Count Text with the ball count
+                m_ballCountText.text = m_ballCount.ToString();
+            }
+        }
+
         // if the green peg power is Kevin's and the show sniper scope button has been released
         if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
         {
@@ -494,18 +525,31 @@ public class PlayerControls : MonoBehaviour
                     // if this was the first frame that the Shoot / Use Power input was pressed
                     if (Input.GetButtonDown("Shoot / Use Power"))
                     {
-                        // create a new line object and make it a child of the lines game object
-                        GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
-                        
-                        // store the line renderer for the current line
-                        m_currentLineRenderer = line.GetComponent<LineRenderer>();
-
-                        // Update the line with the new point
-                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                        // store that the player has started drawing a line
+                        m_lineBegun = true;
                     }
                     // otherwise, if the mouse has moved enough since last frame
                     else if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
                     {
+                        // if the player started drawing a line previously
+                        if (m_lineBegun == true)
+                        {
+                            // create a new line object and make it a child of the lines game object
+                            GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+
+                            // store the line renderer for the current line
+                            m_currentLineRenderer = line.GetComponent<LineRenderer>();
+
+                            // Update the line with the previous point
+                            UpdateLine(Camera.main.ScreenToWorldPoint(m_previousMousePosition));
+
+                            // Update the line with the new point
+                            UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+                            // store that the line has no longer begun being drawn
+                            m_lineBegun = false;
+                        }
+
                         // reduce the amount of ink the player has based on the amount the mouse moved
                         m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
 
