@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 04/03/2024
+    Last Modified: 10/03/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -56,8 +56,11 @@ public class PegManager : MonoBehaviour
 
     [Header("Free Ball From Score")]
     public RectTransform m_freeBallProgressBar;
-    float m_freeBallProgressBarHeight = 0.0f;
+    public RawImage m_freeBallProgressBarBackground;
     public int[] m_freeBallScores;
+    public Color[] m_freeBallProgressBarColors;
+    RawImage m_freeBallProgressBarImage;
+    float m_freeBallProgressBarHeight = 0.0f;
     int m_freeBallsAwarded = 0;
 
     [Header("Victory")]
@@ -147,8 +150,22 @@ public class PegManager : MonoBehaviour
 
     void UpdateFreeBallProgressBar()
     {
+        // if the max amount of free balls have been awarded
+        if (m_freeBallsAwarded >= m_freeBallProgressBarColors.Length)
+        {
+            // set the colours of the background and foreground to the final colour
+            m_freeBallProgressBarBackground.color = m_freeBallProgressBarColors[m_freeBallProgressBarColors.Length];
+            m_freeBallProgressBarImage.color = m_freeBallProgressBarColors[m_freeBallProgressBarColors.Length];
+        }
+        else
+        {
+            // set the colours of the background and foreground based on the amount of free balls that have been awarded
+            m_freeBallProgressBarBackground.color = m_freeBallProgressBarColors[m_freeBallsAwarded];
+            m_freeBallProgressBarImage.color = m_freeBallProgressBarColors[m_freeBallsAwarded + 1];
+        }
+
         // modify the free ball progress bar to be representative of the score progress of reaching the next free ball milestone
-        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(m_currentShootPhaseScore) / (float)(m_freeBallScores[m_freeBallsAwarded])) * m_freeBallProgressBarHeight);
+        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(m_currentShootPhaseScore - ((m_freeBallsAwarded == 0) ? 0 : m_freeBallScores[m_freeBallsAwarded - 1])) / (float)(m_freeBallScores[m_freeBallsAwarded] - ((m_freeBallsAwarded == 0) ? 0 : m_freeBallScores[m_freeBallsAwarded - 1]))) * m_freeBallProgressBarHeight);
     }
 
     void UpdatePhaseScore(int a_scoreIncrease)
@@ -308,6 +325,8 @@ public class PegManager : MonoBehaviour
     {
         // get the current height of the free ball progress bar
         m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
+        // get the raw image component of the progress bar
+        m_freeBallProgressBarImage = m_freeBallProgressBar.GetComponent<RawImage>();
         // initialise the progress bar height
         UpdateFreeBallProgressBar();
 
