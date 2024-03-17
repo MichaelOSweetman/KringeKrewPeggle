@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 04/03/2024
+    Last Modified: 18/03/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -82,6 +82,16 @@ public class PlayerControls : MonoBehaviour
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
+
+    [Header("Loki Power")]
+    public int m_lokiPowerChargesGained = 2;
+    public LineRenderer m_lokiPowerCord;
+    public float m_maxCordLength = 5.0f;
+    public GameObject m_hook;
+    public float m_hookLaunchSpeed = 30.0f;
+    public float m_pullSpeed = 7.5f;
+    GameObject m_connectionPoint;
+    bool m_connectedToPeg = true;
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -267,8 +277,25 @@ public class PlayerControls : MonoBehaviour
         print("KevinPower() called");
     }
 
+    public void ConnectHook(GameObject a_connectionPeg)
+    {
+        // set the connection point of the cord to be the peg
+        m_connectionPoint = a_connectionPeg;
+        // store that the end of the cord has been connected to a peg
+        m_connectedToPeg = true;
+        // make the hook inactive as the peg has replaced it
+        m_hook.SetActive(false);
+    }
+
     void LokiPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+        // if the green peg has been triggered
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+        {
+            // add the charges
+            ModifyPowerCharges(m_lokiPowerChargesGained);
+        }
+        
         // TEMP
         print("LokiPower() called");
     }
@@ -411,11 +438,17 @@ public class PlayerControls : MonoBehaviour
 
         // set the game state to Resolve Turn
         m_currentGameState = GameState.ResolveTurn;
+
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
         {
             FreeBall();
         }
+
+        // hide the Loki Power Cord if it is visible
+        m_lokiPowerCord.gameObject.SetActive(false);
+        // disable the hook
+        m_hook.SetActive(false);
 
         // destroy any active lines
         DestroyLines();
@@ -459,7 +492,7 @@ public class PlayerControls : MonoBehaviour
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
         // TEMP
-        m_greenPegPower = DanielPower;
+        m_greenPegPower = LokiPower;
     }
 
     void Update()
@@ -649,6 +682,65 @@ public class PlayerControls : MonoBehaviour
                             // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
                             m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
                         }
+                    }
+                }
+                else if (m_greenPegPower == LokiPower)
+                {
+                    // if the shoot / use power button is currently pressed
+                    if (Input.GetButton("Shoot / Use Power"))
+                    {
+                        // if this is the first frame the shoot / use power button has been pressed
+                        if (Input.GetButtonDown("Shoot / Use Power"))
+                        {
+                            // initialise the hook
+                            m_hook.SetActive(true);
+                            m_hook.transform.position = m_ball.transform.position;
+
+                            // have the end of the cord be the hook
+                            m_connectionPoint = m_hook;
+
+                            // shoot the hook towards the cursor
+                            m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition - m_ball.transform.position)).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
+
+                            // have the cord be active
+                            m_lokiPowerCord.gameObject.SetActive(true);
+
+                            // store that the ball is not currently connected to a peg
+                            m_connectedToPeg = false;
+                        }
+
+                        if (m_connectedToPeg)
+                        {
+                            // TEMP
+                            m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
+                        }
+                        
+
+                        // if the cord is currently active
+                        if (m_lokiPowerCord.gameObject.activeSelf)
+                        {
+                            // if the connection point is null or if the cord has gone beyond its max length
+                            if (m_connectionPoint == null || (m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
+                            {
+                                // make the cord and hook inactive
+                                m_lokiPowerCord.gameObject.SetActive(false);
+                                m_hook.gameObject.SetActive(false);
+                            }
+                            // if the cord is still not too long
+                            else
+                            {
+                                // draw a line between the ball and the connection point
+                                m_lokiPowerCord.SetPosition(0, m_ball.transform.position);
+                                m_lokiPowerCord.SetPosition(1, m_connectionPoint.transform.position);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // disable the cord
+                        m_lokiPowerCord.gameObject.SetActive(false);
+                        // disable the hook
+                        m_hook.SetActive(false);
                     }
                 }
             }
