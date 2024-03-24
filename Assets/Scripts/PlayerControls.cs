@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 18/03/2024
+    Last Modified: 25/03/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -91,7 +91,7 @@ public class PlayerControls : MonoBehaviour
     public float m_hookLaunchSpeed = 30.0f;
     public float m_pullSpeed = 7.5f;
     GameObject m_connectionPoint;
-    bool m_connectedToPeg = true;
+    bool m_connectedToPeg = false;
 
     [Header("Kevin Power")]
     public int m_kevinPowerChargesGained = 2;
@@ -285,6 +285,8 @@ public class PlayerControls : MonoBehaviour
         m_connectedToPeg = true;
         // make the hook inactive as the peg has replaced it
         m_hook.SetActive(false);
+        // expend a power charge
+        ModifyPowerCharges(-1);
     }
 
     void LokiPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
@@ -647,101 +649,103 @@ public class PlayerControls : MonoBehaviour
         // if the current gamestate is Ball In Play
         else if (m_currentGameState == GameState.BallInPlay)
         {
-            // if there are power charges
-            if (m_powerCharges > 0)
+            // if the green peg power is Kevin's and there are power charges
+            if (m_powerCharges > 0 && m_greenPegPower == KevinPower)
             {
-                // if the green peg power is kevin's
-                if (m_greenPegPower == KevinPower)
+                // if the show sniper scope button has been pressed
+                if (Input.GetButtonDown("Show Sniper Scope"))
                 {
-                    // if the show sniper scope button has been pressed
-                    if (Input.GetButtonDown("Show Sniper Scope"))
+                    // tell the camera to zoom and track the cursor
+                    m_cameraZoom.ZoomAndTrack();
+                    // show the scope overlay
+                    m_scopeOverlay.SetActive(true);
+                    // set the time scale to the scoped time scale
+                    m_timeScale = m_scopedTimeScale;
+                }
+
+                // if the shoot / use power button has been pressed and the camera is at max zoom
+                if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
+                {
+                    // reduce the power charges by 1
+                    ModifyPowerCharges(-1);
+                    // if there are now 0 charges
+                    if (m_powerCharges == 0)
                     {
-                        // tell the camera to zoom and track the cursor
-                        m_cameraZoom.ZoomAndTrack();
-                        // show the scope overlay
-                        m_scopeOverlay.SetActive(true);
-                        // set the time scale to the scoped time scale
-                        m_timeScale = m_scopedTimeScale;
+                        // have the power resolve at the start of next turn
+                        m_resolvePowerNextTurn = true;
                     }
 
-                    // if the shoot / use power button has been pressed and the camera is at max zoom
-                    if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
+                    // if the camera is looking at a point on the ball
+                    if (m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_ball.transform.position.z)))
                     {
-                        // reduce the power charges by 1
-                        ModifyPowerCharges(-1);
-                        // if there are now 0 charges
-                        if (m_powerCharges == 0)
-                        {
-                            // have the power resolve at the start of next turn
-                            m_resolvePowerNextTurn = true;
-                        }
+                        // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
+                        m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                    }
+                }
+            }
+            // otherwise, if the green peg power is Loki's
+            else if (m_greenPegPower == LokiPower)
+            {
+                // if the shoot / use power button is currently pressed
+                if (Input.GetButton("Shoot / Use Power"))
+                {
+                    // if there are power charges and this is the first frame the shoot / use power button has been pressed
+                    if (m_powerCharges > 0 && Input.GetButtonDown("Shoot / Use Power"))
+                    {
+                        // initialise the hook
+                        m_hook.SetActive(true);
+                        m_hook.transform.position = m_ball.transform.position;
 
-                        // if the camera is looking at a point on the ball
-                        if (m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_ball.transform.position.z)))
+                        // have the end of the cord be the hook
+                        m_connectionPoint = m_hook;
+
+                        // shoot the hook towards the cursor
+                        m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_ball.transform.position).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
+
+                        // have the cord be active
+                        m_lokiPowerCord.gameObject.SetActive(true);
+
+                        // store that the ball is not currently connected to a peg
+                        m_connectedToPeg = false;
+                    }
+
+                    if (m_connectedToPeg)
+                    {
+                        // TEMP
+                        m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
+                    }
+                    
+
+                    // if the cord is currently active
+                    if (m_lokiPowerCord.gameObject.activeSelf)
+                    {
+                        // if the connection point is null or inactive, or if the cord has gone beyond its max length
+                        if (m_connectionPoint == null || !m_connectionPoint.activeSelf || (m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
                         {
-                            // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
-                            m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                            // make the cord and hook inactive
+                            m_lokiPowerCord.gameObject.SetActive(false);
+                            m_hook.gameObject.SetActive(false);
+
+                            // store that the ball is not connected to a peg
+                            m_connectedToPeg = false;
+                        }
+                        // if the cord is still not too long
+                        else
+                        {
+                            // draw a line between the ball and the connection point
+                            m_lokiPowerCord.SetPosition(0, m_ball.transform.position);
+                            m_lokiPowerCord.SetPosition(1, m_connectionPoint.transform.position);
                         }
                     }
                 }
-                else if (m_greenPegPower == LokiPower)
+                else
                 {
-                    // if the shoot / use power button is currently pressed
-                    if (Input.GetButton("Shoot / Use Power"))
-                    {
-                        // if this is the first frame the shoot / use power button has been pressed
-                        if (Input.GetButtonDown("Shoot / Use Power"))
-                        {
-                            // initialise the hook
-                            m_hook.SetActive(true);
-                            m_hook.transform.position = m_ball.transform.position;
-
-                            // have the end of the cord be the hook
-                            m_connectionPoint = m_hook;
-
-                            // shoot the hook towards the cursor
-                            m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition - m_ball.transform.position)).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
-
-                            // have the cord be active
-                            m_lokiPowerCord.gameObject.SetActive(true);
-
-                            // store that the ball is not currently connected to a peg
-                            m_connectedToPeg = false;
-                        }
-
-                        if (m_connectedToPeg)
-                        {
-                            // TEMP
-                            m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
-                        }
-                        
-
-                        // if the cord is currently active
-                        if (m_lokiPowerCord.gameObject.activeSelf)
-                        {
-                            // if the connection point is null or if the cord has gone beyond its max length
-                            if (m_connectionPoint == null || (m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
-                            {
-                                // make the cord and hook inactive
-                                m_lokiPowerCord.gameObject.SetActive(false);
-                                m_hook.gameObject.SetActive(false);
-                            }
-                            // if the cord is still not too long
-                            else
-                            {
-                                // draw a line between the ball and the connection point
-                                m_lokiPowerCord.SetPosition(0, m_ball.transform.position);
-                                m_lokiPowerCord.SetPosition(1, m_connectionPoint.transform.position);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // disable the cord
-                        m_lokiPowerCord.gameObject.SetActive(false);
-                        // disable the hook
-                        m_hook.SetActive(false);
-                    }
+                    // disable the cord
+                    m_lokiPowerCord.gameObject.SetActive(false);
+                    // disable the hook
+                    m_hook.SetActive(false);
+                    // store that the ball is not connected to a peg
+                    m_connectedToPeg = false;
                 }
             }
 

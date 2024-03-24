@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 10/03/2024
+    Last Modified: 25/03/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -332,9 +332,9 @@ public class PegManager : MonoBehaviour
 
         // create an array to store the different score multipliers
         m_scoreMultipliers = new int[5] { 1, 2, 3, 5, 10 };
-        // create an array to store the orange peg thresholds at which the score multiplier will increase
+        // create an array to store the orange peg thresholds at which the score multiplier will increase, with the last value as unreachable
         // TEMP { 10, 15, 19, 22 }
-        m_multiplierIncreaseThresholds = new int[4] { 2, 3, 4, 5 };
+        m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
 
         // create an array the size of the amount of children the peg manager has
         m_activePegs = new Peg[transform.childCount];
