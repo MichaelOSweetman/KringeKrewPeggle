@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CameraZoom.cs
     Summary: Allows the camera to zoom in and track a target or return to its default state
     Creation Date: 04/12/2023
-    Last Modified: 18/12/2023
+    Last Modified: 01/04/2023
 */
 public class CameraZoom : MonoBehaviour
 {
@@ -84,7 +84,7 @@ public class CameraZoom : MonoBehaviour
             if (m_camera.orthographicSize > m_maxZoom)
             {
                 // increase the camera zoom and clamp it to valid bounds
-                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize - m_zoomSpeed * Time.deltaTime, m_maxZoom, m_defaultZoom);
+                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize - m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
             }
             // if the camera is fully zoomed in
             else
@@ -107,7 +107,7 @@ public class CameraZoom : MonoBehaviour
             if (m_camera.orthographicSize < m_defaultZoom)
             {
                 // reduce the camera zoom and clamp it to valid bounds
-                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize + m_zoomSpeed * Time.deltaTime, m_maxZoom, m_defaultZoom);
+                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize + m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
             }
 
             // store that the camera is not at max zoom
@@ -117,7 +117,7 @@ public class CameraZoom : MonoBehaviour
             if ((transform.position - m_defaultCameraPosition).sqrMagnitude > m_maxValidSquaredDistanceFromDefaultPosition)
             {
                 // move the camera towards its default position
-                transform.position = Vector3.MoveTowards(transform.position, m_defaultCameraPosition, m_returnMoveSpeed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, m_defaultCameraPosition, m_returnMoveSpeed * Time.unscaledDeltaTime);
 
                 // if the camera is now close enough to the target position
                 if ((transform.position - m_defaultCameraPosition).sqrMagnitude <= m_maxValidSquaredDistanceFromDefaultPosition)

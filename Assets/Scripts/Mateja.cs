@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 22/01/2024
+    Last Modified: 01/04/2024
 */
 public class Mateja : MonoBehaviour
 {
@@ -86,7 +86,7 @@ public class Mateja : MonoBehaviour
         if (m_matejaState == MatejaState.Spawned)
         {
             // move Mateja towards the ready position using the move to ready speed
-            transform.position = Vector3.MoveTowards(transform.position, m_readiedPosition, m_moveToReadySpeed * Time.deltaTime * m_playerControls.m_timeScale);
+            transform.position = Vector3.MoveTowards(transform.position, m_readiedPosition, m_moveToReadySpeed * Time.deltaTime);
 
             // if Mateja is close enough to the readied position
             if ((transform.position - m_readiedPosition).sqrMagnitude <= m_maxValidSquaredDistanceFromReadiedPosition)
@@ -111,14 +111,14 @@ public class Mateja : MonoBehaviour
             else
             {
                 // rotate Mateja's body as he launches
-                m_matejaBody.transform.Rotate(Vector3.forward * m_rotationSpeed * Time.deltaTime * m_playerControls.m_timeScale);
+                m_matejaBody.transform.Rotate(Vector3.forward * m_rotationSpeed * Time.deltaTime);
             }
         }
         // otherwise, if Mateja has been slammed
         else if (m_matejaState == MatejaState.Slammed)
         {
             // move Mateja towards the active bucket
-            transform.position = Vector3.MoveTowards(transform.position, (m_bucket.activeSelf ? m_bucket : m_victoryBuckets).transform.position, m_slamSpeed * Time.deltaTime * m_playerControls.m_timeScale);
+            transform.position = Vector3.MoveTowards(transform.position, (m_bucket.activeSelf ? m_bucket : m_victoryBuckets).transform.position, m_slamSpeed * Time.deltaTime);
         }
     }
 

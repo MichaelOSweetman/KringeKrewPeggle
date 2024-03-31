@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 25/03/2024
+    Last Modified: 01/04/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -112,7 +112,8 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
-    [HideInInspector] public float m_timeScale = 1.0f;
+    float m_defaultTimeScale = 1.0f;
+    float m_defaultDeltaTime = 0.02f;
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
@@ -409,6 +410,8 @@ public class PlayerControls : MonoBehaviour
 
     GameObject Shoot()
     {
+        // switch the time scale back to default
+        ModifyTimeScale(m_defaultTimeScale);
         // create a copy of the ball prefab
         GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
         // set its position to be the same as this game object
@@ -482,8 +485,20 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+    public void ModifyTimeScale(float a_newTimeScale)
+    {
+        // set the time scale to the new value
+        Time.timeScale = a_newTimeScale;
+        // ensure fixedUpdate is called with the same frequency regardless of time scale so physics remains smooth
+        Time.fixedDeltaTime = m_defaultDeltaTime * Time.timeScale;
+    }
+
     void Start()
     {
+        // initialise default time variables
+        m_defaultTimeScale = Time.timeScale;
+        m_defaultDeltaTime = Time.fixedDeltaTime;
+
         // initialise the ball count
         m_ballCount = m_startingBallCount;
 
@@ -494,16 +509,30 @@ public class PlayerControls : MonoBehaviour
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
         // TEMP
-        m_greenPegPower = LokiPower;
+        m_greenPegPower = KevinPower;
     }
 
     void Update()
     {
+        // TEMP
+        if (Input.GetButton("Speed Up Time"))
+        {
+            // change the timescale to the sped up timescale
+            ModifyTimeScale(m_spedUpTimeScale);
+        }
+        // otherwise, if the Speed Up Time button has been released
+        else if (Input.GetButtonUp("Speed Up Time"))
+        {
+            // reset the timescale
+            ModifyTimeScale(m_defaultTimeScale);
+        }
+        // TEMP
+
         // if the Free Ball Text Timer is active
         if (m_freeBallTextTimer > 0.0f)
         {
             // reduce the timer
-            m_freeBallTextTimer -= Time.deltaTime;
+            m_freeBallTextTimer -= Time.unscaledDeltaTime;
 
             // if the timer has ran out
             if (m_freeBallTextTimer <= 0.0f)
@@ -523,7 +552,7 @@ public class PlayerControls : MonoBehaviour
             // hide the scope overlay
             m_scopeOverlay.SetActive(false);
             // reset the time scale
-            m_timeScale = 1.0f;
+            ModifyTimeScale(m_defaultTimeScale);
         }
 
         // if the current game state is Turn Set Up
@@ -631,19 +660,21 @@ public class PlayerControls : MonoBehaviour
                         m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
                     }
                 }
-
-                // if the Speed Up Time input has been detected
-                if (Input.GetButton("Speed Up Time"))
+                // TEMP
+                /*
+                // otherwise, if the Speed Up Time input has been detected
+                else if (Input.GetButton("Speed Up Time"))
                 {
                     // change the timescale to the sped up timescale
-                    m_timeScale = m_spedUpTimeScale;
+                    ModifyTimeScale(m_spedUpTimeScale);
                 }
                 // otherwise, if the Speed Up Time button has been released
                 else if (Input.GetButtonUp("Speed Up Time"))
                 {
                     // reset the timescale
-                    m_timeScale = 1.0f;
+                    ModifyTimeScale(m_defaultTimeScale);
                 }
+                */
             }
         }
         // if the current gamestate is Ball In Play
@@ -660,7 +691,7 @@ public class PlayerControls : MonoBehaviour
                     // show the scope overlay
                     m_scopeOverlay.SetActive(true);
                     // set the time scale to the scoped time scale
-                    m_timeScale = m_scopedTimeScale;
+                    ModifyTimeScale(m_scopedTimeScale);
                 }
 
                 // if the shoot / use power button has been pressed and the camera is at max zoom
