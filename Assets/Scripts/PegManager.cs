@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 25/03/2024
+    Last Modified: 08/04/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -22,6 +22,10 @@ public class PegManager : MonoBehaviour
 
     [Header("Player Controls")]
     public PlayerControls m_playerControls;
+
+    [Header("Levels")]
+    public GameObject m_currentLevel;
+    GameObject m_currentLevelSet;
 
     [Header("Peg Colours")]
     public Color m_bluePegColor;
@@ -320,6 +324,103 @@ public class PegManager : MonoBehaviour
         return false;
     }
 
+    void LoadNextLevel()
+    {
+        // if the current level is the last level of its set
+        if (m_currentLevel.transform.GetSiblingIndex() >= m_currentLevelSet.transform.childCount - 1)
+        {
+            // if the current level is the last level of the last level set
+            if (m_currentLevelSet.transform.GetSiblingIndex() >= transform.childCount - 1)
+            {
+                // load the first level of the first level set
+                LoadLevel(transform.GetChild(0).GetChild(0).gameObject);
+            }
+            // if the current level is not the last level of the last level set
+            else
+            {
+                // get the first child of the next level set and load it as the current level
+                LoadLevel(transform.GetChild(m_currentLevelSet.transform.GetSiblingIndex() + 1).GetChild(0).gameObject);
+            }
+        }
+        // if the current level is not the last level of its set
+        else
+        {
+            // get the next child of the current level set and load it as the current level
+            LoadLevel(m_currentLevelSet.transform.GetChild(m_currentLevel.transform.GetSiblingIndex() + 1).gameObject);
+        }
+    }
+
+    void LoadLevel(GameObject a_newLevel)
+    {
+        // store the arguemnt gameobject as the current level
+        m_currentLevel = a_newLevel;
+        m_currentLevelSet = m_currentLevel.transform.parent.gameObject;
+
+        // make each set of levels inactive
+        for (int i = 0; i < transform.childCount; ++i)
+        {
+            transform.GetChild(i).gameObject.SetActive(false);
+        }
+
+        // make the current level set active
+        m_currentLevelSet.SetActive(true);
+
+        // make each level within the current level set inactive
+        for (int i = 0; i < m_currentLevel.transform.parent.childCount; ++i)
+        {
+            m_currentLevelSet.transform.GetChild(i).gameObject.SetActive(false);
+        }
+
+        // make the current level active
+        m_currentLevel.SetActive(true);
+
+        // create an array the size of the amount of children the level has
+        m_activePegs = new Peg[m_currentLevel.transform.childCount];
+        // create a list to store all active blue pegs
+        m_activeBluePegs = new List<Peg>();
+        // initialise the hit pegs queue
+        m_hitPegs = new Queue<Peg>();
+
+        // create a hash set to store the IDs of all pegs that will start as orange or green
+        HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
+        // create an integer variable to store the ID for the peg to be added to the hash set
+        int randomPegID = 0;
+
+        // loop for each starting orange and green peg
+        for (int i = 0; i < m_startingOrangePegCount + m_startingGreenPegCount; ++i)
+        {
+            // get a random peg ID that has not yet been assigned to a peg
+            do
+            {
+                randomPegID = Random.Range(0, m_currentLevel.transform.childCount);
+            }
+            while (orangeAndGreenPegIDs.Contains(randomPegID));
+
+            // add the ID to to the hash set
+            orangeAndGreenPegIDs.Add(randomPegID);
+            // add the peg to the active pegs array
+            m_activePegs[randomPegID] = m_currentLevel.transform.GetChild(randomPegID).gameObject.GetComponent<Peg>();
+            // set the peg's type to orange, or green if all orange pegs have been assigned
+            SetPegType(m_activePegs[randomPegID], (i < m_startingOrangePegCount) ? PegType.Orange : PegType.Green, false);
+        }
+
+        // loop for each child
+        for (int i = 0; i < m_currentLevel.transform.childCount; ++i)
+        {
+            // if the peg has not yet been assigned, it is should start as a blue peg
+            if (m_activePegs[i] == null)
+            {
+                // add the child to the array of active pegs
+                m_activePegs[i] = m_currentLevel.transform.GetChild(i).gameObject.GetComponent<Peg>();
+                // add the peg to the list of active blue pegs
+                m_activeBluePegs.Add(m_activePegs[i]);
+            }
+        }
+
+        // assign a random blue peg to be purple
+        ReplacePurplePeg();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -336,56 +437,19 @@ public class PegManager : MonoBehaviour
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
 
-        // create an array the size of the amount of children the peg manager has
-        m_activePegs = new Peg[transform.childCount];
-        // create a list to store all active blue pegs
-        m_activeBluePegs = new List<Peg>();
-        // initialise the hit pegs queue
-        m_hitPegs = new Queue<Peg>();
-
-        // create a hash set to store the IDs of all pegs that will start as orange or green
-        HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
-        // create an integer variable to store the ID for the peg to be added to the hash set
-        int randomPegID = 0;
-                
-        // loop for each starting orange and green peg
-        for (int i = 0; i < m_startingOrangePegCount + m_startingGreenPegCount; ++i)
-        {
-            // get a random peg ID that has not yet been assigned to a peg
-            do
-            {
-                randomPegID = Random.Range(0, transform.childCount);
-            }
-            while (orangeAndGreenPegIDs.Contains(randomPegID));
-        
-            // add the ID to to the hash set
-            orangeAndGreenPegIDs.Add(randomPegID);
-            // add the peg to the active pegs array
-            m_activePegs[randomPegID] = transform.GetChild(randomPegID).gameObject.GetComponent<Peg>();
-            // set the peg's type to orange, or green if all orange pegs have been assigned
-            SetPegType(m_activePegs[randomPegID], (i < m_startingOrangePegCount) ? PegType.Orange : PegType.Green, false);
-        }
-
-        // loop for each child
-        for (int i = 0; i < transform.childCount; ++i)
-        {
-            // if the peg has not yet been assigned, it is should start as a blue peg
-            if (m_activePegs[i] == null)
-            {
-                // add the child to the array of active pegs
-                m_activePegs[i] = transform.GetChild(i).gameObject.GetComponent<Peg>();
-                // add the peg to the list of active blue pegs
-                m_activeBluePegs.Add(m_activePegs[i]);
-            }
-        }
-
-        // assign a random blue peg to be purple
-        ReplacePurplePeg();
+        // load the current level
+        LoadLevel(m_currentLevel);
     }
 
     // Update is called once per frame
     void Update()
     {
+        // TEMP
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            LoadNextLevel();
+        }
+
         // if the hit peg queue should be cleared
         if (m_clearHitPegQueue)
         {
