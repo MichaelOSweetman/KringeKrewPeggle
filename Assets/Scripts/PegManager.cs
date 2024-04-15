@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 08/04/2024
+    Last Modified: 15/04/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -26,6 +26,7 @@ public class PegManager : MonoBehaviour
     [Header("Levels")]
     public GameObject m_currentLevel;
     GameObject m_currentLevelSet;
+    int m_levelPegCount;
 
     [Header("Peg Colours")]
     public Color m_bluePegColor;
@@ -72,7 +73,7 @@ public class PegManager : MonoBehaviour
     public GameObject m_victoryBuckets;
     public GameObject m_NearVictoryDetectorPrefab;
 
-    Peg[] m_activePegs;
+    List<Peg> m_pegs;
     Queue<Peg> m_hitPegs;
     List<Peg> m_activeBluePegs;
     Peg m_purplePeg = null;
@@ -221,23 +222,23 @@ public class PegManager : MonoBehaviour
 
     public void ResolveHit(int a_pegID)
     {
-        // if the peg is in the active list, it has not been hit yet
-        if (m_activePegs[a_pegID])
+        // if the peg is in the peg list, it has not been hit yet
+        if (m_pegs[a_pegID])
         {
             // add the peg to the hit pegs queue
-            m_hitPegs.Enqueue(m_activePegs[a_pegID]);
+            m_hitPegs.Enqueue(m_pegs[a_pegID]);
 
             // set the peg's colour to the hit version of its colour
-            SetPegType(m_activePegs[a_pegID], m_activePegs[a_pegID].m_pegType, true);
+            SetPegType(m_pegs[a_pegID], m_pegs[a_pegID].m_pegType, true);
 
 
             // determine the points gained from hitting this peg with the current score multiplier
-            switch (m_activePegs[a_pegID].m_pegType)
+            switch (m_pegs[a_pegID].m_pegType)
             {
                 case PegType.Blue:
                     m_hitPegScore = m_baseBluePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // remove the peg from the list of active blue pegs
-                    m_activeBluePegs.Remove(m_activePegs[a_pegID]);
+                    m_activeBluePegs.Remove(m_pegs[a_pegID]);
                     break;
                 case PegType.Orange:
                     m_hitPegScore = m_baseOrangePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
@@ -256,16 +257,16 @@ public class PegManager : MonoBehaviour
                         // if this was the second last orange peg
                         if (m_hitOrangePegs == m_startingOrangePegCount - 1)
                         {
-                            // loop through the active pegs
-                            for (int i = 0; i < m_activePegs.Length; ++i)
+                            // loop through the pegs
+                            for (int i = 0; i < m_levelPegCount; ++i)
                             {
                                 // if this is not the peg that was just hit, it is active and it is orange
-                                if (i != a_pegID && m_activePegs[i] != null && m_activePegs[i].m_pegType == PegType.Orange)
+                                if (i != a_pegID && m_pegs[i] != null && m_pegs[i].m_pegType == PegType.Orange)
                                 {
                                     // create a near victory detector
                                     GameObject nearVictoryDetector = Instantiate(m_NearVictoryDetectorPrefab);
                                     // set the detectors position to the orange pegs position
-                                    nearVictoryDetector.transform.position = m_activePegs[i].transform.position;
+                                    nearVictoryDetector.transform.position = m_pegs[i].transform.position;
                                     // give the victory detector access to the camera used by Player Controls
                                     nearVictoryDetector.GetComponent<NearVictoryDetector>().m_cameraZoom = m_playerControls.m_cameraZoom;
 
@@ -288,7 +289,7 @@ public class PegManager : MonoBehaviour
                 case PegType.Green:
                     m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // trigger the player's current power
-                    m_playerControls.m_greenPegPower(PlayerControls.PowerFunctionMode.Trigger, m_activePegs[a_pegID].transform.position);
+                    m_playerControls.m_greenPegPower(PlayerControls.PowerFunctionMode.Trigger, m_pegs[a_pegID].transform.position);
                     break;
 
             }
@@ -300,13 +301,13 @@ public class PegManager : MonoBehaviour
             // set the text to display the score gained for hitting the peg
             scoreText.GetComponent<Text>().text = m_hitPegScore.ToString();
             // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
-            scoreText.transform.position = m_camera.WorldToScreenPoint(m_activePegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
+            scoreText.transform.position = m_camera.WorldToScreenPoint(m_pegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
 
             // update the score for this shoot phase with the score gained from the hit peg
             UpdatePhaseScore(m_hitPegScore);
 
-            // remove the peg from the active peg array
-            m_activePegs[a_pegID] = null;
+            // set the value in this pegs position of the peg array to null to indicate it is no longer active
+            m_pegs[a_pegID] = null;
         }
     }
 
@@ -350,9 +351,33 @@ public class PegManager : MonoBehaviour
         }
     }
 
+    void SearchForPegs(Transform a_transform)
+    {
+        // if the transform has the peg container tag
+        if (a_transform.CompareTag("PegContainer"))
+        {
+            // loop for the child's children
+            for (int i = 0; i < a_transform.childCount; ++i)
+            {
+                // check if this transform or its children are pegs
+                SearchForPegs(a_transform.GetChild(i));
+            }
+        }
+        // if the transform is not a peg container
+        else
+        {
+            // add the peg to the peg array
+            m_pegs.Add(a_transform.GetComponent<Peg>());
+            // give the peg its peg ID
+            m_pegs[m_pegs.Count - 1].m_pegID = m_levelPegCount;
+            // increase the peg count for the level
+            ++m_levelPegCount;
+        }
+    }
+
     void LoadLevel(GameObject a_newLevel)
     {
-        // store the arguemnt gameobject as the current level
+        // store the argument gameobject as the current level
         m_currentLevel = a_newLevel;
         m_currentLevelSet = m_currentLevel.transform.parent.gameObject;
 
@@ -374,8 +399,12 @@ public class PegManager : MonoBehaviour
         // make the current level active
         m_currentLevel.SetActive(true);
 
-        // create an array the size of the amount of children the level has
-        m_activePegs = new Peg[m_currentLevel.transform.childCount];
+        // reset the count for the amount of pegs in the level
+        m_levelPegCount = 0;
+        // initisialse the peg array and search for pegs to add to it
+        m_pegs = new List<Peg>();
+        SearchForPegs(m_currentLevel.transform);
+
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
         // initialise the hit pegs queue
@@ -389,31 +418,29 @@ public class PegManager : MonoBehaviour
         // loop for each starting orange and green peg
         for (int i = 0; i < m_startingOrangePegCount + m_startingGreenPegCount; ++i)
         {
-            // get a random peg ID that has not yet been assigned to a peg
+            // get a random peg ID that is not yet in the hash set
             do
             {
-                randomPegID = Random.Range(0, m_currentLevel.transform.childCount);
+                randomPegID = Random.Range(0, m_levelPegCount);
             }
             while (orangeAndGreenPegIDs.Contains(randomPegID));
 
             // add the ID to to the hash set
             orangeAndGreenPegIDs.Add(randomPegID);
-            // add the peg to the active pegs array
-            m_activePegs[randomPegID] = m_currentLevel.transform.GetChild(randomPegID).gameObject.GetComponent<Peg>();
             // set the peg's type to orange, or green if all orange pegs have been assigned
-            SetPegType(m_activePegs[randomPegID], (i < m_startingOrangePegCount) ? PegType.Orange : PegType.Green, false);
+            SetPegType(m_pegs[randomPegID], (i < m_startingOrangePegCount) ? PegType.Orange : PegType.Green, false);
         }
 
-        // loop for each child
-        for (int i = 0; i < m_currentLevel.transform.childCount; ++i)
+        // loop for each peg
+        for (int i = 0; i < m_levelPegCount; ++i)
         {
-            // if the peg has not yet been assigned, it is should start as a blue peg
-            if (m_activePegs[i] == null)
+            // if this peg is not an orange or green peg
+            if (!orangeAndGreenPegIDs.Contains(i))
             {
-                // add the child to the array of active pegs
-                m_activePegs[i] = m_currentLevel.transform.GetChild(i).gameObject.GetComponent<Peg>();
                 // add the peg to the list of active blue pegs
-                m_activeBluePegs.Add(m_activePegs[i]);
+                m_activeBluePegs.Add(m_pegs[i]);
+                // set the peg to be blue
+                SetPegType(m_pegs[i], PegType.Blue, false);
             }
         }
 
