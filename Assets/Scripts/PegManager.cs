@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 15/04/2024
+    Last Modified: 22/04/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -325,7 +325,7 @@ public class PegManager : MonoBehaviour
         return false;
     }
 
-    void LoadNextLevel()
+    public void LoadNextLevel()
     {
         // if the current level is the last level of its set
         if (m_currentLevel.transform.GetSiblingIndex() >= m_currentLevelSet.transform.childCount - 1)
@@ -375,7 +375,7 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    void LoadLevel(GameObject a_newLevel)
+    public void LoadLevel(GameObject a_newLevel)
     {
         // store the argument gameobject as the current level
         m_currentLevel = a_newLevel;
@@ -446,6 +446,8 @@ public class PegManager : MonoBehaviour
 
         // assign a random blue peg to be purple
         ReplacePurplePeg();
+
+        m_playerControls.Reload();
     }
 
     // Start is called before the first frame update

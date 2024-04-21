@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 01/04/2024
+    Last Modified: 22/04/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -17,8 +17,6 @@ public class PlayerControls : MonoBehaviour
         Shoot,
         BallInPlay,
         ResolveTurn,
-        LevelOver,
-        Paused
     }
 
     public enum PowerFunctionMode
@@ -33,6 +31,7 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
 
     [Header("Other Scripts")]
+    public UIManager m_UIManager;
     public PegManager m_pegManager;
     public CameraZoom m_cameraZoom;
     public LookAtCursor m_LauncherLookControls;
@@ -493,6 +492,20 @@ public class PlayerControls : MonoBehaviour
         Time.fixedDeltaTime = m_defaultDeltaTime * Time.timeScale;
     }
 
+    public void Reload()
+    {
+        // reset the ball count
+        m_ballCount = m_startingBallCount;
+        m_ballCountText.text = m_ballCount.ToString();
+
+        // reset the power charges
+        m_powerCharges = 0;
+        m_PowerChargesText.text = m_powerCharges.ToString();
+
+        // set the game state to the shoot phase
+        m_currentGameState = GameState.Shoot;
+    }
+
     void Start()
     {
         // initialise default time variables
@@ -794,20 +807,22 @@ public class PlayerControls : MonoBehaviour
                 // if there is not a mateja in play
                 else
                 {
-                    // resolve the turn
-                    ResolveTurn();
+                    // if the ball count is over 0
+                    if (m_ballCount > 0)
+                    {
+                        // resolve the turn
+                        ResolveTurn();
+                    }
+                    // if the player has run out of balls
+                    else
+                    {
+                        // destroy the ball
+                        Destroy(m_ball);
+                        // tell the UI Manager that the level is over and the player failed
+                        m_UIManager.LevelOver(false);
+                    }
                 }
             }
-        }
-        // if the current game state is Level Over
-        else if (m_currentGameState == GameState.LevelOver)
-        {
-
-        }
-        // if the current game state is Paused
-        else if (m_currentGameState == GameState.Paused)
-        {
-
         }
     }
 }
