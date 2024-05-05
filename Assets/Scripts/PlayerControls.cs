@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 22/04/2024
+    Last Modified: 29/04/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -24,7 +24,8 @@ public class PlayerControls : MonoBehaviour
         Trigger,
         SetUp,
         OnShoot,
-        Resolve
+        Resolve,
+		Reload
     }
 
 
@@ -64,6 +65,7 @@ public class PlayerControls : MonoBehaviour
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
+	[HideInInspector] public List<Wasp> m_wasps;
 
     [Header("Ethen Power")]
     public int m_ethenPowerChargesGained = 2;
@@ -139,6 +141,8 @@ public class PlayerControls : MonoBehaviour
                 {
                     // create a wasp
                     GameObject wasp = Instantiate(m_wasp) as GameObject;
+					// add the wasp to the wasp list
+					m_wasps.Add(wasp);
                     // position it on the green peg
                     wasp.transform.position = a_greenPegPosition;
                     // give the wasp the peg as its target
@@ -148,6 +152,17 @@ public class PlayerControls : MonoBehaviour
                 }
             }
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// destroy all remaining wasps
+			while(m_wasps.Count > 0)
+			{
+				Destroy(m_wasps[m_wasps.Count - 1].gameobject);
+				m_wasps.RemoveAt(m_wasps[m_wasps.Count - 1]);
+			}
+		}
+			
 
         // TEMP
         print("DanielPower() called");
@@ -253,6 +268,27 @@ public class PlayerControls : MonoBehaviour
             // initialise the previous mouse position variable
             m_previousMousePosition = Input.mousePosition;
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// Destroy all lines
+			DestroyLines();
+			
+			// turn off the drawing UI elements
+			m_endDrawButton.SetActive(false);
+			m_clearButton.SetActive(false);
+			m_inkResourceBarBackground.SetActive(false);
+			
+			// take the player out of drawing mode
+			m_drawing = false;
+			
+			// store that a line has not begun being drawn
+			m_lineBegun = false;
+			
+			// ensure the LookAtCursor component of the launcher is on
+			m_LauncherLookControls.enabled = true;
+		}
+		
 
         // TEMP
         print("EthenPower() called");
@@ -272,6 +308,14 @@ public class PlayerControls : MonoBehaviour
             // add the charges
             ModifyPowerCharges(m_kevinPowerChargesGained);
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// tell the camera to return to its default state
+            m_cameraZoom.ReturnToDefault();
+            // hide the scope overlay
+            m_scopeOverlay.SetActive(false);
+		}
 
         // TEMP
         print("KevinPower() called");
@@ -297,6 +341,19 @@ public class PlayerControls : MonoBehaviour
             // add the charges
             ModifyPowerCharges(m_lokiPowerChargesGained);
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// clear the connection point
+			m_connectionPoint = null;
+			
+			// make the cord and hook inactive
+			m_lokiPowerCord.gameObject.SetActive(false);
+			m_hook.gameObject.SetActive(false);
+			
+			// store that the ball is not connected to a peg
+			m_connectedToPeg = false;
+		}
         
         // TEMP
         print("LokiPower() called");
@@ -326,6 +383,12 @@ public class PlayerControls : MonoBehaviour
                 m_setUpPowerNextTurn = true;
             }
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// destroy Mateja
+			Destroy(Mateja);
+		}
 
         // TEMP
         print("MatPower() called");
@@ -384,10 +447,21 @@ public class PlayerControls : MonoBehaviour
             }
         }
         // otherwise, if the green peg power is to be set up or resolved
-        else
+        else if (a_powerFunctionMode == PowerFunctionMode.SetUp || a_powerFunctionMode == PowerFunctionMode.Resolve)
         {
+			// flip the bucket, launcher and gravity
             ToggleHillside();
         }
+		// otherwise, if the power should be reloaded
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// if the power has flipped gravity to be negative
+			if (Physics2D.gravity < 0)
+			{
+				// flip the bucket, launcher and gravity back to default positions
+				ToggleHillside();
+			}
+		}
 
         // TEMP
         print("SweetsPower() called");
@@ -501,9 +575,21 @@ public class PlayerControls : MonoBehaviour
         // reset the power charges
         m_powerCharges = 0;
         m_PowerChargesText.text = m_powerCharges.ToString();
+		
+		// reset the power
+		m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
 
         // set the game state to the shoot phase
         m_currentGameState = GameState.Shoot;
+		
+		// destroy the ball if one exists
+		if (m_ball != null)
+		{
+		Destroy(m_ball);
+		}
+		
+		// reset the time scale
+		ModifyTimeScale(m_defaultTimeScale);
     }
 
     void Start()
