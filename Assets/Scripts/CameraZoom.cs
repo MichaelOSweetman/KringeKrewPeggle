@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CameraZoom.cs
     Summary: Allows the camera to zoom in and track a target or return to its default state
     Creation Date: 04/12/2023
-    Last Modified: 01/04/2023
+    Last Modified: 06/05/2024
 */
 public class CameraZoom : MonoBehaviour
 {
@@ -32,12 +32,21 @@ public class CameraZoom : MonoBehaviour
     Vector3 m_defaultCameraPosition;
     Vector3 m_cameraPosition;
 
-    public void ReturnToDefault()
+    public void ReturnToDefault(bool a_instant = false)
     {
         // store that the camera should no longer be tracking
         m_tracking = false;
         // show the cursor if it had been hidden
         Cursor.visible = true;
+
+        // if the camera should return to default zoom and position instantly
+        if (a_instant)
+        {
+            // return the camera to the default zoom
+            m_camera.orthographicSize = m_defaultZoom;
+            // return the camera to the default position
+            transform.position = m_defaultCameraPosition;
+        }
     }
 
     public void ZoomAndTrack(GameObject a_target = null)

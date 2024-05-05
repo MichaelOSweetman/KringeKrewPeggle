@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 22/04/2024
+    Last Modified: 06/05/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -44,6 +44,7 @@ public class PegManager : MonoBehaviour
 
     [Header("Score")]
     public GameObject m_pegScoreTextPrefab;
+    public Transform m_pegScoreTextParent;
     public Camera m_camera;
     public GameObject m_canvas;
     public Text m_scoreText;
@@ -297,7 +298,7 @@ public class PegManager : MonoBehaviour
             // instantiate the peg score text prefab
             GameObject scoreText = Instantiate(m_pegScoreTextPrefab) as GameObject;
             // set the text's parent to be the canvas
-            scoreText.transform.SetParent(m_canvas.transform, false);
+            scoreText.transform.SetParent(m_pegScoreTextParent, false);
             // set the text to display the score gained for hitting the peg
             scoreText.GetComponent<Text>().text = m_hitPegScore.ToString();
             // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
@@ -443,6 +444,22 @@ public class PegManager : MonoBehaviour
                 SetPegType(m_pegs[i], PegType.Blue, false);
             }
         }
+
+        // reset the score multiplier index
+        m_scoreMultiplierIndex = 0;
+
+        // reset the free balls awarded
+        m_freeBallsAwarded = 0;
+
+        // clear the screen of peg score texts
+        for (int i = m_pegScoreTextParent.transform.childCount - 1; i >= 0; --i)
+        {
+            // destroy the current peg score text
+            Destroy(m_pegScoreTextParent.transform.GetChild(i).gameObject);
+        }
+
+        // stop clearing hit pegs
+        m_clearHitPegQueue = false;
 
         // assign a random blue peg to be purple
         ReplacePurplePeg();

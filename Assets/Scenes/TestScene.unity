@@ -2961,6 +2961,7 @@ MonoBehaviour:
   m_matejaPrefab: {fileID: 5672377063983417263, guid: 7f9a0a7fdbc0c2546a5638fe7057ed6e, type: 3}
   m_wasp: {fileID: 9221240970569109631, guid: f08068c35f1347f44aa0b9ce790dfca5, type: 3}
   m_searchRadius: 2
+  m_wasps: []
   m_ethenPowerChargesGained: 2
   m_lines: {fileID: 879736977}
   m_linePrefab: {fileID: 3989778212776657580, guid: 836673e1555ec684eb3348b26ea8496c, type: 3}
@@ -2986,7 +2987,7 @@ MonoBehaviour:
   m_topPlayAreaCollider: {fileID: 561992431}
   m_gameOverlay: {fileID: 571884302}
   m_hillsideGameOverlay: {fileID: 1947776465}
-  m_bucket: {fileID: 308680431}
+  m_bucket: {fileID: 308680432}
   m_victoryBuckets: {fileID: 1901099215}
   m_spedUpTimeScale: 5
 --- !u!1 &291137620
@@ -3435,6 +3436,8 @@ MonoBehaviour:
   m_secondPosition: {x: 4, y: -4.5, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 1.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &308680433
 Transform:
   m_ObjectHideFlags: 0
@@ -5678,6 +5681,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &500948728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8937,6 +8942,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &690989425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10407,6 +10414,8 @@ MonoBehaviour:
   m_secondPosition: {x: -2.5, y: -2, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.055
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &838419299
 GameObject:
   m_ObjectHideFlags: 0
@@ -13487,6 +13496,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1, y: -3.7, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1050039994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15400,6 +15411,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1268357385}
   m_CullTransparentMesh: 1
+--- !u!1 &1275951801
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1275951802}
+  m_Layer: 5
+  m_Name: PegScoreTexts
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1275951802
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275951801}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1539352618}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1277538732
 GameObject:
   m_ObjectHideFlags: 0
@@ -19044,6 +19090,7 @@ RectTransform:
   - {fileID: 1915776723}
   - {fileID: 1268357386}
   - {fileID: 401892797}
+  - {fileID: 1275951802}
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -23126,6 +23173,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &1985508965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23500,6 +23549,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1, y: -3.7, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &2054471199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23749,6 +23800,8 @@ MonoBehaviour:
   m_secondPosition: {x: 1, y: -3.7, z: 0}
   m_maxValidSquaredDistanceFromTarget: 0.005
   m_minSquareDistanceFromPointForMaxSpeed: 0.5
+  m_firstPosition: {x: 0, y: 0, z: 0}
+  m_targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &2089395729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24014,6 +24067,7 @@ MonoBehaviour:
   m_startingOrangePegCount: 15
   m_startingGreenPegCount: 2
   m_pegScoreTextPrefab: {fileID: 7456070119279739998, guid: 6bf64a015dd01324aa63a8bf0c7f104a, type: 3}
+  m_pegScoreTextParent: {fileID: 1275951802}
   m_camera: {fileID: 519420031}
   m_canvas: {fileID: 1539352614}
   m_scoreText: {fileID: 423325514}

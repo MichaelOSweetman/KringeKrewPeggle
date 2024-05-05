@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 29/04/2024
+    Last Modified: 06/05/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -58,14 +58,14 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
 
-    [Header("Mat Power")]
+    [Header("Mateja Power")]
     public GameObject m_matejaPrefab;
     GameObject m_mateja = null;
 
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
-	[HideInInspector] public List<Wasp> m_wasps;
+	[HideInInspector] public List<GameObject> m_wasps;
 
     [Header("Ethen Power")]
     public int m_ethenPowerChargesGained = 2;
@@ -108,7 +108,7 @@ public class PlayerControls : MonoBehaviour
     public GameObject m_hillsideGameOverlay;
 
     [Header("Buckets")]
-    public GameObject m_bucket;
+    public MoveToPoints m_bucket;
     public GameObject m_victoryBuckets;
 
     [Header("Time Scale")]
@@ -158,8 +158,8 @@ public class PlayerControls : MonoBehaviour
 			// destroy all remaining wasps
 			while(m_wasps.Count > 0)
 			{
-				Destroy(m_wasps[m_wasps.Count - 1].gameobject);
-				m_wasps.RemoveAt(m_wasps[m_wasps.Count - 1]);
+				Destroy(m_wasps[m_wasps.Count - 1]);
+				m_wasps.RemoveAt(m_wasps.Count - 1);
 			}
 		}
 			
@@ -311,8 +311,8 @@ public class PlayerControls : MonoBehaviour
 		// otherwise, if the power should be reloaded
 		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
 		{
-			// tell the camera to return to its default state
-            m_cameraZoom.ReturnToDefault();
+			// tell the camera to return to its default state instantly
+            m_cameraZoom.ReturnToDefault(true);
             // hide the scope overlay
             m_scopeOverlay.SetActive(false);
 		}
@@ -359,7 +359,7 @@ public class PlayerControls : MonoBehaviour
         print("LokiPower() called");
     }
 
-    void MatPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
+    void MatejaPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
         // if the green peg has been triggered or if the green peg power is to be set up
         if (a_powerFunctionMode == PowerFunctionMode.Trigger || a_powerFunctionMode == PowerFunctionMode.SetUp)
@@ -373,7 +373,7 @@ public class PlayerControls : MonoBehaviour
                 Mateja matejaScript = m_mateja.GetComponent<Mateja>();
                 matejaScript.m_playerControls = this;
                 // give it the bucket and victory bucket game objects
-                matejaScript.m_bucket = m_bucket;
+                matejaScript.m_bucket = m_bucket.gameObject;
                 matejaScript.m_victoryBuckets = m_victoryBuckets;
             }
             // if there is already a Mateja
@@ -387,7 +387,7 @@ public class PlayerControls : MonoBehaviour
 		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
 		{
 			// destroy Mateja
-			Destroy(Mateja);
+			Destroy(m_mateja);
 		}
 
         // TEMP
@@ -399,6 +399,11 @@ public class PlayerControls : MonoBehaviour
         // flip the bucket around the x axis
         m_bucket.transform.position = new Vector3(m_bucket.transform.position.x, -m_bucket.transform.position.y);
         m_bucket.transform.rotation = Quaternion.Euler(m_bucket.transform.rotation.eulerAngles.x, m_bucket.transform.rotation.eulerAngles.y, m_bucket.transform.rotation.eulerAngles.z + 180.0f);
+
+        // invert the y axis values of the positions of the bucket's MoveToPoints script
+        m_bucket.m_firstPosition.y *= -1.0f;
+        m_bucket.m_secondPosition.y *= -1.0f;
+        m_bucket.m_targetPosition.y *= -1.0f;
 
         // flip the victory buckets around the x axis
         m_victoryBuckets.transform.position = new Vector3(m_victoryBuckets.transform.position.x, -m_victoryBuckets.transform.position.y);
@@ -455,8 +460,8 @@ public class PlayerControls : MonoBehaviour
 		// otherwise, if the power should be reloaded
 		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
 		{
-			// if the power has flipped gravity to be negative
-			if (Physics2D.gravity < 0)
+			// if the power has flipped gravity to be positive
+			if (Physics2D.gravity.y > 0)
 			{
 				// flip the bucket, launcher and gravity back to default positions
 				ToggleHillside();
@@ -576,7 +581,7 @@ public class PlayerControls : MonoBehaviour
         m_powerCharges = 0;
         m_PowerChargesText.text = m_powerCharges.ToString();
 		
-		// reset the power
+		// reload the power
 		m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
 
         // set the game state to the shoot phase
@@ -585,7 +590,7 @@ public class PlayerControls : MonoBehaviour
 		// destroy the ball if one exists
 		if (m_ball != null)
 		{
-		Destroy(m_ball);
+		    Destroy(m_ball);
 		}
 		
 		// reset the time scale
@@ -608,7 +613,7 @@ public class PlayerControls : MonoBehaviour
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
         // TEMP
-        m_greenPegPower = KevinPower;
+        m_greenPegPower = MatejaPower;
     }
 
     void Update()
