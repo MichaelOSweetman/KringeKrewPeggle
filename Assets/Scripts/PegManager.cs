@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 06/05/2024
+    Last Modified: 13/05/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -59,7 +59,7 @@ public class PegManager : MonoBehaviour
     int m_scoreMultiplierIndex = 0;
     int m_currentShootPhaseScore = 0;
     int m_score = 0;
-
+	
     [Header("Free Ball From Score")]
     public RectTransform m_freeBallProgressBar;
     public RawImage m_freeBallProgressBarBackground;
@@ -129,6 +129,44 @@ public class PegManager : MonoBehaviour
             }
         }
     }
+
+	public int GetAverageActivePegScore()
+	{
+		int totalScore = 0;
+		int activePegCount = 0;
+		
+		// loop for each peg
+		for (int i = 0; i < m_pegs.Count; ++i)
+		{
+			// if the peg is active and not hit
+			if (m_peg[i].transform.gameObject.activeSelf && !m_peg[i].m_hit)
+			{
+				// increase the active peg counter by 1
+				++activePegCount
+				
+				// add score to the total depending on its peg type
+				switch (m_pegs[a_pegID].m_pegType)
+				{
+					case PegType.Blue:
+					totalScore += m_baseBluePegScore;
+						break;
+					case PegType.Orange:
+					totalScore += m_baseOrangePegScore;
+						break;
+					case PegType.Purple:
+					totalScore += m_basePurplePegScore;
+						break;
+					case PegType.Green:
+					totalScore += m_baseGreenPegScore;
+						break;
+	
+				}
+			}
+		}
+		
+		// return the average score or 0 if no active pegs were found
+		return (activePegCount > 0) ? totalScore/activePegCount : 0;
+	}
 
     public void AddScore(int a_scoreIncrease)
     {

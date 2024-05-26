@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 06/05/2024
+    Last Modified: 13/05/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -83,7 +83,15 @@ public class PlayerControls : MonoBehaviour
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
-
+	
+	[Header("Jack Power")]
+	public int m_jackPowerChargesGained = 4;
+	int m_communistPegScore = 0;
+	int m_defaultBluePegScore = 0;
+    int m_defaultOrangePegScore = 0;
+    int m_defaultPurplePegScore = 0;
+    int m_defaultGreenPegScore = 0;
+	
     [Header("Loki Power")]
     public int m_lokiPowerChargesGained = 2;
     public LineRenderer m_lokiPowerCord;
@@ -293,9 +301,49 @@ public class PlayerControls : MonoBehaviour
         // TEMP
         print("EthenPower() called");
     }
-
+	
     void JackPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+		// if the green peg has been triggered
+        if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+        {
+            // add the charges
+            ModifyPowerCharges(m_jackPowerChargesGained);
+        }
+		// otherwise, if the green peg power is to be set up
+		else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
+		{
+			// get the average of the scores of all the active pegs
+			m_communistPegScore = m_pegManager.GetAverageActivePegScore();
+			
+			// replace the score gained from these pegs with this average
+			m_PegManager.m_baseBluePegScore = m_communistPegScore;
+			m_PegManager.m_baseOrangePegScore = m_communistPegScore;
+			m_PegManager.m_basePurplePegScore = m_communistPegScore;
+			m_PegManager.m_baseGreenPegScore = m_communistPegScore;
+		}
+		// otherwise, if the player has just shot a ball
+        else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
+        {
+            // reduce the power charges by 1
+            ModifyPowerCharges(-1);
+            // if there are now 0 charges
+            if (m_powerCharges == 0)
+            {
+                // have the power resolve at the start of next turn
+                m_resolvePowerNextTurn = true;
+            }
+        }
+		// otherwise, if the green peg power should be resolved or reloaded
+		else
+		{
+			// return the score gained from pegs to their default bases
+			m_pegManager.m_baseBluePegScore = m_defaultBluePegScore;
+			m_pegManager.m_baseOrangePegScore = m_defaultOrangePegScore;
+			m_pegManager.m_basePurplePegScore = m_defaultPurplePegScore;
+			m_pegManager.m_baseGreenPegScore = m_defaultGreenPegScore;
+		}
+		
         // TEMP
         print("JackPower() called");
     }
@@ -612,8 +660,14 @@ public class PlayerControls : MonoBehaviour
         // get the width of the ink resource bar background
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
 
+		// store the base peg scores of each type for the Jack Power
+		m_defaultBluePegScore = m_pegManager.m_baseBluePegScore;
+		m_defaultOrangePegScore = m_pegManager.m_baseOrangePegScore;
+		m_defaultPurplePegScore = m_pegManager.m_basePurplePegScore;
+		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
+
         // TEMP
-        m_greenPegPower = MatejaPower;
+        m_greenPegPower = JackPower;
     }
 
     void Update()
