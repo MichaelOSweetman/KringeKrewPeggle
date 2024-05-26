@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 13/05/2024
+    Last Modified: 20/05/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -57,6 +57,10 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public int m_powerCharges = 0;
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
+
+	[Header("Ben Power")]
+	public GameObject m_IsaacPrefab;
+	bool m_spawnIsaac = false;
 
     [Header("Mateja Power")]
     public GameObject m_matejaPrefab;
@@ -126,8 +130,19 @@ public class PlayerControls : MonoBehaviour
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
-        // have the power set up next turn
-        m_setUpPowerNextTurn = true;
+		// if the green peg has been triggered
+		if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+		{
+			// have Isaac spawn instead of the ball next turn
+			m_spawnIsaac = true;
+		}
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+		{
+			// ensure the ball is spawned instead of Isaac next shoot phase
+			m_spawnIsaac = false;
+		}
+		
+        
         // TEMP
         print("BenPower() called");
     }
@@ -534,20 +549,69 @@ public class PlayerControls : MonoBehaviour
         m_PowerChargesText.text = m_powerCharges.ToString();
     }
 
+	public void RemoveBall()
+	{
+		// if there is a mateja in play
+        if (m_mateja != null)
+        {
+            // have mateja launch back up
+            m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
+            // destroy the ball
+            Destroy(m_ball);
+        }
+        // if there is not a mateja in play
+        else
+        {
+            // if the ball count is over 0
+            if (m_ballCount > 0)
+            {
+                // resolve the turn
+                ResolveTurn();
+            }
+            // if the player has run out of balls
+            else
+            {
+                // destroy the ball
+                Destroy(m_ball);
+                // tell the UI Manager that the level is over and the player failed
+                m_UIManager.LevelOver(false);
+            }
+        }
+	}
+
     GameObject Shoot()
     {
         // switch the time scale back to default
         ModifyTimeScale(m_defaultTimeScale);
-        // create a copy of the ball prefab
-        GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
-        // set its position to be the same as this game object
-        Ball.transform.position = transform.position;
-        // apply the launch speed force to the ball, in the direction this gameobject is facing
-        Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
-        // give the ball the peg manager
-        Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
-        // give the ball this component
-        Ball.GetComponent<Ball>().m_playerControls = this;
+		
+		GameObject Ball = null;
+		
+		// if Isaac should be spawned instead of the ball
+		if (m_spawnIsaac)
+		{
+			// create a copy of the Isaac prefab
+			Ball = Instantiate(m_IsaacPrefab);
+			// set its position to be the same as this game object
+			Ball.transform.position = transform.position;
+			// give Isaac this component
+			Ball.GetComponent<Isaac>().m_playerControls = this;
+		}
+		// if the ball should be spawned, not Isaac
+		else
+		{
+			// create a copy of the ball prefab
+			Ball = Instantiate(m_ballPrefab) as GameObject;
+			// set its position to be the same as this game object
+			Ball.transform.position = transform.position;
+			// apply the launch speed force to the ball, in the direction this gameobject is facing
+			Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
+			// give the ball the peg manager
+			Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
+			// give the ball this component
+			Ball.GetComponent<Ball>().m_playerControls = this;
+		}
+        
+
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;
         // update the ball count text
@@ -941,32 +1005,8 @@ public class PlayerControls : MonoBehaviour
             // if the ball is in play and has fallen low enough (or high enough with the Sweets Power)
             if (m_ball != null && (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor))
             {
-                // if there is a mateja in play
-                if (m_mateja != null)
-                {
-                    // have mateja launch back up
-                    m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
-                    // destroy the ball
-                    Destroy(m_ball);
-                }
-                // if there is not a mateja in play
-                else
-                {
-                    // if the ball count is over 0
-                    if (m_ballCount > 0)
-                    {
-                        // resolve the turn
-                        ResolveTurn();
-                    }
-                    // if the player has run out of balls
-                    else
-                    {
-                        // destroy the ball
-                        Destroy(m_ball);
-                        // tell the UI Manager that the level is over and the player failed
-                        m_UIManager.LevelOver(false);
-                    }
-                }
+				// remove the ball from play
+				RemoveBall();
             }
         }
     }
