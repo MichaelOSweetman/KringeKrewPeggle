@@ -5,9 +5,9 @@ using UnityEngine;
 
 /*
     File name: Isaac.cs
-    Summary: 
+    Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 20/05/2024
+    Last Modified: 27/05/2024
 */
 public class Isaac : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public class Isaac : MonoBehaviour
 	public int m_bombCount = 1;
 	public GameObject m_isaacTearPrefab;
 	public float m_fireRate = 0.25f;
-	Vector2 m_displacement = Vector2.zero;
+	Vector3 m_displacement = Vector3.zero;
 	float m_healthTimer = 0.0f;
 	float m_fireRateTimer = 0.0f;
 	
@@ -55,26 +55,24 @@ public class Isaac : MonoBehaviour
 		m_displacement = Vector2.zero;
 		
 		// determine the displacement of Isaac this frame
-        if (Input.GetButtonDown("Move Isaac Up"))
+        if (Input.GetAxis("Move Isaac Vertical") > 0)
 		{
-			m_displacement += Vector2.up * m_moveSpeed;
+			m_displacement += Vector3.up * m_moveSpeed;
 		}
-		
-		if (Input.GetButtonDown("Move Isaac Down"))
+		else if (Input.GetAxis("Move Isaac Vertical") < 0)
 		{
-			m_displacement -= Vector2.up * m_moveSpeed;
+			m_displacement -= Vector3.up * m_moveSpeed;
 		}
-		
-		if (Input.GetButtonDown("Move Isaac Left"))
+
+		if (Input.GetAxis("Move Isaac Horizontal") < 0)
 		{
-			m_displacement -= Vector2.right * m_moveSpeed;
+			m_displacement -= Vector3.right * m_moveSpeed;
 		}
-		
-		if (Input.GetButtonDown("Move Isaac Right"))
+		else if (Input.GetAxis("Move Isaac Horizontal") > 0)
 		{
-			m_displacement += Vector2.right * m_moveSpeed;
+			m_displacement += Vector3.right * m_moveSpeed;
 		}
-		
+
 		// apply the displacement to Isaac
 		transform.position += m_displacement * Time.unscaledDeltaTime;
 		
@@ -85,36 +83,36 @@ public class Isaac : MonoBehaviour
 		if (m_fireRateTimer >= m_fireRate)
 		{
 			// if Isaac should shoot a tear up
-			if (Input.GetButton("Isaac Shoot Tear Up"))
+			if (Input.GetAxis("Shoot Isaac's Tears Vertical") > 0)
 			{
 				// create a copy of the tear prefab
 				GameObject tear = Instantiate(m_isaacTearPrefab);
 				// reset the fire rate timer
-				m_fireRateTimer -= m_fireRate;
+				m_fireRateTimer = 0.0f;
 			}
 			// otherwise, if Isaac should shoot a tear down
-			else if (Input.GetButton("Isaac Shoot Tear Down"))
+			else if (Input.GetAxis("Shoot Isaac's Tears Vertical") < 0)
 			{
 				// create a copy of the tear prefab
 				GameObject tear = Instantiate(m_isaacTearPrefab);
 				// reset the fire rate timer
-				m_fireRateTimer -= m_fireRate;
+				m_fireRateTimer = 0.0f;
 			}
 			// otherwise, if Isaac should shoot a tear left
-			else if (Input.GetButton("Isaac Shoot Tear Left"))
+			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal") < 0)
 			{
 				// create a copy of the tear prefab
 				GameObject tear = Instantiate(m_isaacTearPrefab);
 				// reset the fire rate timer
-				m_fireRateTimer -= m_fireRate;
+				m_fireRateTimer = 0.0f;
 			}
 			// otherwise, if Isaac should shoot a tear right
-			else if (Input.GetButton("Isaac Shoot Tear Right"))
+			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal") > 0)
 			{
 				// create a copy of the tear prefab
 				GameObject tear = Instantiate(m_isaacTearPrefab);
 				// reset the fire rate timer
-				m_fireRateTimer -= m_fireRate;
+				m_fireRateTimer = 0.0f;
 			}
 		}
 		

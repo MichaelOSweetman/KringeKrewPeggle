@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 20/05/2024
+    Last Modified: 27/05/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -58,7 +58,8 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
 
-	[Header("Ben Power")]
+    [Header("Ben Power")]
+    public int m_benPowerChargesGained = 1;
 	public GameObject m_IsaacPrefab;
 	bool m_spawnIsaac = false;
 
@@ -125,18 +126,34 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
-    float m_defaultTimeScale = 1.0f;
-    float m_defaultDeltaTime = 0.02f;
+    public float m_nearVictoryTimeScale = 0.25f;
+    [HideInInspector] public float m_defaultTimeScale = 1.0f;
+    [HideInInspector] float m_defaultDeltaTime = 0.02f;
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
 		// if the green peg has been triggered
 		if (a_powerFunctionMode == PowerFunctionMode.Trigger)
 		{
-			// have Isaac spawn instead of the ball next turn
-			m_spawnIsaac = true;
-		}
-		else if (a_powerFunctionMode == PowerFunctionMode.Reload)
+            // add the charges
+            ModifyPowerCharges(m_benPowerChargesGained);
+            // spawn isaac instead of the ball this turn
+            m_spawnIsaac = true;
+        }
+        // otherwise, if isaac was just spawned
+        else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
+        {
+            // reduce the power charges by 1
+            ModifyPowerCharges(-1);
+            // if there are now 0 charges
+            if (m_powerCharges == 0)
+            {
+                // have the power resolve at the start of next turn
+                m_resolvePowerNextTurn = true;
+            }
+        }
+        // otherwise, if the power should be reloaded, or if the turn has resolved
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload || a_powerFunctionMode == PowerFunctionMode.Resolve)
 		{
 			// ensure the ball is spawned instead of Isaac next shoot phase
 			m_spawnIsaac = false;
@@ -324,6 +341,8 @@ public class PlayerControls : MonoBehaviour
         {
             // add the charges
             ModifyPowerCharges(m_jackPowerChargesGained);
+            // have the power set up next turn
+            m_setUpPowerNextTurn = true;
         }
 		// otherwise, if the green peg power is to be set up
 		else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
@@ -332,10 +351,10 @@ public class PlayerControls : MonoBehaviour
 			m_communistPegScore = m_pegManager.GetAverageActivePegScore();
 			
 			// replace the score gained from these pegs with this average
-			m_PegManager.m_baseBluePegScore = m_communistPegScore;
-			m_PegManager.m_baseOrangePegScore = m_communistPegScore;
-			m_PegManager.m_basePurplePegScore = m_communistPegScore;
-			m_PegManager.m_baseGreenPegScore = m_communistPegScore;
+			m_pegManager.m_baseBluePegScore = m_communistPegScore;
+			m_pegManager.m_baseOrangePegScore = m_communistPegScore;
+			m_pegManager.m_basePurplePegScore = m_communistPegScore;
+			m_pegManager.m_baseGreenPegScore = m_communistPegScore;
 		}
 		// otherwise, if the player has just shot a ball
         else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
@@ -642,6 +661,7 @@ public class PlayerControls : MonoBehaviour
 
         // hide the Loki Power Cord if it is visible
         m_lokiPowerCord.gameObject.SetActive(false);
+
         // disable the hook
         m_hook.SetActive(false);
 
@@ -731,7 +751,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = JackPower;
+        m_greenPegPower = BenPower;
     }
 
     void Update()

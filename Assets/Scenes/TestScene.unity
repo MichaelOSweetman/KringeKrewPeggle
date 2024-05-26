@@ -2958,6 +2958,7 @@ MonoBehaviour:
   m_PowerChargesText: {fileID: 631596763}
   m_powerCharges: 0
   m_setUpPowerNextTurn: 0
+  m_IsaacPrefab: {fileID: 1503201037274521672, guid: 3bf3a41acc99fa9409346901b58404b1, type: 3}
   m_matejaPrefab: {fileID: 5672377063983417263, guid: 7f9a0a7fdbc0c2546a5638fe7057ed6e, type: 3}
   m_wasp: {fileID: 9221240970569109631, guid: f08068c35f1347f44aa0b9ce790dfca5, type: 3}
   m_searchRadius: 2
@@ -2972,6 +2973,7 @@ MonoBehaviour:
   m_minValidSquareMouseMovement: 0.05
   m_ink: 0
   m_drawing: 0
+  m_jackPowerChargesGained: 4
   m_lokiPowerChargesGained: 2
   m_lokiPowerCord: {fileID: 6294972222161617348}
   m_maxCordLength: 3
@@ -2990,6 +2992,8 @@ MonoBehaviour:
   m_bucket: {fileID: 308680432}
   m_victoryBuckets: {fileID: 1901099215}
   m_spedUpTimeScale: 5
+  m_nearVictoryTimeScale: 0.25
+  m_defaultTimeScale: 1
 --- !u!1 &291137620
 GameObject:
   m_ObjectHideFlags: 0

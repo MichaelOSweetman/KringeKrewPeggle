@@ -6,16 +6,20 @@ using UnityEngine;
     File name: NearVictoryDetector.cs
     Summary: Prompts the camera to zoom in towards the ball when it is in the detector's space
     Creation Date: 04/12/2023
-    Last Modified: 04/12/2023
+    Last Modified: 27/05/2023
 */
 public class NearVictoryDetector : MonoBehaviour
 {
+    [HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public CameraZoom m_cameraZoom;
     List<GameObject> m_ballsInRange;
 
     // Start is called before the first frame update
     void Start()
     {
+        // get the Camera Zoom script from Player Controls
+        m_cameraZoom = m_playerControls.m_cameraZoom;
+
         // create a list to store all balls that are in range of the detector
         m_ballsInRange = new List<GameObject>();
     }
@@ -36,6 +40,8 @@ public class NearVictoryDetector : MonoBehaviour
             {
                 // tell the camera to zoom and track this ball
                 m_cameraZoom.ZoomAndTrack(a_collision.gameObject);
+                // slow down the time scale
+                m_playerControls.ModifyTimeScale(m_playerControls.m_nearVictoryTimeScale);
             }
             
             // add the ball to the list of balls in range
@@ -59,6 +65,8 @@ public class NearVictoryDetector : MonoBehaviour
             {
                 // tell the camera to return to its default zoom and position
                 m_cameraZoom.ReturnToDefault();
+                // reset the time scale
+                m_playerControls.ModifyTimeScale(m_playerControls.m_defaultTimeScale);
             }
         }
     }

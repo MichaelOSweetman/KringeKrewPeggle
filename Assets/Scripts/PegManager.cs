@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 13/05/2024
+    Last Modified: 27/05/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -139,13 +139,13 @@ public class PegManager : MonoBehaviour
 		for (int i = 0; i < m_pegs.Count; ++i)
 		{
 			// if the peg is active and not hit
-			if (m_peg[i].transform.gameObject.activeSelf && !m_peg[i].m_hit)
+			if (m_pegs[i] != null && !m_pegs[i].m_hit)
 			{
-				// increase the active peg counter by 1
-				++activePegCount
+                // increase the active peg counter by 1
+                ++activePegCount;
 				
 				// add score to the total depending on its peg type
-				switch (m_pegs[a_pegID].m_pegType)
+				switch (m_pegs[i].m_pegType)
 				{
 					case PegType.Blue:
 					totalScore += m_baseBluePegScore;
@@ -306,8 +306,9 @@ public class PegManager : MonoBehaviour
                                     GameObject nearVictoryDetector = Instantiate(m_NearVictoryDetectorPrefab);
                                     // set the detectors position to the orange pegs position
                                     nearVictoryDetector.transform.position = m_pegs[i].transform.position;
-                                    // give the victory detector access to the camera used by Player Controls
-                                    nearVictoryDetector.GetComponent<NearVictoryDetector>().m_cameraZoom = m_playerControls.m_cameraZoom;
+                                    // give the victory detector access to Player Controls
+                                    nearVictoryDetector.GetComponent<NearVictoryDetector>().m_playerControls = m_playerControls;
+
 
                                     // exit the loop as the one unhit orange peg has been found
                                     break;
