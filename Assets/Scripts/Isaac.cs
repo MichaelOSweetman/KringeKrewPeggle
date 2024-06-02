@@ -7,7 +7,7 @@ using UnityEngine;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 27/05/2024
+    Last Modified: 03/06/2024
 */
 public class Isaac : MonoBehaviour
 {
@@ -19,10 +19,27 @@ public class Isaac : MonoBehaviour
 	public int m_bombCount = 1;
 	public GameObject m_isaacTearPrefab;
 	public float m_fireRate = 0.25f;
+	public float m_tearSpeed = 5.0f;
+	public float m_tearDuration = 1.5f;
 	Vector3 m_displacement = Vector3.zero;
 	float m_healthTimer = 0.0f;
 	float m_fireRateTimer = 0.0f;
 	
+	void ShootTear(Vector2 m_direction)
+	{
+		// create a copy of the tear prefab
+		GameObject tear = Instantiate(m_isaacTearPrefab);
+		// set the tear's position to Isaac's
+		tear.transform.position = this.transform.position;
+		// shoot the tear in the specified direction
+		tear.GetComponent<Rigidbody2D>().AddForce(m_direction * m_tearSpeed, ForceMode2D.Impulse);
+		// tell the tear how long it should last
+		tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
+		// reset the fire rate timer
+		m_fireRateTimer = 0.0f;
+	}
+	
+
     // Start is called before the first frame update
     void Start()
     {
@@ -85,34 +102,26 @@ public class Isaac : MonoBehaviour
 			// if Isaac should shoot a tear up
 			if (Input.GetAxis("Shoot Isaac's Tears Vertical") > 0)
 			{
-				// create a copy of the tear prefab
-				GameObject tear = Instantiate(m_isaacTearPrefab);
-				// reset the fire rate timer
-				m_fireRateTimer = 0.0f;
+				// shoot a tear up
+				ShootTear(Vector2.up);
 			}
 			// otherwise, if Isaac should shoot a tear down
 			else if (Input.GetAxis("Shoot Isaac's Tears Vertical") < 0)
 			{
-				// create a copy of the tear prefab
-				GameObject tear = Instantiate(m_isaacTearPrefab);
-				// reset the fire rate timer
-				m_fireRateTimer = 0.0f;
+				// shoot a tear down
+				ShootTear(Vector2.down);
 			}
 			// otherwise, if Isaac should shoot a tear left
 			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal") < 0)
 			{
-				// create a copy of the tear prefab
-				GameObject tear = Instantiate(m_isaacTearPrefab);
-				// reset the fire rate timer
-				m_fireRateTimer = 0.0f;
+				// shoot a tear left
+				ShootTear(Vector2.left);
 			}
 			// otherwise, if Isaac should shoot a tear right
 			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal") > 0)
 			{
-				// create a copy of the tear prefab
-				GameObject tear = Instantiate(m_isaacTearPrefab);
-				// reset the fire rate timer
-				m_fireRateTimer = 0.0f;
+				// shoot a tear right
+				ShootTear(Vector2.right);
 			}
 		}
 		

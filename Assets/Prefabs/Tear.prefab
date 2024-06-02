@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4841658878327926215}
   - component: {fileID: 4932960785429281346}
   - component: {fileID: 86533573777579047}
+  - component: {fileID: 2068491592226458415}
   m_Layer: 0
   m_Name: Tear
   m_TagString: Untagged
@@ -104,7 +105,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &86533573777579047
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -121,3 +122,16 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.165
+--- !u!114 &2068491592226458415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3885556697031281885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa52ce46f5370be41b1a04950d67fbed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_duration: 0

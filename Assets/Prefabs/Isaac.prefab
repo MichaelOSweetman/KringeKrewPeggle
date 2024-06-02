@@ -103,3 +103,4 @@ MonoBehaviour:
   m_bombCount: 1
   m_isaacTearPrefab: {fileID: 3885556697031281885, guid: 437e9a591602f174890f5288649d1f29, type: 3}
   m_fireRate: 0.25
+  m_tearSpeed: 5
