@@ -47,7 +47,7 @@ public class PlayerControls : MonoBehaviour
     public float m_ballLaunchSpeed;
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
-    GameObject m_ball = null;
+    [HideInInspector] public GameObject m_ball = null;
     int m_ballCount = 0;
 
     [Header("Green Pegs")]
