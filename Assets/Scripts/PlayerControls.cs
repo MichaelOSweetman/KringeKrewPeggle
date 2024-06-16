@@ -137,7 +137,7 @@ public class PlayerControls : MonoBehaviour
 		{
             // add the charges
             ModifyPowerCharges(m_benPowerChargesGained);
-            // spawn isaac instead of the ball this turn
+            // spawn isaac instead of the ball next turn
             m_spawnIsaac = true;
         }
         // otherwise, if isaac was just spawned
@@ -145,6 +145,8 @@ public class PlayerControls : MonoBehaviour
         {
             // reduce the power charges by 1
             ModifyPowerCharges(-1);
+            // disable the bucket
+            m_bucket.gameObject.SetActive(false);
             // if there are now 0 charges
             if (m_powerCharges == 0)
             {
@@ -152,11 +154,12 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = true;
             }
         }
-        // otherwise, if the power should be reloaded, or if the turn has resolved
+        // otherwise, if the power should be reloaded, or if the power should resolved
 		else if (a_powerFunctionMode == PowerFunctionMode.Reload || a_powerFunctionMode == PowerFunctionMode.Resolve)
 		{
 			// ensure the ball is spawned instead of Isaac next shoot phase
 			m_spawnIsaac = false;
+            m_bucket.gameObject.SetActive(true);
 		}
 		
         
@@ -751,7 +754,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = BenPower;
+        m_greenPegPower = SweetsPower;
     }
 
     void Update()
