@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 24/06/2024
+    Last Modified: 01/07/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -116,6 +116,7 @@ public class PlayerControls : MonoBehaviour
 	[Header("Phoebe Power")]
 	public int m_phoebePowerChargesGained = 3;
 	public GameObject m_bocconciniPrefab;
+    List<Bocconcini> m_bocconcinis;
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
@@ -346,10 +347,14 @@ public class PlayerControls : MonoBehaviour
 		// if the green peg has been triggered
         if (a_powerFunctionMode == PowerFunctionMode.Trigger)
         {
+            // if there are 0 power charges
+            if (m_powerCharges == 0)
+            {
+                // have the power set up next turn
+                m_setUpPowerNextTurn = true;
+            }
             // add the charges
             ModifyPowerCharges(m_jackPowerChargesGained);
-            // have the power set up next turn
-            m_setUpPowerNextTurn = true;
         }
 		// otherwise, if the green peg power is to be set up
 		else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
@@ -568,12 +573,35 @@ public class PlayerControls : MonoBehaviour
 			// if there are 0 power charges
 			if (m_powerCharges == 0)
 			{
+                // have the power set up next turn
+                m_setUpPowerNextTurn = true;
+            }
+            // add the charges
+            ModifyPowerCharges(m_phoebePowerChargesGained);
 
-			}
-			// add the charges
-			ModifyPowerCharges(m_phoebePowerChargesGained);
 		}
-		// otherwise, if the player has just shot a ball
+        // otherwise, if the green peg power is to be set up
+        else if (a_powerFunctionMode == PowerFunctionMode.SetUp)
+        {
+            // set up the bocconcini list
+            m_bocconcinis = new List<Bocconcini>();
+
+            // loop for each peg in the current level
+            foreach (Peg peg in m_pegManager.m_pegs)
+            {
+                // if the peg is not set to null, it is active
+                if (peg != null)
+                {
+                    // create a Bocconcini
+                    GameObject bocconcini = Instantiate(m_bocconciniPrefab) as GameObject;
+                    // add it to the list of bocconcinis
+                    m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
+                    // give the bocconcini this peg
+                    m_bocconcinis[m_bocconcinis.Count - 1].SetOriginalPeg(peg);
+                }
+            }
+        }
+        // otherwise, if the player has just shot a ball
         else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
         {
             // reduce the power charges by 1
@@ -585,10 +613,19 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = true;
             }
         }
-		// otherwise, if the power should be reloaded or resolved as the player has run out of power charges
-		else if (a_powerFunctionMode == PowerFunctionMode.Reload || (a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0))
+		// otherwise, if the bocconcini list has been initialised and the power should be reloaded or resolved as the player has run out of power charges
+		else if (m_bocconcinis != null && (a_powerFunctionMode == PowerFunctionMode.Reload || (a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0)))
 		{
-			
+            // loop through the bocconcini list
+            for (int i = 0; i < m_bocconcinis.Count; ++i)
+            {
+                // if the bocconcini hasn't already been destroyed
+                if (m_bocconcinis[i] != null)
+                {
+                    // replace it with the peg it replaced
+                    m_bocconcinis[i].ReturnOriginalPeg();
+                }
+            }
 		}
 		
         // TEMP
@@ -707,6 +744,21 @@ public class PlayerControls : MonoBehaviour
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn
         m_pegManager.ResolveTurn();
+
+        // if the power is the Phoebe power, there are power charges, and the bocconcini array has been initialised
+        if (m_greenPegPower == PhoebePower && m_powerCharges > 0 && m_bocconcinis != null)
+        {
+            // loop through the bocconcini list
+            for (int i = 0; i < m_bocconcinis.Count; ++i)
+            {
+                // if the bocconcini hasn't already been destroyed
+                if (m_bocconcinis[i] != null)
+                {
+                    // update the color of the boccocinis
+                    m_bocconcinis[i].CopyOriginalPegColor();
+                }
+            }
+        }
     }
 
     public void FreeBall(bool a_showFreeBallText = false)
@@ -786,7 +838,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = SweetsPower;
+        m_greenPegPower = PhoebePower;
     }
 
     void Update()
