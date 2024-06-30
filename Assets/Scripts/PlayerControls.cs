@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 27/05/2024
+    Last Modified: 24/06/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -63,10 +63,6 @@ public class PlayerControls : MonoBehaviour
 	public GameObject m_IsaacPrefab;
 	bool m_spawnIsaac = false;
 
-    [Header("Mateja Power")]
-    public GameObject m_matejaPrefab;
-    GameObject m_mateja = null;
-
     [Header("Daniel Power")]
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
@@ -97,6 +93,12 @@ public class PlayerControls : MonoBehaviour
     int m_defaultPurplePegScore = 0;
     int m_defaultGreenPegScore = 0;
 	
+	[Header("Kevin Power")]
+    public int m_kevinPowerChargesGained = 2;
+    public GameObject m_scopeOverlay;
+    public float m_forceToBall = 2000.0f;
+    public float m_scopedTimeScale = 0.3f;
+	
     [Header("Loki Power")]
     public int m_lokiPowerChargesGained = 2;
     public LineRenderer m_lokiPowerCord;
@@ -106,12 +108,14 @@ public class PlayerControls : MonoBehaviour
     public float m_pullSpeed = 7.5f;
     GameObject m_connectionPoint;
     bool m_connectedToPeg = false;
+	
+	[Header("Mateja Power")]
+    public GameObject m_matejaPrefab;
+    GameObject m_mateja = null;
 
-    [Header("Kevin Power")]
-    public int m_kevinPowerChargesGained = 2;
-    public GameObject m_scopeOverlay;
-    public float m_forceToBall = 2000.0f;
-    public float m_scopedTimeScale = 0.3f;
+	[Header("Phoebe Power")]
+	public int m_phoebePowerChargesGained = 3;
+	public GameObject m_bocconciniPrefab;
 
     [Header("Sweets Power")]
     public int m_sweetsPowerChargesGained = 3;
@@ -154,8 +158,8 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = true;
             }
         }
-        // otherwise, if the power should be reloaded, or if the power should resolved
-		else if (a_powerFunctionMode == PowerFunctionMode.Reload || a_powerFunctionMode == PowerFunctionMode.Resolve)
+        // otherwise, if the power should be reloaded, or if the power should resolved as the player has expended all power charges
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload || (a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0))
 		{
 			// ensure the ball is spawned instead of Isaac next shoot phase
 			m_spawnIsaac = false;
@@ -371,8 +375,8 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = true;
             }
         }
-		// otherwise, if the green peg power should be resolved or reloaded
-		else
+		// otherwise, if the green peg power should be reloaded or resolved as the player has run out of power charges
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload || ( a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0))
 		{
 			// return the score gained from pegs to their default bases
 			m_pegManager.m_baseBluePegScore = m_defaultBluePegScore;
@@ -536,8 +540,8 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = true;
             }
         }
-        // otherwise, if the green peg power is to be set up or resolved
-        else if (a_powerFunctionMode == PowerFunctionMode.SetUp || a_powerFunctionMode == PowerFunctionMode.Resolve)
+        // otherwise, if the green peg power is to be set up or resolved as the player has run out of power charges
+        else if (a_powerFunctionMode == PowerFunctionMode.SetUp || (a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0))
         {
 			// flip the bucket, launcher and gravity
             ToggleHillside();
@@ -559,6 +563,34 @@ public class PlayerControls : MonoBehaviour
 
     void PhoebePower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
+		if (a_powerFunctionMode == PowerFunctionMode.Trigger)
+		{
+			// if there are 0 power charges
+			if (m_powerCharges == 0)
+			{
+
+			}
+			// add the charges
+			ModifyPowerCharges(m_phoebePowerChargesGained);
+		}
+		// otherwise, if the player has just shot a ball
+        else if (a_powerFunctionMode == PowerFunctionMode.OnShoot)
+        {
+            // reduce the power charges by 1
+            ModifyPowerCharges(-1);
+            // if there are now 0 charges
+            if (m_powerCharges == 0)
+            {
+                // have the power resolve at the start of next turn
+                m_resolvePowerNextTurn = true;
+            }
+        }
+		// otherwise, if the power should be reloaded or resolved as the player has run out of power charges
+		else if (a_powerFunctionMode == PowerFunctionMode.Reload || (a_powerFunctionMode == PowerFunctionMode.Resolve && m_powerCharges == 0))
+		{
+			
+		}
+		
         // TEMP
         print("PhoebePower() called");
     }
