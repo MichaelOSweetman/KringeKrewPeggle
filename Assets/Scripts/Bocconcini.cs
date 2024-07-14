@@ -6,75 +6,52 @@ using UnityEngine;
     File name: Bocconcini.cs
     Summary: Manages the Bocconcini pegs created by PhoebePower
     Creation Date: 01/07/2024
-    Last Modified: 01/07/2024
+    Last Modified: 08/07/2024
 */
 public class Bocconcini : MonoBehaviour
 {
     SpriteRenderer m_renderer;
-    Peg m_originalPeg;
-    Collider2D m_originalPegCollider;
-    SpriteRenderer m_originalPegRenderer;
-    bool m_hit = false;
+    Collider2D m_parentPegCollider;
+    SpriteRenderer m_parentPegRenderer;
 
-    public void SetOriginalPeg(Peg a_peg)
+    public void ReenableParentPeg()
     {
-        m_originalPeg = a_peg;
-        m_originalPegCollider = a_peg.GetComponent<Collider2D>();
-        m_originalPegRenderer = a_peg.GetComponent<SpriteRenderer>();
-
-        // set this bocconcini's position to be the original peg's position
-        transform.position = m_originalPeg.transform.position;
-
-        // turn off the original peg's collider and renderer
-        m_originalPegCollider.enabled = false;
-        m_originalPegRenderer.enabled = false;
-
-        // copy the original peg's color
-        CopyOriginalPegColor();
-    }
-
-    public void ReturnOriginalPeg()
-    {
-        // turn on the original peg's collider and renderer
-        m_originalPegCollider.enabled = true;
-        m_originalPegRenderer.enabled = true;
+        // turn on the parent peg's collider and renderer
+        m_parentPegCollider.enabled = true;
+        m_parentPegRenderer.enabled = true;
 
         // destroy this bocconcini
         Destroy(this.gameObject);
     }
 
-    public void CopyOriginalPegColor()
+    public void CopyParentPegColor()
     {
-        // if the renderer has not yet been set up
-        if (m_renderer == null)
-        {
-            // get the renderer component for this bocconcini
-             m_renderer = GetComponent<SpriteRenderer>();
-        }
-
         // set this bocconcini's color to the color of its original peg
-        m_renderer.color = m_originalPegRenderer.color;
+        m_renderer.color = m_parentPegRenderer.color;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+		// get the renderer component for this bocconcini
+        m_renderer = GetComponent<SpriteRenderer>();
+		
+		// store the parent peg's collider and renderer
+		m_parentPegCollider = transform.parent.GetComponent<Collider2D>();
+		m_parentPegRenderer = transform.parent.GetComponent<SpriteRenderer>();
+		
+		// turn off the parent peg's collider and renderer
+        m_parentPegCollider.enabled = false;
+        m_parentPegRenderer.enabled = false;
+		
+		// copy the parent peg's color
+        CopyParentPegColor();
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*
-         TEMP determine a better way to do this
-         */
 
-        // if the bocconcini has been hit and the original peg is no longer active
-        if (m_hit && m_originalPeg.gameObject.activeSelf == false)
-        {
-            // destroy this bocconcini
-            Destroy(this.gameObject);
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D a_collision)
@@ -83,11 +60,9 @@ public class Bocconcini : MonoBehaviour
         if (a_collision.gameObject.CompareTag("Ball"))
         {
             // have the original peg be hit
-            m_originalPeg.Hit();
-            // store that the bocconcini has been hit
-            m_hit = true;
+            m_parentPeg.Hit();
             // copy the original peg's colour so it changes to its hit colour
-            CopyOriginalPegColor();
+            CopyParentPegColor();
         }
     }
 }

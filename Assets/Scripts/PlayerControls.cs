@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 01/07/2024
+    Last Modified: 08/07/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -592,12 +592,10 @@ public class PlayerControls : MonoBehaviour
                 // if the peg is not set to null, it is active
                 if (peg != null)
                 {
-                    // create a Bocconcini
-                    GameObject bocconcini = Instantiate(m_bocconciniPrefab) as GameObject;
+                    // create a Bocconcini and set its parent to be this peg
+                    GameObject bocconcini = Instantiate(m_bocconciniPrefab, peg.transform) as GameObject;
                     // add it to the list of bocconcinis
                     m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
-                    // give the bocconcini this peg
-                    m_bocconcinis[m_bocconcinis.Count - 1].SetOriginalPeg(peg);
                 }
             }
         }
@@ -751,8 +749,8 @@ public class PlayerControls : MonoBehaviour
             // loop through the bocconcini list
             for (int i = 0; i < m_bocconcinis.Count; ++i)
             {
-                // if the bocconcini hasn't already been destroyed
-                if (m_bocconcinis[i] != null)
+                // if the bocconcini's parent peg is still active
+                if (m_bocconcinis[i].transform.parent.activeSelf)
                 {
                     // update the color of the boccocinis
                     m_bocconcinis[i].CopyOriginalPegColor();
