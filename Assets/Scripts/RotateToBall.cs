@@ -6,13 +6,13 @@ using UnityEngine;
     File name: RotateToBall.cs
     Summary: Rotates an object to face either the ball or optionally the cursor when there is no ball active
     Creation Date: 10/06/2024
-    Last Modified: 08/07/2024
+    Last Modified: 15/07/2024
 */
 public class RotateToBall : MonoBehaviour
 {
 	public PlayerControls m_playerControls;
 	public bool m_targetCursorWithoutBall = false;
-	Vector3 m_cameraToTarget = Vector3.zero;
+	Vector3 m_transformToTarget = Vector3.zero;
 	Vector3 m_mousePosition = Vector3.zero;
 	Vector3 m_eulerRotation = Vector3.zero;
 	
@@ -24,10 +24,10 @@ public class RotateToBall : MonoBehaviour
 
 	void RotateTowardsTarget(Vector3 a_targetPosition)
 	{
-		// get the vector from the camera to the target
-		m_cameraToTarget = a_targetPosition - Camera.main.gameObject.transform.position;
+		// get the vector from the transform to the target
+		m_transformToTarget = a_targetPosition - transform.position;
 		// use the vector to determine the rotation to apply to this transform
-		m_eulerRotation.z = Mathf.Atan2(m_cameraToTarget.y, m_cameraToTarget.x) * Mathf.Rad2Deg;
+		m_eulerRotation.z = Mathf.Atan2(m_transformToTarget.y, m_transformToTarget.x) * Mathf.Rad2Deg;
 		// apply the rotation
 		transform.rotation = Quaternion.Euler(m_eulerRotation);
 	}

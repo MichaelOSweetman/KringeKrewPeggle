@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 08/07/2024
+    Last Modified: 15/07/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -592,8 +592,12 @@ public class PlayerControls : MonoBehaviour
                 // if the peg is not set to null, it is active
                 if (peg != null)
                 {
-                    // create a Bocconcini and set its parent to be this peg
-                    GameObject bocconcini = Instantiate(m_bocconciniPrefab, peg.transform) as GameObject;
+                    // create a Bocconcini
+                    GameObject bocconcini = Instantiate(m_bocconciniPrefab) as GameObject;
+                    // set its parent to be the peg after creation so its scale isn't modified
+                    bocconcini.transform.parent = peg.transform;
+                    // position the bocconcini at the peg's position
+                    bocconcini.transform.position = peg.transform.position;
                     // add it to the list of bocconcinis
                     m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
                 }
@@ -621,7 +625,7 @@ public class PlayerControls : MonoBehaviour
                 if (m_bocconcinis[i] != null)
                 {
                     // replace it with the peg it replaced
-                    m_bocconcinis[i].ReturnOriginalPeg();
+                    m_bocconcinis[i].ReenableParentPeg();
                 }
             }
 		}
@@ -750,10 +754,10 @@ public class PlayerControls : MonoBehaviour
             for (int i = 0; i < m_bocconcinis.Count; ++i)
             {
                 // if the bocconcini's parent peg is still active
-                if (m_bocconcinis[i].transform.parent.activeSelf)
+                if (m_bocconcinis[i].transform.parent.gameObject.activeSelf)
                 {
                     // update the color of the boccocinis
-                    m_bocconcinis[i].CopyOriginalPegColor();
+                    m_bocconcinis[i].CopyParentPegColor();
                 }
             }
         }
@@ -836,7 +840,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = PhoebePower;
+        m_greenPegPower = SweetsPower;
     }
 
     void Update()

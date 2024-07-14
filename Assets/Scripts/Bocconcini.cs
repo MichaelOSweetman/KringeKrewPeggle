@@ -6,13 +6,14 @@ using UnityEngine;
     File name: Bocconcini.cs
     Summary: Manages the Bocconcini pegs created by PhoebePower
     Creation Date: 01/07/2024
-    Last Modified: 08/07/2024
+    Last Modified: 15/07/2024
 */
 public class Bocconcini : MonoBehaviour
 {
     SpriteRenderer m_renderer;
     Collider2D m_parentPegCollider;
     SpriteRenderer m_parentPegRenderer;
+    Peg m_parentPeg;
 
     public void ReenableParentPeg()
     {
@@ -36,9 +37,10 @@ public class Bocconcini : MonoBehaviour
 		// get the renderer component for this bocconcini
         m_renderer = GetComponent<SpriteRenderer>();
 		
-		// store the parent peg's collider and renderer
+		// store the parent peg's collider and renderer and peg components
 		m_parentPegCollider = transform.parent.GetComponent<Collider2D>();
 		m_parentPegRenderer = transform.parent.GetComponent<SpriteRenderer>();
+        m_parentPeg         = transform.parent.GetComponent<Peg>();
 		
 		// turn off the parent peg's collider and renderer
         m_parentPegCollider.enabled = false;
