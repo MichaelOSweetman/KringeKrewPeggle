@@ -2527,6 +2527,7 @@ GameObject:
   - component: {fileID: 241605735}
   - component: {fileID: 241605734}
   - component: {fileID: 241605737}
+  - component: {fileID: 241605738}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -2598,6 +2599,22 @@ MonoBehaviour:
   m_pegManager: {fileID: 2117815010}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
+--- !u!114 &241605738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241605733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd22f703167cde4c8a0b91744b81bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_levelCount: 4
+  m_saveFilePath: C:\Users\Michael Sweetman\Desktop\SaveFile.txt
+  m_highScores: 
+  m_lastCompletedLevel: 0
 --- !u!1 &242558810
 GameObject:
   m_ObjectHideFlags: 0
@@ -2948,7 +2965,7 @@ MonoBehaviour:
   m_UIManager: {fileID: 241605737}
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
-  m_LauncherLookControls: {fileID: 711364716}
+  m_LauncherLookControls: {fileID: 0}
   m_ballCountText: {fileID: 1240219596}
   m_freeBallTextDuration: 2
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
@@ -9258,6 +9275,8 @@ GameObject:
   - component: {fileID: 711364715}
   - component: {fileID: 711364714}
   - component: {fileID: 711364716}
+  - component: {fileID: 711364718}
+  - component: {fileID: 711364717}
   m_Layer: 0
   m_Name: LauncherBody
   m_TagString: Untagged
@@ -9304,7 +9323,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: 4adeaf2d2b1c7417e89f026626d8264f, type: 3}
   m_Color: {r: 1, g: 0, b: 1, a: 1}
   m_FlipX: 0
@@ -9340,10 +9359,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 711364713}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d9f599c66cc1494fa7b73b6d3aa6bd0, type: 3}
+  m_Script: {fileID: 11500000, guid: c20beac67f00b42479cb97428c8d713b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_rotationRange: 160
+--- !u!58 &711364717
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711364713}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.50000006
+--- !u!114 &711364718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711364713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a28197ba6874674bb87c7a935e16949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_rotatingEye: {fileID: 21300000, guid: 3a7e4c566981e294f9dc54478e06d4cc, type: 3}
+  m_centeredEye: {fileID: 21300000, guid: 9fd0ae1c77ad8d84abb646f38711a2d4, type: 3}
+  m_leftEye: {fileID: 457127607}
+  m_rightEye: {fileID: 1283629595}
 --- !u!1 &720117369
 GameObject:
   m_ObjectHideFlags: 0

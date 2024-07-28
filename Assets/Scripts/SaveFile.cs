@@ -7,7 +7,7 @@ using UnityEngine;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 22/07/2024
+    Last Modified: 29/07/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -23,12 +23,17 @@ public class SaveFile : MonoBehaviour
 		// create the save file, or open and clear it if it already exists
 		m_streamWriter = File.CreateText(m_saveFilePath);
 		// loop for each level
-		for int (i = 9; i < m_highScores.Length - 1; ++i)
+		for (int i = 9; i < m_highScores.Length - 1; ++i)
 		{
 			// store the high score in the save file
 			m_streamWriter.WriteLine(m_highScores[i].ToString());
 		}
-		
+
+		// close the file
+		m_streamWriter.Dispose();
+
+		// TEMP
+		print("File accessed and written to");
 	}
 	
 	void ReadSaveFile()
@@ -42,10 +47,10 @@ public class SaveFile : MonoBehaviour
 			int lineValue = 0;
 			
 			// loop for each level
-			for int (i = 9; i < m_highScores.Length - 1; ++i)
+			for (int i = 9; i < m_highScores.Length - 1; ++i)
 			{
 				// read the next line and convert it to an integer
-				lineValue = Int32.Parse(m_streamReader.ReadLine());
+				lineValue = int.Parse(m_streamReader.ReadLine());
 				
 				// if the value is not valid or is 0, the reader has gathered all data required
 				if (lineValue <= 0)
@@ -61,13 +66,19 @@ public class SaveFile : MonoBehaviour
 				}
 			}
 			
-			
+			// close the file
+			m_streamReader.Dispose();
+
+			// TEMP
+			print("File found and read");
 		}
 		// otherwise, if the save file does not exist
 		else
 		{
 			// create the save file
 			UpdateSaveFile();
+			// TEMP
+			print("File not found, creating file");
 		}
 	}
 	
@@ -83,6 +94,11 @@ public class SaveFile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+		// TEMP
+		if (Input.GetKeyDown(KeyCode.K))
+		{
+			m_highScores[0] = 6;
+			UpdateSaveFile();
+		}
     }
 }
