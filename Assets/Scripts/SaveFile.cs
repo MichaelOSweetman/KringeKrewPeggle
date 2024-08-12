@@ -7,13 +7,15 @@ using UnityEngine;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 29/07/2024
+    Last Modified: 05/08/2024
 */
 public class SaveFile : MonoBehaviour
 {
-	public int m_levelCount = 0;
+	public int m_levelSetCount = 0;
+	public int m_levelsPerSet = 0;
 	public string m_saveFilePath = "";
-	[HideInInspector] public int[] m_highScores;
+	string m_fullSavePath = Application.dataPath;
+	[HideInInspector] public int[][] m_highScores;
 	[HideInInspector] public int m_lastCompletedLevel = 0;
 	StreamWriter m_streamWriter;
 	StreamReader m_streamReader;
@@ -21,12 +23,25 @@ public class SaveFile : MonoBehaviour
 	void UpdateSaveFile()
 	{
 		// create the save file, or open and clear it if it already exists
-		m_streamWriter = File.CreateText(m_saveFilePath);
-		// loop for each level
-		for (int i = 9; i < m_highScores.Length - 1; ++i)
+		m_streamWriter = File.CreateText(m_fullSavePath);
+		
+		string m_line = "";
+		
+		// loop for each level set 
+		for (int i = 0; i < m_levelSetCount - 1; ++i)
 		{
-			// store the high score in the save file
-			m_streamWriter.WriteLine(m_highScores[i].ToString());
+			// reset the line string
+			m_line = "";
+			
+			// loop for each level
+			for (int j = 0; j < m_levelSetCount - 1; ++j)
+			{
+				// add the high score to the line
+				m_line += m_highScores[i][j].ToString() + ",";
+			}
+			
+			// store the high scores of the level set in the save file
+			m_streamWriter.WriteLine(m_line);
 		}
 
 		// close the file
@@ -39,30 +54,48 @@ public class SaveFile : MonoBehaviour
 	void ReadSaveFile()
 	{
 		// if the save file exists
-		if (File.Exists(m_saveFilePath))
+		if (File.Exists(m_fullSavePath))
 		{
 			// open the file for reading
-			m_streamReader = File.OpenText(m_saveFilePath);
+			m_streamReader = File.OpenText(m_fullSavePath);
 			// create a variable to store the data from each line
-			int lineValue = 0;
+			string line = "";
 			
-			// loop for each level
-			for (int i = 9; i < m_highScores.Length - 1; ++i)
+			// loop for each level set
+			for (int i = 0; i < m_levelSetCount - 1; ++i)
 			{
-				// read the next line and convert it to an integer
-				lineValue = int.Parse(m_streamReader.ReadLine());
+				// read the next line
+				line = m_streamReader.ReadLine();
 				
-				// if the value is not valid or is 0, the reader has gathered all data required
-				if (lineValue <= 0)
+				// if the line is empty, the reader has gathered all data required
+				if (lineValue == "")
 				{
 					// exit the loop
 					break;
 				}
-				// otherwise, if the value is over 0
+				// otherwise, if the line is not empty
 				else
 				{
-					// store the value in the high score array
-					m_highScores[i] = lineValue;
+					int levelNumber = 0;
+					string highScore = "";
+					// loop through the line
+					for (int j = 0; j < line.Length - 1; ++j)
+					{
+						if (line[j] == ",")
+						{
+							// add the high score to the high scores array
+							m_highScores[i][levelNumber] = int.Parse(highScore);
+							// move to the next level
+							++levelNumber;
+							// reset the highscore variable for the next level
+							highScore = "";
+						}
+						else
+						{
+							// add the character to the current high score value
+							highScore += line[j];
+						}
+					}
 				}
 			}
 			
@@ -85,8 +118,10 @@ public class SaveFile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+		// determine the save file location using the application's save location and the specified location for the save file
+		m_fullSavePath += "\" + m_saveFilePath;
 		// initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[m_levelCount];
+        m_highScores = new int[m_levelSetCount][m_levelsPerSet];
 		// get the high score info from the save file, if the data exists
 		ReadSaveFile();
     }
