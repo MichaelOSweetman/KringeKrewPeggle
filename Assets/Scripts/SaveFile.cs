@@ -7,15 +7,15 @@ using UnityEngine;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 05/08/2024
+    Last Modified: 12/08/2024
 */
 public class SaveFile : MonoBehaviour
 {
 	public int m_levelSetCount = 0;
 	public int m_levelsPerSet = 0;
 	public string m_saveFilePath = "";
-	string m_fullSavePath = Application.dataPath;
-	[HideInInspector] public int[][] m_highScores;
+	string m_fullSavePath = "";
+	[HideInInspector] public int[,] m_highScores;
 	[HideInInspector] public int m_lastCompletedLevel = 0;
 	StreamWriter m_streamWriter;
 	StreamReader m_streamReader;
@@ -25,23 +25,23 @@ public class SaveFile : MonoBehaviour
 		// create the save file, or open and clear it if it already exists
 		m_streamWriter = File.CreateText(m_fullSavePath);
 		
-		string m_line = "";
+		string line = "";
 		
 		// loop for each level set 
-		for (int i = 0; i < m_levelSetCount - 1; ++i)
+		for (int i = 0; i < m_levelSetCount; ++i)
 		{
 			// reset the line string
-			m_line = "";
+			line = "";
 			
 			// loop for each level
-			for (int j = 0; j < m_levelSetCount - 1; ++j)
+			for (int j = 0; j < m_levelsPerSet; ++j)
 			{
 				// add the high score to the line
-				m_line += m_highScores[i][j].ToString() + ",";
+				line += m_highScores[i, j].ToString() + ",";
 			}
 			
 			// store the high scores of the level set in the save file
-			m_streamWriter.WriteLine(m_line);
+			m_streamWriter.WriteLine(line);
 		}
 
 		// close the file
@@ -62,13 +62,13 @@ public class SaveFile : MonoBehaviour
 			string line = "";
 			
 			// loop for each level set
-			for (int i = 0; i < m_levelSetCount - 1; ++i)
+			for (int i = 0; i < m_levelSetCount; ++i)
 			{
 				// read the next line
 				line = m_streamReader.ReadLine();
 				
 				// if the line is empty, the reader has gathered all data required
-				if (lineValue == "")
+				if (line == null || line == "")
 				{
 					// exit the loop
 					break;
@@ -79,12 +79,12 @@ public class SaveFile : MonoBehaviour
 					int levelNumber = 0;
 					string highScore = "";
 					// loop through the line
-					for (int j = 0; j < line.Length - 1; ++j)
+					for (int j = 0; j < line.Length; ++j)
 					{
-						if (line[j] == ",")
+						if (line[j] == ',')
 						{
 							// add the high score to the high scores array
-							m_highScores[i][levelNumber] = int.Parse(highScore);
+							m_highScores[i, levelNumber] = int.Parse(highScore);
 							// move to the next level
 							++levelNumber;
 							// reset the highscore variable for the next level
@@ -119,9 +119,9 @@ public class SaveFile : MonoBehaviour
     void Start()
     {
 		// determine the save file location using the application's save location and the specified location for the save file
-		m_fullSavePath += "\" + m_saveFilePath;
+		m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
 		// initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[m_levelSetCount][m_levelsPerSet];
+        m_highScores = new int[m_levelSetCount, m_levelsPerSet];
 		// get the high score info from the save file, if the data exists
 		ReadSaveFile();
     }
@@ -132,7 +132,6 @@ public class SaveFile : MonoBehaviour
 		// TEMP
 		if (Input.GetKeyDown(KeyCode.K))
 		{
-			m_highScores[0] = 6;
 			UpdateSaveFile();
 		}
     }

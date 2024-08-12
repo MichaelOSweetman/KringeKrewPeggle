@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CenterEyes.cs
     Summary: Replaces the images of the player character's eyes with one where the pupils are centered when the cursor is on the launcher
     Creation Date: 29/07/2024
-    Last Modified: 05/08/2024
+    Last Modified: 12/08/2024
 */
 public class CenterEyes : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class CenterEyes : MonoBehaviour
     private void OnMouseEnter()
     {
 		// if the eyes are tracking the cursor as opposed to the ball
-		if (!m_leftEye.m_targetingBall)
+		if (!m_leftEyeRotator.m_targetingBall)
         {
 			// replace the sprite of the eyes with the centered eye sprite
 			m_leftEye.sprite = m_centeredEye;

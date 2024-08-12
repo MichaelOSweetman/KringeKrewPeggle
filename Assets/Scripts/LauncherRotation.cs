@@ -6,7 +6,7 @@ using UnityEngine;
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 05/08/2024
+    Last Modified: 12/08/2024
 */
 public class LauncherRotation : MonoBehaviour
 {
@@ -31,7 +31,7 @@ public class LauncherRotation : MonoBehaviour
 		m_mousePosition.z = 0.0f;
 		
 		// if the mouse has moved this frame
-		if ((m_mousePosition - m_previousMousePosition).Magnitude > m_floatAccuracy)
+		if ((m_mousePosition - m_previousMousePosition).magnitude > m_floatAccuracy)
 		{
 			// rotate the game object to face the mouse
 			transform.up = m_mousePosition - transform.position;
@@ -43,7 +43,10 @@ public class LauncherRotation : MonoBehaviour
 		else if (Input.mouseScrollDelta.y > m_floatAccuracy || Input.mouseScrollDelta.y < -m_floatAccuracy)
 		{
 			// apply the rotation
-			transform.rotation = Vector3.forward * Input.mouseScrollDelta.y * m_scrollRotationModifier;
+			transform.Rotate(Vector3.forward, Input.mouseScrollDelta.y * m_scrollRotationModifier);
+
+			// clamp the rotation to the valid range
+			transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.Clamp(transform.localEulerAngles.z, m_validRotationCentre - m_rotationRange * 0.5f, m_validRotationCentre + m_rotationRange * 0.5f));
 		}
 		
 		// store this frame's mouse position for next frame

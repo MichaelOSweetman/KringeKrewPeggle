@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 29/07/2024
+    Last Modified: 12/08/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -840,7 +840,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = SweetsPower;
+        m_greenPegPower = DanielPower;
     }
 
     void Update()

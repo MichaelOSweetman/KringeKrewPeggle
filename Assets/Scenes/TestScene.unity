@@ -2611,9 +2611,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd22f703167cde4c8a0b91744b81bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_levelCount: 4
-  m_saveFilePath: C:\Users\Michael Sweetman\Desktop\SaveFile.txt
-  m_highScores: 
+  m_levelSetCount: 2
+  m_levelsPerSet: 3
+  m_saveFilePath: Saves/SaveFile.txt
   m_lastCompletedLevel: 0
 --- !u!1 &242558810
 GameObject:
@@ -4986,6 +4986,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_targetCursorWithoutBall: 1
+  m_targetingBall: 1
 --- !u!212 &457127607
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9363,6 +9364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_rotationRange: 160
+  m_floatAccuracy: 0.001
+  m_scrollRotationModifier: 1
 --- !u!58 &711364717
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -15808,6 +15811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_targetCursorWithoutBall: 1
+  m_targetingBall: 1
 --- !u!212 &1283629595
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20130,6 +20134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_targetCursorWithoutBall: 0
+  m_targetingBall: 1
 --- !u!114 &1640186360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24548,6 +24553,7 @@ MonoBehaviour:
   m_baseOrangePegScore: 100
   m_basePurplePegScore: 500
   m_baseGreenPegScore: 10
+  m_score: 0
   m_freeBallProgressBar: {fileID: 1352222923}
   m_freeBallProgressBarBackground: {fileID: 1915776724}
   m_freeBallScores: ee020000dc050000b80b0000

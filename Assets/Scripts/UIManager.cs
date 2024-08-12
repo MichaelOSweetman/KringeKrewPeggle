@@ -6,17 +6,19 @@ using UnityEngine;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 26/02/2024
+    Last Modified: 12/08/2024
 */
 public class UIManager : MonoBehaviour
 {
     public PlayerControls m_playerControls;
     public PegManager m_pegManager;
-
+    
     [Header("UI Screens")]
     public GameObject m_levelComplete;
     public GameObject m_tryAgain;
 
+    bool m_newHighScore = false;
+    SaveFile m_saveFile;
     public void LevelOver(bool a_won)
     {
         // turn off the player controls
@@ -25,6 +27,16 @@ public class UIManager : MonoBehaviour
         // if the player won the level
         if (a_won)
         {
+            // if the stored highscore for this level is lower than or equal to the scored achieved
+           if (m_saveFile.m_highScores[m_pegManager.m_currentLevel.transform.parent.GetSiblingIndex(), m_pegManager.m_currentLevel.transform.GetSiblingIndex()] <= m_pegManager.m_score)
+            {
+                // update the highscore
+                m_saveFile.m_highScores[m_pegManager.m_currentLevel.transform.parent.GetSiblingIndex(), m_pegManager.m_currentLevel.transform.GetSiblingIndex()] = m_pegManager.m_score;
+                // store that the player has achieved a new high score
+                m_newHighScore = true;
+            }
+            
+
             // show the level complete screen
             m_levelComplete.SetActive(true);
         }
@@ -59,7 +71,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_saveFile = GetComponent<SaveFile>();
     }
 
     // Update is called once per frame
