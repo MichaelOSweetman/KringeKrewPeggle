@@ -6,19 +6,22 @@ using UnityEngine;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 12/08/2024
+    Last Modified: 19/08/2024
 */
 public class UIManager : MonoBehaviour
 {
     public PlayerControls m_playerControls;
     public PegManager m_pegManager;
-    
+	public Dialogue m_dialogue;
+
     [Header("UI Screens")]
     public GameObject m_levelComplete;
     public GameObject m_tryAgain;
+	public GameObject m_dialogueScreen;
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
+
     public void LevelOver(bool a_won)
     {
         // turn off the player controls
@@ -47,6 +50,16 @@ public class UIManager : MonoBehaviour
             m_tryAgain.SetActive(true);
         }
     }
+
+	public void SwitchToDialogue(int a_dialogueIndex)
+	{
+		// disable player controls
+		m_playerControls.enabled = false;
+		// show the dialogue screen
+		m_dialogueScreen.SetActive(true);
+		// give the dialogue script the dialogue set to run through
+		m_dialogue.m_dialogueIndex = a_dialogueIndex;
+	}
 
     public void NextLevel()
     {
