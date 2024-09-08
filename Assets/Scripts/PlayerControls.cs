@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 12/08/2024
+    Last Modified: 09/09/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -134,6 +134,10 @@ public class PlayerControls : MonoBehaviour
     public float m_nearVictoryTimeScale = 0.25f;
     [HideInInspector] public float m_defaultTimeScale = 1.0f;
     [HideInInspector] float m_defaultDeltaTime = 0.02f;
+
+    [Header("Audio")]
+    public AudioSource m_audioSource;
+    public AudioClip[] m_freeBallSounds;
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
@@ -767,6 +771,9 @@ public class PlayerControls : MonoBehaviour
     {
         // increase the ball count by 1 as a ball has been gained
         ++m_ballCount;
+
+        // play the free ball sound that corresponds to the amount of free balls earned this round 
+        m_audioSource.PlayOneShot(m_freeBallSounds[m_pegManager.m_freeBallsAwarded]);
 
         // if the free ball text should shown
         if (a_showFreeBallText)

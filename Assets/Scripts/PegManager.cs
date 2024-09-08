@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 02/09/2024
+    Last Modified: 09/09/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -67,7 +67,7 @@ public class PegManager : MonoBehaviour
     public Color[] m_freeBallProgressBarColors;
     RawImage m_freeBallProgressBarImage;
     float m_freeBallProgressBarHeight = 0.0f;
-    int m_freeBallsAwarded = 0;
+    [HideInInspector] public int m_freeBallsAwarded = 0;
 
     [Header("Victory")]
     public GameObject m_bucket;
@@ -75,9 +75,10 @@ public class PegManager : MonoBehaviour
     public GameObject m_NearVictoryDetectorPrefab;
 	
 	[Header("Sound")]
-	public AudioSource m_audioSource;
+	public AudioSource m_pegAudioSource;
 	public AudioClip[] m_pegHitSounds;
-	float m_pegHitPitchIndex = 0;
+	int m_pegHitPitchIndex = 0;
+    public AudioClip m_pegRemoveSound;
 	
 	
     [HideInInspector] public List<Peg> m_pegs;
@@ -194,6 +195,8 @@ public class PegManager : MonoBehaviour
         UpdateFreeBallProgressBar();
         // assign a random blue peg to be purple
         ReplacePurplePeg();
+        // reset the peg hit sound
+        m_pegHitPitchIndex = 0;
         // set the GameState to Round Set Up as the Turn has resolved
         m_playerControls.m_currentGameState = PlayerControls.GameState.TurnSetUp;
     }
@@ -228,6 +231,7 @@ public class PegManager : MonoBehaviour
         {
             // give the player a free ball and show the free ball text
             m_playerControls.FreeBall(true);
+
             // switch to the next free ball milestone
             ++m_freeBallsAwarded;
         }
@@ -350,13 +354,13 @@ public class PegManager : MonoBehaviour
             scoreText.transform.position = m_camera.WorldToScreenPoint(m_pegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
 
 			// move the audio source to the hit peg
-			m_audioSource.transform.position = m_pegs[a_pegID].transform.position;
+			m_pegAudioSource.transform.position = m_pegs[a_pegID].transform.position;
 			// set the sound of the audio source to the current peg hit sound
-			m_audioSource.AudioClip = m_pegHitSounds[m_pegHitPitchIndex];
+			m_pegAudioSource.clip = m_pegHitSounds[m_pegHitPitchIndex];
 			// play the audio
-			m_audioSource.Play();
+			m_pegAudioSource.Play();
 			// if this peg hit sound is not the last
-			if (m_pegHitPitchIndex < m_pegHitSounds.Count)
+			if (m_pegHitPitchIndex < m_pegHitSounds.Length - 1)
 			{
 				// increase the peg hit pitch index so the next audio clip plays next time a hit occurs
 				++m_pegHitPitchIndex;
@@ -563,6 +567,11 @@ public class PegManager : MonoBehaviour
             // if the enough time has passed since the last peg was cleared from the queue
             if (m_clearHitPegQueueTimer >= m_clearHitPegDelay)
             {
+                // position the peg audio source at the next peg
+                m_pegAudioSource.transform.position = m_hitPegs.Peek().transform.position;
+                // play the peg remove sound
+                m_pegAudioSource.PlayOneShot(m_pegRemoveSound);
+
                 // set the next peg in the queue to be inactive
                 m_hitPegs.Dequeue().gameObject.SetActive(false);
                 // reset the timer
