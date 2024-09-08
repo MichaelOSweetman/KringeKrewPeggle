@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 12/08/2024
+    Last Modified: 02/09/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -73,7 +73,13 @@ public class PegManager : MonoBehaviour
     public GameObject m_bucket;
     public GameObject m_victoryBuckets;
     public GameObject m_NearVictoryDetectorPrefab;
-
+	
+	[Header("Sound")]
+	public AudioSource m_audioSource;
+	public AudioClip[] m_pegHitSounds;
+	float m_pegHitPitchIndex = 0;
+	
+	
     [HideInInspector] public List<Peg> m_pegs;
     Queue<Peg> m_hitPegs;
     List<Peg> m_activeBluePegs;
@@ -343,6 +349,19 @@ public class PegManager : MonoBehaviour
             // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
             scoreText.transform.position = m_camera.WorldToScreenPoint(m_pegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
 
+			// move the audio source to the hit peg
+			m_audioSource.transform.position = m_pegs[a_pegID].transform.position;
+			// set the sound of the audio source to the current peg hit sound
+			m_audioSource.AudioClip = m_pegHitSounds[m_pegHitPitchIndex];
+			// play the audio
+			m_audioSource.Play();
+			// if this peg hit sound is not the last
+			if (m_pegHitPitchIndex < m_pegHitSounds.Count)
+			{
+				// increase the peg hit pitch index so the next audio clip plays next time a hit occurs
+				++m_pegHitPitchIndex;
+			}
+			
             // update the score for this shoot phase with the score gained from the hit peg
             UpdatePhaseScore(m_hitPegScore);
 
