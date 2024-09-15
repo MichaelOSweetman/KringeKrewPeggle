@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 09/09/2024
+    Last Modified: 16/09/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -734,7 +734,8 @@ public class PlayerControls : MonoBehaviour
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
         {
-            FreeBall();
+            // give the player a free ball without playing the free ball sound
+            FreeBall(false, false);
         }
 
         // hide the Loki Power Cord if it is visible
@@ -767,13 +768,17 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    public void FreeBall(bool a_showFreeBallText = false)
+    public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false)
     {
         // increase the ball count by 1 as a ball has been gained
         ++m_ballCount;
 
-        // play the free ball sound that corresponds to the amount of free balls earned this round 
-        m_audioSource.PlayOneShot(m_freeBallSounds[m_pegManager.m_freeBallsAwarded]);
+        // if the free ball sound effect should be played
+        if (a_playSound)
+        {
+            // play the free ball sound that corresponds to the amount of free balls earned this round 
+            m_audioSource.PlayOneShot(m_freeBallSounds[m_pegManager.m_freeBallsAwarded]);
+        }
 
         // if the free ball text should shown
         if (a_showFreeBallText)

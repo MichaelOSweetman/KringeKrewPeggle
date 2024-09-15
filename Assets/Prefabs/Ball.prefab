@@ -105,7 +105,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!58 &5669556024543014715
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -135,5 +135,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_pegManager: {fileID: 0}
+  m_playerControls: {fileID: 0}
   m_lowestAllowedVelocitySquared: 0.01
   m_maxLowVelocityDuration: 0.5

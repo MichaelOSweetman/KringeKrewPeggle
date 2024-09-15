@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 19/08/2024
+    Last Modified: 16/09/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class UIManager : MonoBehaviour
     public GameObject m_levelComplete;
     public GameObject m_tryAgain;
 	public GameObject m_dialogueScreen;
+    public GameObject m_pauseMenu;
+
+    [Header("UI Elements")]
+    public Toggle m_fullscreenToggle;
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
@@ -79,6 +84,28 @@ public class UIManager : MonoBehaviour
         m_pegManager.LoadLevel(m_pegManager.m_currentLevel);
         // hide the try again screen
         m_tryAgain.SetActive(false);
+    }
+
+    public void ShowPauseMenu()
+    {
+        // disable player controls
+        m_playerControls.enabled = false;
+        // show the pause menu
+        m_pauseMenu.SetActive(true);
+    }
+
+    public void BackToGame()
+    {
+        // enable player controls
+        m_playerControls.enabled = true;
+        // hide the pause menu
+        m_pauseMenu.SetActive(false);
+    }
+
+    public void FullscreenToggle()
+    {
+        // set the fullscreen mode to fullscreen or windowed, as per the toggle's value
+        Screen.fullScreenMode = (m_fullscreenToggle.isOn) ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
     }
 
     // Start is called before the first frame update
