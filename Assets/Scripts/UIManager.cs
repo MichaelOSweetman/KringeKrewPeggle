@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 16/09/2024
+    Last Modified: 23/09/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -23,6 +23,15 @@ public class UIManager : MonoBehaviour
 
     [Header("UI Elements")]
     public Toggle m_fullscreenToggle;
+    public Toggle m_colorblindToggle;
+    public Slider m_musicVolumeSlider;
+    public Slider m_feverVolumeSlider;
+    public Slider m_soundEffectVolumeSlider;
+
+    [Header("Audio")]
+    public AudioSource m_musicAudioSource;
+    public AudioSource m_feverAudioSource;
+    public AudioSource m_soundEffectAudioSource;
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
@@ -86,26 +95,39 @@ public class UIManager : MonoBehaviour
         m_tryAgain.SetActive(false);
     }
 
-    public void ShowPauseMenu()
+    public void UpdateMusicVolume()
     {
-        // disable player controls
-        m_playerControls.enabled = false;
-        // show the pause menu
-        m_pauseMenu.SetActive(true);
+        m_musicAudioSource.volume = m_musicVolumeSlider.value;
     }
 
-    public void BackToGame()
+    public void UpdateFeverVolume()
     {
-        // enable player controls
-        m_playerControls.enabled = true;
-        // hide the pause menu
-        m_pauseMenu.SetActive(false);
+        m_feverAudioSource.volume = m_feverVolumeSlider.value;
+    }
+
+    public void UpdateSoundEffectVolume()
+    {
+        m_soundEffectAudioSource.volume = m_soundEffectVolumeSlider.value;
     }
 
     public void FullscreenToggle()
     {
         // set the fullscreen mode to fullscreen or windowed, as per the toggle's value
         Screen.fullScreenMode = (m_fullscreenToggle.isOn) ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+    }
+
+    public void ColorblindToggle()
+    {
+        // have the peg manager use the peg visuals as per the colourblind mode
+        m_pegManager.m_colorblindMode = m_colorblindToggle.isOn;
+    }
+
+    public void TogglePauseMenu()
+    {
+        // swap the active state of player controls
+        m_playerControls.enabled = !m_playerControls.enabled;
+        // swap the active state of the pause menu
+        m_pauseMenu.SetActive(!m_pauseMenu.activeSelf);
     }
 
     // Start is called before the first frame update
@@ -117,6 +139,9 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetButtonDown("Toggle Menu"))
+        {
+            TogglePauseMenu();
+        }
     }
 }
