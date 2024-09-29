@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 23/09/2024
+    Last Modified: 30/09/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -38,17 +38,19 @@ public class SaveFile : MonoBehaviour
 		m_streamWriter = File.CreateText(m_fullSavePath);
 
 		string line = "";
-
 		// get the music volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-		line += m_musicAudioSource.volume.ToString("n" + m_volumeSavePrecision.ToString() + ",");
+		line += m_musicAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the fever volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-        line += m_feverAudioSource.volume.ToString("n" + m_volumeSavePrecision.ToString() + ",");
+        line += m_feverAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the sound effect volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-        line += m_soundEffectAudioSource.volume.ToString("n" + m_volumeSavePrecision.ToString() + ",");
-		// add the fullscreen mode to the first line of the save file as a boolean
-		line += (Screen.fullScreenMode == FullScreenMode.FullScreenWindow).ToString() + ",";
+        line += m_soundEffectAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
+        // add the fullscreen mode to the first line of the save file as a boolean
+        line += (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) ? "1" : "0" + ",";
 		// add the colorblind setting to the first line of the save file as a boolean
-		line += m_colorblindToggle.isOn.ToString();
+		line += (m_colorblindToggle.isOn) ? "1" : "0" + ",";
+
+		// write the line into the save file
+		m_streamWriter.WriteLine(line);
 
         // loop for each level set 
         for (int i = 0; i < m_levelSetCount; ++i)
@@ -101,46 +103,44 @@ public class SaveFile : MonoBehaviour
             // otherwise, if the line is not empty
             else
             {
-                // loop through the line
-                for (int j = 0; j < line.Length; ++j)
-                {
-					int settingIndex = 0;
-					string settingValue = "";
+				int settingIndex = 0;
+				string settingValue = "";
 
-					// loop through the line
-					for (int i = 0; i < line.Length; ++i)
+				// loop through the first line
+				for (int i = 0; i < line.Length; ++i)
+				{
+					// if the current character is a ',' then the data for the current setting has been read and is ready to be applied
+					if (line[i] == ',')
 					{
-						if (line[j] == ',')
+						// apply the value to the corresponding setting
+						switch (settingIndex)
 						{
-							switch (settingIndex)
-							{
-								case 0:
-									m_musicAudioSource.volume = float.Parse(settingValue);
-									break;
-                                case 1:
-                                    m_feverAudioSource.volume = float.Parse(settingValue);
-                                    break;
-                                case 2:
-                                    m_soundEffectAudioSource.volume = float.Parse(settingValue);
-                                    break;
-                                case 3:
-									m_fullscreenToggle.isOn = bool.Parse(settingValue);
-                                    break;
-                                case 4:
-									m_colorblindToggle.isOn = bool.Parse(settingValue);
-                                    break;
-                            }
+							case 0:
+								m_musicAudioSource.volume = float.Parse(settingValue);
+								break;
+                               case 1:
+                                   m_feverAudioSource.volume = float.Parse(settingValue);
+                                   break;
+                               case 2:
+                                   m_soundEffectAudioSource.volume = float.Parse(settingValue);
+                                   break;
+                               case 3:
+								m_fullscreenToggle.isOn = bool.Parse(settingValue);
+                                   break;
+                               case 4:
+								m_colorblindToggle.isOn = bool.Parse(settingValue);
+                                   break;
+                           }
 
-							// move to the next setting
-							++settingIndex;
-							// reset the setting value variable
-							settingValue = "";
-						}
-						else
-						{
-							// add the character to the current high score value
-							settingValue += line[i];
-						}
+						// move to the next setting
+						++settingIndex;
+						// reset the setting value variable
+						settingValue = "";
+					}
+					else
+					{
+						// add the character to the setting value string
+						settingValue += line[i];
 					}
 				}
             }

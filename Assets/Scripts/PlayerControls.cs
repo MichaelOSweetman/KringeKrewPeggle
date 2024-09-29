@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 16/09/2024
+    Last Modified: 30/09/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -510,6 +510,9 @@ public class PlayerControls : MonoBehaviour
         // flip the launcher around the x axis
         m_launcher.transform.position = new Vector3(m_launcher.transform.position.x, -m_launcher.transform.position.y);
         m_launcher.transform.rotation = Quaternion.Euler(m_launcher.transform.rotation.eulerAngles.x, m_launcher.transform.rotation.eulerAngles.y, m_launcher.transform.rotation.eulerAngles.z + 180.0f);
+
+        // invert the rotation center of the launcher
+        m_LauncherLookControls.m_validRotationCentre *= -1.0f;
 
         // flip the Top Play Area Collider around the x axis
         m_topPlayAreaCollider.transform.position = new Vector3(m_topPlayAreaCollider.transform.position.x, -m_topPlayAreaCollider.transform.position.y);

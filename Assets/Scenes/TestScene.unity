@@ -3076,7 +3076,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_pegManager: {fileID: 2117815010}
-  m_dialogue: {fileID: 0}
+  m_dialogue: {fileID: 191030509}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
   m_dialogueScreen: {fileID: 1819568582}
@@ -3462,7 +3462,7 @@ MonoBehaviour:
   m_UIManager: {fileID: 241605737}
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
-  m_LauncherLookControls: {fileID: 0}
+  m_LauncherLookControls: {fileID: 711364716}
   m_ballCountText: {fileID: 1240219596}
   m_freeBallTextDuration: 2
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
@@ -10540,6 +10540,7 @@ MonoBehaviour:
   m_rotationRange: 160
   m_floatAccuracy: 0.001
   m_scrollRotationModifier: 1
+  m_validRotationCentre: 0
 --- !u!58 &711364717
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -28435,7 +28436,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dbada1b75cb0faa49a1d6847e4113b7c, type: 3}
   m_pegRemoveSound: {fileID: 8300000, guid: 6adae356d08105743b7f7ccbfeca14ea, type: 3}
   m_pegs: []
-  m_clearHitPegDelay: 0.25
+  m_clearHitPegDelay: 0.1
 --- !u!1 &2118928974
 GameObject:
   m_ObjectHideFlags: 0
