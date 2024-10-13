@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 30/09/2024
+    Last Modified: 14/10/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -118,19 +118,19 @@ public class SaveFile : MonoBehaviour
 							case 0:
 								m_musicAudioSource.volume = float.Parse(settingValue);
 								break;
-                               case 1:
-                                   m_feverAudioSource.volume = float.Parse(settingValue);
-                                   break;
-                               case 2:
-                                   m_soundEffectAudioSource.volume = float.Parse(settingValue);
-                                   break;
-                               case 3:
-								m_fullscreenToggle.isOn = bool.Parse(settingValue);
-                                   break;
-                               case 4:
-								m_colorblindToggle.isOn = bool.Parse(settingValue);
-                                   break;
-                           }
+							case 1:
+							    m_feverAudioSource.volume = float.Parse(settingValue);
+								break;
+							case 2:
+							    m_soundEffectAudioSource.volume = float.Parse(settingValue);
+								break;
+							case 3:
+								m_fullscreenToggle.isOn = (settingValue == "1");
+								break;				  
+							case 4:					  
+								m_colorblindToggle.isOn = (settingValue == "1");
+								break;
+                        }
 
 						// move to the next setting
 						++settingIndex;
