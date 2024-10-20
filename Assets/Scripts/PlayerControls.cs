@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 14/10/2024
+    Last Modified: 21/10/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -30,6 +30,8 @@ public class PlayerControls : MonoBehaviour
 
 
     [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
+
+    public RectTransform m_playAreaBounds;
 
     [Header("Other Scripts")]
     public UIManager m_UIManager;
@@ -218,6 +220,17 @@ public class PlayerControls : MonoBehaviour
 
         // TEMP
         print("DanielPower() called");
+    }
+
+    public bool CursorWithinPlayArea()
+    {
+        Vector3 CursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //if (CursorPosition.x > m_playAreaBounds.rect.)
+        //{
+        //
+        //}
+
+            return false;
     }
 
     public void EndDrawButtonPressed()
@@ -855,7 +868,7 @@ public class PlayerControls : MonoBehaviour
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
-        m_greenPegPower = DanielPower;
+        m_greenPegPower = EthenPower;
     }
 
     void Update()
@@ -929,8 +942,8 @@ public class PlayerControls : MonoBehaviour
             // if the power is Ethen's power and drawing mode is on
             if (m_drawing && m_greenPegPower == EthenPower)
             {
-                // if there is ink remaining and the Shoot / Use Power input is currently pressed
-                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power"))
+                // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
+                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power"))// && )
                 {
                     // if this was the first frame that the Shoot / Use Power input was pressed
                     if (Input.GetButtonDown("Shoot / Use Power"))
