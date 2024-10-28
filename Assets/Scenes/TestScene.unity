@@ -3462,7 +3462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentGameState: 1
-  m_playAreaBounds: {fileID: 0}
+  m_playAreaBounds: {fileID: 363654200}
   m_UIManager: {fileID: 241605737}
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}

@@ -224,13 +224,23 @@ public class PlayerControls : MonoBehaviour
 
     public bool CursorWithinPlayArea()
     {
-        Vector3 CursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //if (CursorPosition.x > m_playAreaBounds.rect.)
-        //{
-        //
-        //}
+        // get the cursor position in screen space
+        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 minCorner = new Vector3(m_playAreaBounds.rect.x, m_playAreaBounds.rect.y, 1);
+        Vector3 maxCorner = new Vector3(m_playAreaBounds.rect.xMax, m_playAreaBounds.rect.yMax, 1);
 
-            return false;
+        print(cursorPosition.x + "| " + (Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner)) + "| " + (Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner)));
+
+        // return whether the cursor is within the play area bounds (converted to screen space)
+        return
+        (
+            cursorPosition.x > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner).x &&
+            cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner).y &&
+            cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner).x &&
+            cursorPosition.y < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner).y
+            //cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.x) &&
+            //cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.y)
+        );
     }
 
     public void EndDrawButtonPressed()
@@ -943,7 +953,7 @@ public class PlayerControls : MonoBehaviour
             if (m_drawing && m_greenPegPower == EthenPower)
             {
                 // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
-                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power"))// && )
+                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
                 {
                     // if this was the first frame that the Shoot / Use Power input was pressed
                     if (Input.GetButtonDown("Shoot / Use Power"))
