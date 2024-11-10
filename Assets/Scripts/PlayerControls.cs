@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 21/10/2024
+    Last Modified: 11/11/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -40,6 +40,7 @@ public class PlayerControls : MonoBehaviour
     public LauncherRotation m_LauncherLookControls;
 
     [Header("UI")]
+    public Canvas m_canvas;
     public Text m_ballCountText;
     public float m_freeBallTextDuration = 2.0f;
     float m_freeBallTextTimer = 0.0f;
@@ -225,21 +226,28 @@ public class PlayerControls : MonoBehaviour
     public bool CursorWithinPlayArea()
     {
         // get the cursor position in screen space
-        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 minCorner = new Vector3(m_playAreaBounds.rect.x, m_playAreaBounds.rect.y, 1);
-        Vector3 maxCorner = new Vector3(m_playAreaBounds.rect.xMax, m_playAreaBounds.rect.yMax, 1);
+        Vector3 cursorPosition = Input.mousePosition;
+        //cursorPosition.x -= m_canvas.GetComponent<RectTransform>().rect.width * 0.5f;
+        //cursorPosition.y += m_canvas.GetComponent<RectTransform>().rect.height * 0.5f;
+        Vector3 minCorner = new Vector3(m_playAreaBounds.rect.x, m_playAreaBounds.rect.y, 1.0f);
+        Vector3 maxCorner = new Vector3(m_playAreaBounds.rect.xMax, m_playAreaBounds.rect.yMax, 1.0f);
 
-        print(cursorPosition.x + "| " + (Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner)) + "| " + (Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner)));
+        print(cursorPosition + "| " + (m_playAreaBounds.transform.position + minCorner) + "| " + (m_playAreaBounds.transform.localPosition + maxCorner));
 
         // return whether the cursor is within the play area bounds (converted to screen space)
         return
         (
-            cursorPosition.x > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner).x &&
-            cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + minCorner).y &&
-            cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner).x &&
-            cursorPosition.y < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition + maxCorner).y
-            //cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.x) &&
-            //cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.y)
+            cursorPosition.x > m_playAreaBounds.transform.position.x - (0.5f * m_playAreaBounds.rect.width) &&
+            cursorPosition.x < m_playAreaBounds.transform.position.x + (0.5f * m_playAreaBounds.rect.width) &&
+            cursorPosition.y > m_playAreaBounds.transform.position.y - (0.5f * m_playAreaBounds.rect.height) &&
+            cursorPosition.y < m_playAreaBounds.transform.position.y + (0.5f * m_playAreaBounds.rect.height)
+
+        //cursorPosition.x > (m_playAreaBounds.transform.position + minCorner).x &&
+        //cursorPosition.y > (m_playAreaBounds.transform.position + minCorner).y &&
+        //cursorPosition.x < (m_playAreaBounds.transform.position + maxCorner).x &&
+        //cursorPosition.y < (m_playAreaBounds.transform.position + maxCorner).y
+        //cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.x) &&
+        //cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.y)
         );
     }
 
@@ -883,6 +891,9 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
+        // TEMP
+        transform.parent.parent.GetComponentInParent<SpriteRenderer>().color = (CursorWithinPlayArea()) ? m_pegManager.m_greenPegColor : m_pegManager.m_orangePegColor;
+
         // TEMP
         if (Input.GetButton("Speed Up Time"))
         {

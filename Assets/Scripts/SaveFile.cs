@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 14/10/2024
+    Last Modified: 11/11/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class SaveFile : MonoBehaviour
 	public int m_levelSetCount = 0;
 	public int m_levelsPerSet = 0;
 	public string m_saveFilePath = "";
+	public int m_maxSaves = 3;
 	string m_fullSavePath = "";
 	[HideInInspector] public int[,] m_highScores;
 	[HideInInspector] public int m_lastCompletedLevel = 0;
@@ -24,7 +25,8 @@ public class SaveFile : MonoBehaviour
 	StreamReader m_streamReader;
 
 
-    [Header("Settings")]
+	[Header("Save File Data")]
+	public string m_saveName = "";
     public AudioSource m_musicAudioSource;
     public AudioSource m_feverAudioSource;
     public AudioSource m_soundEffectAudioSource;
@@ -32,14 +34,16 @@ public class SaveFile : MonoBehaviour
     public Toggle m_colorblindToggle;
     public int m_volumeSavePrecision = 2;
 
-    void UpdateSaveFile()
+    void UpdateSaveFile(string a_fileName)
 	{
 		// create the save file, or open and clear it if it already exists
-		m_streamWriter = File.CreateText(m_fullSavePath);
+		m_streamWriter = File.CreateText(m_fullSavePath + a_fileName);
 
-		string line = "";
+		// add the save name to the top of the save file
+		m_streamWriter.WriteLine(m_saveName);
+
 		// get the music volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-		line += m_musicAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
+		string line = m_musicAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the fever volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
         line += m_feverAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the sound effect volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
@@ -76,7 +80,7 @@ public class SaveFile : MonoBehaviour
 		print("File accessed and written to");
 	}
 	
-	void ReadSaveFile()
+	void ReadSaveFile(string a_fileName)
 	{
 		// if the save file exists
 		if (File.Exists(m_fullSavePath))
@@ -95,7 +99,7 @@ public class SaveFile : MonoBehaviour
                 // close the file for reading
                 m_streamReader.Dispose();
                 // create the save file
-                UpdateSaveFile();
+                UpdateSaveFile(a_fileName);
 				// exit this function
 				return;
 
@@ -106,7 +110,13 @@ public class SaveFile : MonoBehaviour
 				int settingIndex = 0;
 				string settingValue = "";
 
-				// loop through the first line
+				//store the first line as the save name
+				m_saveName = line;
+
+				// read the next line
+				line = m_streamReader.ReadLine();
+
+				// loop through the line
 				for (int i = 0; i < line.Length; ++i)
 				{
 					// if the current character is a ',' then the data for the current setting has been read and is ready to be applied
@@ -196,7 +206,7 @@ public class SaveFile : MonoBehaviour
             print("File not found, creating file");
 
             // create the save file
-            UpdateSaveFile();
+            UpdateSaveFile(a_fileName);
         }
 	}
 	
@@ -208,7 +218,7 @@ public class SaveFile : MonoBehaviour
 		// initialise the high scores array to have an element for each level in the game
         m_highScores = new int[m_levelSetCount, m_levelsPerSet];
 		// get the high score info from the save file, if the data exists
-		ReadSaveFile();
+		//ReadSaveFile();
     }
 
     // Update is called once per frame
@@ -217,7 +227,7 @@ public class SaveFile : MonoBehaviour
 		// TEMP
 		if (Input.GetKeyDown(KeyCode.K))
 		{
-			UpdateSaveFile();
+			//UpdateSaveFile();
 		}
     }
 }
