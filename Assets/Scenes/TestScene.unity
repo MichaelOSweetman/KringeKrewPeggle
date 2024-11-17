@@ -3107,7 +3107,7 @@ MonoBehaviour:
   m_uiManager: {fileID: 241605737}
   m_levelSetCount: 2
   m_levelsPerSet: 3
-  m_saveFilePath: Saves/SaveFile.txt
+  m_saveFilePath: Saves/
   m_maxSaves: 3
   m_lastCompletedLevel: 0
   m_saveName: Test Save

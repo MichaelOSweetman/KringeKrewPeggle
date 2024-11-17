@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 11/11/2024
+    Last Modified: 18/11/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -33,11 +33,14 @@ public class SaveFile : MonoBehaviour
     public Toggle m_fullscreenToggle;
     public Toggle m_colorblindToggle;
     public int m_volumeSavePrecision = 2;
+	[HideInInspector] public int m_currentSaveID = 0;
+	string m_fileName = "SaveFile";
+	string m_fileType = ".txt";
 
-    void UpdateSaveFile(string a_fileName)
+    void UpdateSaveFile(int a_saveID = 0)
 	{
 		// create the save file, or open and clear it if it already exists
-		m_streamWriter = File.CreateText(m_fullSavePath + a_fileName);
+		m_streamWriter = File.CreateText(m_fullSavePath + m_fileName + a_saveID + m_fileType);
 
 		// add the save name to the top of the save file
 		m_streamWriter.WriteLine(m_saveName);
@@ -80,10 +83,13 @@ public class SaveFile : MonoBehaviour
 		print("File accessed and written to");
 	}
 	
-	void ReadSaveFile(string a_fileName)
+	void ReadSaveFile(int a_saveID = 0)
 	{
+		// store that the active save file is now this file
+		m_currentSaveID = a_saveID;
+
 		// if the save file exists
-		if (File.Exists(m_fullSavePath))
+		if (File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType))
 		{
 			// open the file for reading
 			m_streamReader = File.OpenText(m_fullSavePath);
@@ -99,7 +105,7 @@ public class SaveFile : MonoBehaviour
                 // close the file for reading
                 m_streamReader.Dispose();
                 // create the save file
-                UpdateSaveFile(a_fileName);
+                UpdateSaveFile(a_saveID);
 				// exit this function
 				return;
 
@@ -206,7 +212,7 @@ public class SaveFile : MonoBehaviour
             print("File not found, creating file");
 
             // create the save file
-            UpdateSaveFile(a_fileName);
+            UpdateSaveFile(a_saveID);
         }
 	}
 	
@@ -218,7 +224,7 @@ public class SaveFile : MonoBehaviour
 		// initialise the high scores array to have an element for each level in the game
         m_highScores = new int[m_levelSetCount, m_levelsPerSet];
 		// get the high score info from the save file, if the data exists
-		//ReadSaveFile();
+		ReadSaveFile();
     }
 
     // Update is called once per frame
@@ -227,7 +233,7 @@ public class SaveFile : MonoBehaviour
 		// TEMP
 		if (Input.GetKeyDown(KeyCode.K))
 		{
-			//UpdateSaveFile();
+			UpdateSaveFile();
 		}
     }
 }

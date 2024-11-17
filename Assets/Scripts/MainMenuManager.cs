@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: MainMenuManager.cs
     Summary: Manages the UI of the main menu screen
     Creation Date: 03/11/2024
-    Last Modified: 03/11/2024
+    Last Modified: 18/11/2024
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class MainMenuManager : MonoBehaviour
     public GameObject m_mainMenu;
     public GameObject m_quitMenu;
     public GameObject m_optionsMenu;
+    public GameObject m_changeSaveMenu;
 
     [Header("Options")]
     public Slider m_musicVolumeSlider;
@@ -30,6 +31,7 @@ public class MainMenuManager : MonoBehaviour
     bool m_colorblind = false;
 
     [Header("Speech Bubble")]
+    public GameObject m_changeSaveButton;
     public Text m_speechBubbleText;
     public string m_defaultText = "Welcome Back Sweets!";
     public string m_quitHoverText = "See you again soon!";
@@ -58,6 +60,18 @@ public class MainMenuManager : MonoBehaviour
         m_titleScreen.SetActive(false);
         // turn on the title screen objects
         m_mainMenu.SetActive(true);
+    }
+
+    public void ChangeSaveButton()
+    {
+        // show the change save menu
+        m_changeSaveMenu.SetActive(true);
+    }
+
+    public void CancelChangeSave()
+    {
+        // hide the change save menu
+        m_changeSaveMenu.SetActive(false);
     }
 
     public void QuitButton()
@@ -123,21 +137,33 @@ public class MainMenuManager : MonoBehaviour
 
     public void SpeechBubbleDefault()
     {
+        // update the speech bubble text
         m_speechBubbleText.text = m_defaultText;
+        // make the change save button active
+        m_changeSaveButton.SetActive(true);
     }
 
     public void SpeechBubbleQuit()
     {
+        // update the speech bubble text
         m_speechBubbleText.text = m_quitHoverText;
+        // make the change save button inactive
+        m_changeSaveButton.SetActive(false);
     }
 
     public void SpeechBubbleOptions()
     {
+        // update the speech bubble text
         m_speechBubbleText.text = m_optionsHoverText;
+        // make the change save button inactive
+        m_changeSaveButton.SetActive(false);
     }
 
     public void SpeechBubbleAdventure()
     {
+        // update the speech bubble text
         m_speechBubbleText.text = m_adventureHoverText;
+        // make the change save button inactive
+        m_changeSaveButton.SetActive(false);
     }
 }
