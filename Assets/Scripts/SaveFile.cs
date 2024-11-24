@@ -9,16 +9,18 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 18/11/2024
+    Last Modified: 25/11/2024
 */
 public class SaveFile : MonoBehaviour
 {
-	public UIManager m_uiManager;
+	public UIManager m_uiManager = null;
+	public MainMenuManager m_mainMenuManager = null;
 	public int m_levelSetCount = 0;
 	public int m_levelsPerSet = 0;
 	public string m_saveFilePath = "";
 	public int m_maxSaves = 3;
 	string m_fullSavePath = "";
+	[HideInInspector] public int m_SaveFileCount;
 	[HideInInspector] public int[,] m_highScores;
 	[HideInInspector] public int m_lastCompletedLevel = 0;
 	StreamWriter m_streamWriter;
@@ -37,7 +39,13 @@ public class SaveFile : MonoBehaviour
 	string m_fileName = "SaveFile";
 	string m_fileType = ".txt";
 
-    void UpdateSaveFile(int a_saveID = 0)
+	public void DeleteSaveFile(int a_saveID)
+	{
+		// delete the file
+		File.Delete(m_fullSavePath + m_fileName + a_saveID + m_fileType);
+	}
+
+    public void UpdateSaveFile(int a_saveID = 0)
 	{
 		// create the save file, or open and clear it if it already exists
 		m_streamWriter = File.CreateText(m_fullSavePath + m_fileName + a_saveID + m_fileType);
@@ -83,7 +91,7 @@ public class SaveFile : MonoBehaviour
 		print("File accessed and written to");
 	}
 	
-	void ReadSaveFile(int a_saveID = 0)
+	public void ReadSaveFile(int a_saveID = 0)
 	{
 		// store that the active save file is now this file
 		m_currentSaveID = a_saveID;
@@ -92,7 +100,7 @@ public class SaveFile : MonoBehaviour
 		if (File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType))
 		{
 			// open the file for reading
-			m_streamReader = File.OpenText(m_fullSavePath);
+			m_streamReader = File.OpenText(m_fullSavePath + m_fileName + a_saveID + m_fileType);
 			// create a variable to store the data from each line. Get the first line
 			string line = m_streamReader.ReadLine();
             
@@ -223,8 +231,32 @@ public class SaveFile : MonoBehaviour
 		m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
 		// initialise the high scores array to have an element for each level in the game
         m_highScores = new int[m_levelSetCount, m_levelsPerSet];
-		// get the high score info from the save file, if the data exists
-		ReadSaveFile();
+
+		string saveFileName = "";
+
+		// loop for each save slot
+		for (int i = 0; i < m_maxSaves; ++i)
+		{
+			// if a file exists for this slot
+			if (File.Exists(m_fullSavePath + m_fileName + i + m_fileType))
+			{
+                // open the file and read the first line
+                m_streamReader = File.OpenText(m_fullSavePath + m_fileName + i + m_fileType);
+                saveFileName = m_streamReader.ReadLine();
+
+                // if the line is not empty
+                if (saveFileName != null && saveFileName != "")
+				{
+					// initialise the select save file button for this save file
+					m_mainMenuManager.UpdateSaveFileButtonText(i, saveFileName);
+                    // close the file for reading
+                    m_streamReader.Dispose();
+                }
+			}
+		}
+
+        // read the first save file
+        ReadSaveFile();
     }
 
     // Update is called once per frame
