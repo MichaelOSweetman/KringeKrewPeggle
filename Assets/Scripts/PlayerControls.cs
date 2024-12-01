@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 11/11/2024
+    Last Modified: 02/12/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -38,6 +38,7 @@ public class PlayerControls : MonoBehaviour
     public PegManager m_pegManager;
     public CameraZoom m_cameraZoom;
     public LauncherRotation m_LauncherLookControls;
+    public BallTrajectory m_ballTrajectory;
 
     [Header("UI")]
     public Canvas m_canvas;
@@ -341,6 +342,9 @@ public class PlayerControls : MonoBehaviour
             // reset the ink meter
             m_ink = m_maxInk;
             UpdateInkResourceBar();
+
+            // disable the ball trajectory
+            m_ballTrajectory.ShowLine(false);
 
             // turn off the LookAtCursor component of the launcher
             m_LauncherLookControls.enabled = false;
@@ -747,8 +751,6 @@ public class PlayerControls : MonoBehaviour
         --m_ballCount;
         // update the ball count text
         m_ballCountText.text = m_ballCount.ToString();
-        // set the game state to Ball In Play
-        m_currentGameState = GameState.BallInPlay;
         // return the ball gameobject
         return Ball;
     }
@@ -889,6 +891,16 @@ public class PlayerControls : MonoBehaviour
         m_greenPegPower = EthenPower;
     }
 
+    private void FixedUpdate()
+    {
+        // if the current game state is shoot and the player is not currently using the Ethen Power
+        if (m_currentGameState == GameState.Shoot && !m_drawing)
+        {
+            // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
+            m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);
+        }
+    }
+
     void Update()
     {
         // TEMP
@@ -954,7 +966,9 @@ public class PlayerControls : MonoBehaviour
                 m_resolvePowerNextTurn = false;
             }
 
-            // TEMP
+            // enable the ball trajectory line
+            m_ballTrajectory.ShowLine(true);
+            // change the game state to shoot
             m_currentGameState = GameState.Shoot;
         }
         // if the current game state is Shoot
@@ -1039,6 +1053,12 @@ public class PlayerControls : MonoBehaviour
                         // have the power trigger its On Shoot effect
                         m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
                     }
+
+                    // change the current game state to Ball In Play
+                    m_currentGameState = GameState.BallInPlay;
+
+                    // disable the ball trajectory line
+                    m_ballTrajectory.ShowLine(false);
                 }
                 // TEMP
                 /*

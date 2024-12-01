@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 23/09/2024
+    Last Modified: 02/12/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -473,6 +473,9 @@ public class PegManager : MonoBehaviour
         m_activeBluePegs = new List<Peg>();
         // initialise the hit pegs queue
         m_hitPegs = new Queue<Peg>();
+
+        // store that no orange pegs have been hit
+        m_hitOrangePegs = 0;
 
         // create a hash set to store the IDs of all pegs that will start as orange or green
         HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
