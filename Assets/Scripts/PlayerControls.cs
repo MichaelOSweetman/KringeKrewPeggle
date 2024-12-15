@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 02/12/2024
+    Last Modified: 16/12/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -27,7 +27,6 @@ public class PlayerControls : MonoBehaviour
         Resolve,
 		Reload
     }
-
 
     [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
 
@@ -142,6 +141,41 @@ public class PlayerControls : MonoBehaviour
     [Header("Audio")]
     public AudioSource m_freeBallAudioSource;
     public AudioClip[] m_freeBallSounds;
+
+    public void SetGreenPegPower(int a_characterID)
+    {
+        switch (a_characterID)
+        {
+            case 0:
+                m_greenPegPower = SweetsPower;
+                break;
+            case 1:
+                m_greenPegPower = JackPower;
+                break;
+            case 2:
+                m_greenPegPower = MatejaPower;
+                break;
+            case 3:
+                m_greenPegPower = PhoebePower;
+                break;
+            case 4:
+                m_greenPegPower = DanielPower;
+                break;
+            case 5:
+                m_greenPegPower = KevinPower;
+                break;
+            case 6:
+                m_greenPegPower = EthenPower;
+                break;
+            case 7:
+                m_greenPegPower = LokiPower;
+                break;
+            case 8:
+                m_greenPegPower = BenPower;
+                break;
+        }
+
+    }
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
     {
@@ -853,8 +887,8 @@ public class PlayerControls : MonoBehaviour
 		// reload the power
 		m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
 
-        // set the game state to the shoot phase
-        m_currentGameState = GameState.Shoot;
+        // set the game state to the Turn Set Up phase
+        m_currentGameState = GameState.TurnSetUp;
 		
 		// destroy the ball if one exists
 		if (m_ball != null)
@@ -971,8 +1005,9 @@ public class PlayerControls : MonoBehaviour
             // change the game state to shoot
             m_currentGameState = GameState.Shoot;
         }
+
         // if the current game state is Shoot
-        else if (m_currentGameState == GameState.Shoot)
+        if (m_currentGameState == GameState.Shoot)
         {
             // if the power is Ethen's power and drawing mode is on
             if (m_drawing && m_greenPegPower == EthenPower)

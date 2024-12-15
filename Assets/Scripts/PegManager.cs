@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PegManager.cs
     Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
     Creation Date: 09/10/2023
-    Last Modified: 02/12/2024
+    Last Modified: 16/12/2024
 */
 
 public class PegManager : MonoBehaviour
@@ -73,7 +73,7 @@ public class PegManager : MonoBehaviour
     [Header("Victory")]
     public GameObject m_bucket;
     public GameObject m_victoryBuckets;
-    public GameObject m_NearVictoryDetectorPrefab;
+    public GameObject m_nearVictoryDetector;
 	
 	[Header("Sound")]
 	public AudioSource m_pegAudioSource;
@@ -184,20 +184,26 @@ public class PegManager : MonoBehaviour
         m_scoreText.text = m_score.ToString();
     }
 
-    public void ResolveTurn()
+    public void ResetTurnScore()
     {
-        // add the score gained in this shoot phase to the total score
-        AddScore(m_currentShootPhaseScore);
         // reset the current shoot phase score tracker
         m_currentShootPhaseScore = 0;
         // reset the free balls awarded
         m_freeBallsAwarded = 0;
         // reset the free ball progress bar
         UpdateFreeBallProgressBar();
-        // assign a random blue peg to be purple
-        ReplacePurplePeg();
         // reset the peg hit sound
         m_pegHitPitchIndex = 0;
+    }
+
+    public void ResolveTurn()
+    {
+        // add the score gained in this shoot phase to the total score
+        AddScore(m_currentShootPhaseScore);
+        // reset the score trackers for the turn
+        ResetTurnScore();
+        // assign a random blue peg to be purple
+        ReplacePurplePeg();
         // set the GameState to Round Set Up as the Turn has resolved
         m_playerControls.m_currentGameState = PlayerControls.GameState.TurnSetUp;
     }
@@ -300,6 +306,10 @@ public class PegManager : MonoBehaviour
                         // replace the bucket with the victory buckets
                         m_bucket.SetActive(false);
                         m_victoryBuckets.SetActive(true);
+                        // set the near victory detector to have no parent
+                        m_nearVictoryDetector.transform.parent = null;
+                        // set the near victory detector to be inactive
+                        m_nearVictoryDetector.SetActive(false);
                     }
                     // if this was not the last orange peg
                     else
@@ -313,14 +323,12 @@ public class PegManager : MonoBehaviour
                                 // if this is not the peg that was just hit, it is active and it is orange
                                 if (i != a_pegID && m_pegs[i] != null && m_pegs[i].m_pegType == PegType.Orange)
                                 {
-                                    // create a near victory detector
-                                    GameObject nearVictoryDetector = Instantiate(m_NearVictoryDetectorPrefab);
+                                    //enable the near victory detector
+                                    m_nearVictoryDetector.SetActive(true);
                                     // set the detectors position to the orange pegs position
-                                    nearVictoryDetector.transform.position = m_pegs[i].transform.position;
-                                    // give the victory detector access to Player Controls
-                                    nearVictoryDetector.GetComponent<NearVictoryDetector>().m_playerControls = m_playerControls;
-
-
+                                    m_nearVictoryDetector.transform.position = m_pegs[i].transform.position;
+                                    // make the detector a child of the peg so it follows it if it moves
+                                    m_nearVictoryDetector.transform.parent = m_pegs[i].transform;
                                     // exit the loop as the one unhit orange peg has been found
                                     break;
                                 }
@@ -441,6 +449,30 @@ public class PegManager : MonoBehaviour
 
     public void LoadLevel(GameObject a_newLevel)
     {
+        // ensure all the turn score trackers are at their initial state
+        ResetTurnScore();
+
+        // store that no orange pegs have been hit
+        m_hitOrangePegs = 0;
+
+        // reset the count for the amount of pegs in the level
+        m_levelPegCount = 0;
+
+        // reset the score multiplier index
+        m_scoreMultiplierIndex = 0;
+
+        // stop clearing hit pegs
+        m_clearHitPegQueue = false;
+
+        // set the near victory detector to have no parent
+        m_nearVictoryDetector.transform.parent = null;
+        // set the near victory detector to be inactive
+        m_nearVictoryDetector.SetActive(false);
+
+        // ensure the victory buckets are inactive and the regular bucket is active
+        m_victoryBuckets.SetActive(false);
+        m_bucket.SetActive(true);
+
         // store the argument gameobject as the current level
         m_currentLevel = a_newLevel;
         m_currentLevelSet = m_currentLevel.transform.parent.gameObject;
@@ -463,8 +495,6 @@ public class PegManager : MonoBehaviour
         // make the current level active
         m_currentLevel.SetActive(true);
 
-        // reset the count for the amount of pegs in the level
-        m_levelPegCount = 0;
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
         SearchForPegs(m_currentLevel.transform);
@@ -473,9 +503,6 @@ public class PegManager : MonoBehaviour
         m_activeBluePegs = new List<Peg>();
         // initialise the hit pegs queue
         m_hitPegs = new Queue<Peg>();
-
-        // store that no orange pegs have been hit
-        m_hitOrangePegs = 0;
 
         // create a hash set to store the IDs of all pegs that will start as orange or green
         HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
@@ -511,12 +538,6 @@ public class PegManager : MonoBehaviour
             }
         }
 
-        // reset the score multiplier index
-        m_scoreMultiplierIndex = 0;
-
-        // reset the free balls awarded
-        m_freeBallsAwarded = 0;
-
         // clear the screen of peg score texts
         for (int i = m_pegScoreTextParent.transform.childCount - 1; i >= 0; --i)
         {
@@ -524,12 +545,10 @@ public class PegManager : MonoBehaviour
             Destroy(m_pegScoreTextParent.transform.GetChild(i).gameObject);
         }
 
-        // stop clearing hit pegs
-        m_clearHitPegQueue = false;
-
         // assign a random blue peg to be purple
         ReplacePurplePeg();
 
+        // have the player controls reset for the new level
         m_playerControls.Reload();
     }
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 23/09/2024
+    Last Modified: 16/12/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     public GameObject m_tryAgain;
 	public GameObject m_dialogueScreen;
     public GameObject m_pauseMenu;
+    public GameObject m_characterSelect;
 
     [Header("UI Elements")]
     public Toggle m_fullscreenToggle;
@@ -35,6 +36,38 @@ public class UIManager : MonoBehaviour
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
+    int m_playableCharacterCount = 9;
+    int m_selectedCharacterID = 0;
+
+    public void LockInCharacter()
+    {
+        // have player controls set the green peg power
+        m_playerControls.SetGreenPegPower(m_selectedCharacterID);
+
+        // TEMP
+        // set corresponding art assets for character, victory music, etc
+
+        // set the character select screen to be inactive
+        m_characterSelect.SetActive(false);
+    }
+
+    public void SelectCharacter(int a_characterID)
+    {
+        // if the character ID is greater than the amount of characters, the random option has been selected
+        if (a_characterID >= m_playableCharacterCount)
+        {
+            // get a random character
+            m_selectedCharacterID = Random.Range(0, m_playableCharacterCount);
+        }
+        else
+        {
+            // set the selected character to the character clicked on
+            m_selectedCharacterID = a_characterID;
+        }
+        // TEMP
+        // Put gold border around small art
+        // put set big image to corresponding character art
+    }
 
     public void LevelOver(bool a_won)
     {
