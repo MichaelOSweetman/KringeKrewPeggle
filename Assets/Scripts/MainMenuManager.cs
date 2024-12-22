@@ -9,13 +9,16 @@ using UnityEngine.UI;
     File name: MainMenuManager.cs
     Summary: Manages the UI of the main menu screen
     Creation Date: 03/11/2024
-    Last Modified: 25/11/2024
+    Last Modified: 22/12/2024
 */
 public class MainMenuManager : MonoBehaviour
 {
     [Header("Sub Menus")]
     public GameObject m_titleScreen;
     public GameObject m_mainMenu;
+    public GameObject m_levelSelect;
+
+    [Header("Pop Up Menus")]
     public GameObject m_quitMenu;
     public GameObject m_optionsMenu;
     public GameObject m_changeSaveMenu;
@@ -26,10 +29,6 @@ public class MainMenuManager : MonoBehaviour
     public Slider m_soundEffectVolumeSlider;
     public Toggle m_fullscreenToggle;
     public Toggle m_colorblindToggle;
-    float m_musicVolume = 0.0f;
-    float m_feverVolume = 0.0f;
-    float m_soundEffectVolume = 0.0f;
-    bool m_colorblind = false;
 
     [Header("Saves")]
     public SaveFile m_saveFile;
@@ -45,6 +44,7 @@ public class MainMenuManager : MonoBehaviour
     public string m_quitHoverText = "See you again soon!";
     public string m_optionsHoverText = "Change Settings";
     public string m_adventureHoverText = "Continue your adventure";
+    public string m_quickPlayHoverText = "Play individual levels that you have unlocked in Adventure!";
 
 
     [Header("Other")]
@@ -97,12 +97,15 @@ public class MainMenuManager : MonoBehaviour
         m_saveFile.DeleteSaveFile(m_selectedSaveFile);
     }
 
-    public void ClickToPlay()
+    public void SwitchSubMenu(GameObject a_activeSubMenu)
     {
-        // turn off the title screen objects
+        // turn off all Sub Menus
         m_titleScreen.SetActive(false);
-        // turn on the title screen objects
-        m_mainMenu.SetActive(true);
+        m_mainMenu.SetActive(false);
+        m_levelSelect.SetActive(false);
+
+        // turn on the argument sub menu
+        a_activeSubMenu.SetActive(true);
     }
 
     public void ChangeSaveButton()
@@ -142,17 +145,17 @@ public class MainMenuManager : MonoBehaviour
 
     public void UpdateMusicVolume()
     {
-        m_musicVolume = m_musicVolumeSlider.value;
+        GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
     }
 
     public void UpdateFeverVolume()
     {
-        m_feverVolume = m_feverVolumeSlider.value;
+        GlobalSettings.m_feverVolume = m_feverVolumeSlider.value;
     }
 
     public void UpdateSoundEffectVolume()
     {
-        m_soundEffectVolume = m_soundEffectVolumeSlider.value;
+        GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
     }
 
     public void FullscreenToggle()
@@ -163,7 +166,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void ColorblindToggle()
     {
-        m_colorblind = m_colorblindToggle.isOn;
+        GlobalSettings.m_colorblindMode = m_colorblindToggle.isOn;
     }
 
     public void OptionsMenuBack()
@@ -172,10 +175,23 @@ public class MainMenuManager : MonoBehaviour
         m_optionsMenu.SetActive(false);
     }
 
-    public void Adventure()
+    public void LoadGameplayScene(bool a_adventure)
     {
+        // store whether the gameplay scene should be loaded in adventure mode or quickplay mode
+        GlobalSettings.m_adventureMode = a_adventure;
+
         // load the Gameplay scene
         SceneManager.LoadSceneAsync(m_GameplaySceneID);
+    }
+
+    public void SelectLevel(int a_levelID)
+    {
+        // TEMP determine level set from page
+        
+        // set the level ID to load in the gamplay scene
+        GlobalSettings.m_currentLevelID = a_levelID;
+        // load the gameplay scene in quickplay mode
+        LoadGameplayScene(false);
     }
 
     public void SpeechBubbleDefault()
@@ -206,6 +222,14 @@ public class MainMenuManager : MonoBehaviour
     {
         // update the speech bubble text
         m_speechBubbleText.text = m_adventureHoverText;
+        // make the change save button inactive
+        m_changeSaveButton.SetActive(false);
+    }
+
+    public void SpeechBubbleQuickPlay()
+    {
+        // update the speech bubble text
+        m_speechBubbleText.text = m_quickPlayHoverText;
         // make the change save button inactive
         m_changeSaveButton.SetActive(false);
     }

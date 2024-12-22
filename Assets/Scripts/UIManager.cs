@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 16/12/2024
+    Last Modified: 22/12/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -130,17 +130,20 @@ public class UIManager : MonoBehaviour
 
     public void UpdateMusicVolume()
     {
-        m_musicAudioSource.volume = m_musicVolumeSlider.value;
+        //store the new music volume in the global variable and apply it to the music audio source
+        m_musicAudioSource.volume = GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
     }
 
     public void UpdateFeverVolume()
     {
-        m_feverAudioSource.volume = m_feverVolumeSlider.value;
+        //store the new fever volume in the global variable and apply it to the fever audio source
+        m_feverAudioSource.volume = GlobalSettings.m_feverVolume = m_feverVolumeSlider.value;
     }
 
     public void UpdateSoundEffectVolume()
     {
-        m_soundEffectAudioSource.volume = m_soundEffectVolumeSlider.value;
+        //store the new sound effect volume in the global variable and apply it to the sound effect audio source
+        m_soundEffectAudioSource.volume = GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
     }
 
     public void FullscreenToggle()
@@ -151,8 +154,8 @@ public class UIManager : MonoBehaviour
 
     public void ColorblindToggle()
     {
-        // have the peg manager use the peg visuals as per the colourblind mode
-        m_pegManager.m_colorblindMode = m_colorblindToggle.isOn;
+        // store the new colorblind mode in the global variable
+        GlobalSettings.m_colorblindMode = m_colorblindToggle.isOn;
     }
 
     public void TogglePauseMenu()

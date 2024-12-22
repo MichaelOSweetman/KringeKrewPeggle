@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: SaveFile.cs
     Summary: manages the storage and reading of the player's save file
     Creation Date: 22/07/2024
-    Last Modified: 25/11/2024
+    Last Modified: 22/12/2024
 */
 public class SaveFile : MonoBehaviour
 {
@@ -35,7 +35,6 @@ public class SaveFile : MonoBehaviour
     public Toggle m_fullscreenToggle;
     public Toggle m_colorblindToggle;
     public int m_volumeSavePrecision = 2;
-	[HideInInspector] public int m_currentSaveID = 0;
 	string m_fileName = "SaveFile";
 	string m_fileType = ".txt";
 
@@ -94,7 +93,7 @@ public class SaveFile : MonoBehaviour
 	public void ReadSaveFile(int a_saveID = 0)
 	{
 		// store that the active save file is now this file
-		m_currentSaveID = a_saveID;
+		GlobalSettings.m_currentSaveID = a_saveID;
 
 		// if the save file exists
 		if (File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType))
