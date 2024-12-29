@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 16/12/2024
+    Last Modified: 30/12/2024
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -984,6 +984,9 @@ public class PlayerControls : MonoBehaviour
         // if the current game state is Turn Set Up
         if (m_currentGameState == GameState.TurnSetUp)
         {
+            // enable the ball trajectory line
+            m_ballTrajectory.ShowLine(true);
+
             // if the power should be set up this turn
             if (m_setUpPowerNextTurn)
             {
@@ -999,9 +1002,7 @@ public class PlayerControls : MonoBehaviour
                 // set the Resolve Power Next Turn flag to false as the power has now been resolved
                 m_resolvePowerNextTurn = false;
             }
-
-            // enable the ball trajectory line
-            m_ballTrajectory.ShowLine(true);
+            
             // change the game state to shoot
             m_currentGameState = GameState.Shoot;
         }

@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: MainMenuManager.cs
     Summary: Manages the UI of the main menu screen
     Creation Date: 03/11/2024
-    Last Modified: 22/12/2024
+    Last Modified: 30/12/2024
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -23,12 +23,14 @@ public class MainMenuManager : MonoBehaviour
     public GameObject m_optionsMenu;
     public GameObject m_changeSaveMenu;
 
-    [Header("Options")]
+    [Header("UI Components")]
     public Slider m_musicVolumeSlider;
     public Slider m_feverVolumeSlider;
     public Slider m_soundEffectVolumeSlider;
     public Toggle m_fullscreenToggle;
     public Toggle m_colorblindToggle;
+    public Button m_navigateLeft;
+    public Button m_navigateRight;
 
     [Header("Saves")]
     public SaveFile m_saveFile;
@@ -46,6 +48,10 @@ public class MainMenuManager : MonoBehaviour
     public string m_adventureHoverText = "Continue your adventure";
     public string m_quickPlayHoverText = "Play individual levels that you have unlocked in Adventure!";
 
+    [Header("Stage Text")]
+    public Text m_stageNumberText;
+    public string m_stageNumberBaseText = "STAGE ";
+    public string[] m_writtenNumbers;
 
     [Header("Other")]
     public int m_GameplaySceneID = 0;
@@ -182,6 +188,38 @@ public class MainMenuManager : MonoBehaviour
 
         // load the Gameplay scene
         SceneManager.LoadSceneAsync(m_GameplaySceneID);
+    }
+
+    public void RandomLevel()
+    {
+        // TEMP limit to levels completed in adventure
+
+        // get a random level set
+        GlobalSettings.m_currentLevelSetID = Random.Range(0, GlobalSettings.m_levelSetCount - 1);
+        // get a random level
+        GlobalSettings.m_currentLevelID = Random.Range(0, GlobalSettings.m_levelsPerSet - 1);
+        // load the gameplay scene in quickplay mode
+        LoadGameplayScene(false);
+    }
+
+    public void NavigateLevelSet(int a_modifier)
+    {
+        // if the new level set ID would be within valid bounds
+        if (GlobalSettings.m_currentLevelSetID + a_modifier >= 0 && GlobalSettings.m_currentLevelSetID < GlobalSettings.m_levelSetCount)
+        {
+            // set the level set ID to the new value
+            GlobalSettings.m_currentLevelSetID += a_modifier;
+
+            // TEMP update level images
+
+            // update stage number text
+            m_stageNumberText.text = m_stageNumberBaseText + m_writtenNumbers[GlobalSettings.m_currentLevelSetID];
+
+            // enable/disable the navigate buttons depending on if there is a level set in that direction of the current level set
+            m_navigateLeft.interactable = (GlobalSettings.m_currentLevelSetID > 0);
+            m_navigateRight.interactable = (GlobalSettings.m_currentLevelSetID < GlobalSettings.m_levelSetCount - 1);
+
+        }
     }
 
     public void SelectLevel(int a_levelID)

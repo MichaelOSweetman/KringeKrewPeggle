@@ -3469,7 +3469,6 @@ MonoBehaviour:
   m_fullscreenToggle: {fileID: 476794879}
   m_colorblindToggle: {fileID: 1907779088}
   m_volumeSavePrecision: 2
-  m_currentSaveID: 0
 --- !u!1 &242558810
 GameObject:
   m_ObjectHideFlags: 0
@@ -27219,7 +27218,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1779825543
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31524,7 +31523,6 @@ MonoBehaviour:
   m_hitPurplePegColor: {r: 0.6095308, g: 0.33459416, b: 0.6886792, a: 1}
   m_greenPegColor: {r: 0, g: 0.41509432, b: 0.021598779, a: 1}
   m_hitGreenPegColor: {r: 0.18841223, g: 0.5471698, b: 0.20871924, a: 1}
-  m_colorblindMode: 0
   m_startingOrangePegCount: 15
   m_startingGreenPegCount: 2
   m_pegScoreTextPrefab: {fileID: 7456070119279739998, guid: 6bf64a015dd01324aa63a8bf0c7f104a, type: 3}

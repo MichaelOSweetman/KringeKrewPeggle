@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 22/12/2024
+    Last Modified: 30/12/2024
 */
 public class UIManager : MonoBehaviour
 {
@@ -46,6 +46,9 @@ public class UIManager : MonoBehaviour
 
         // TEMP
         // set corresponding art assets for character, victory music, etc
+
+        // enable the player controls
+        m_playerControls.enabled = true;
 
         // set the character select screen to be inactive
         m_characterSelect.SetActive(false);
@@ -170,6 +173,23 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         m_saveFile = GetComponent<SaveFile>();
+
+        // initialise volume
+        UpdateMusicVolume();
+        UpdateFeverVolume();
+        UpdateSoundEffectVolume();
+
+        // initialse the color blind setting
+        m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
+
+        // if the game scene has been launched in quickplay mode
+        if (!GlobalSettings.m_adventureMode)
+        {
+            // show the character select menu
+            m_characterSelect.SetActive(true);
+            // disable the player controls
+            m_playerControls.enabled = false;
+        }
     }
 
     // Update is called once per frame
