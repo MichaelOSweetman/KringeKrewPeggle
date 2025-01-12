@@ -6,10 +6,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /*
-    File name: MainMenuManager.cs
-    Summary: Manages the UI of the main menu screen
-    Creation Date: 03/11/2024
-    Last Modified: 30/12/2024
+	File name: MainMenuManager.cs
+	Summary: Manages the UI of the main menu screen
+	Creation Date: 03/11/2024
+	Last Modified: 06/01/2025
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -205,10 +205,10 @@ public class MainMenuManager : MonoBehaviour
     public void NavigateLevelSet(int a_modifier)
     {
         // if the new level set ID would be within valid bounds
-        if (GlobalSettings.m_currentLevelSetID + a_modifier >= 0 && GlobalSettings.m_currentLevelSetID < GlobalSettings.m_levelSetCount)
+        if (GlobalSettings.m_currentStageID + a_modifier >= 0 && GlobalSettings.m_currentStageID < GlobalSettings.m_stageCount)
         {
             // set the level set ID to the new value
-            GlobalSettings.m_currentLevelSetID += a_modifier;
+            GlobalSettings.m_currentStageID += a_modifier;
 
             // TEMP update level images
 
@@ -224,8 +224,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void SelectLevel(int a_levelID)
     {
-        // TEMP determine level set from page
-        
         // set the level ID to load in the gamplay scene
         GlobalSettings.m_currentLevelID = a_levelID;
         // load the gameplay scene in quickplay mode
@@ -272,3 +270,4 @@ public class MainMenuManager : MonoBehaviour
         m_changeSaveButton.SetActive(false);
     }
 }
+

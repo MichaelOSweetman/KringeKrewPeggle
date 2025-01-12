@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /*
-    File name: PegManager.cs
-    Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
-    Creation Date: 09/10/2023
-    Last Modified: 22/12/2024
+	File name: PegManager.cs
+	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
+	Creation Date: 09/10/2023
+	Last Modified: 06/01/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -24,9 +24,12 @@ public class PegManager : MonoBehaviour
     public PlayerControls m_playerControls;
 
     [Header("Levels")]
-    public GameObject m_currentLevel;
-    GameObject m_currentLevelSet;
-    int m_levelPegCount;
+    //public GameObject m_currentLevel;
+    //GameObject m_currentLevelSet;
+    //int m_levelPegCount;
+    public GameObject[,] m_levels;
+    int m_currentStageID = 0;
+    int m_currentLevelID = 0;
 
     [Header("Peg Visuals")]
     public Color m_bluePegColor;
@@ -59,7 +62,7 @@ public class PegManager : MonoBehaviour
     int m_scoreMultiplierIndex = 0;
     int m_currentShootPhaseScore = 0;
     [HideInInspector] public int m_score = 0;
-	
+
     [Header("Free Ball From Score")]
     public RectTransform m_freeBallProgressBar;
     public RawImage m_freeBallProgressBarBackground;
@@ -73,14 +76,14 @@ public class PegManager : MonoBehaviour
     public GameObject m_bucket;
     public GameObject m_victoryBuckets;
     public GameObject m_nearVictoryDetector;
-	
-	[Header("Sound")]
-	public AudioSource m_pegAudioSource;
-	public AudioClip[] m_pegHitSounds;
-	int m_pegHitPitchIndex = 0;
+
+    [Header("Sound")]
+    public AudioSource m_pegAudioSource;
+    public AudioClip[] m_pegHitSounds;
+    int m_pegHitPitchIndex = 0;
     public AudioClip m_pegRemoveSound;
-	
-	
+
+
     [HideInInspector] public List<Peg> m_pegs;
     Queue<Peg> m_hitPegs;
     List<Peg> m_activeBluePegs;
@@ -94,7 +97,7 @@ public class PegManager : MonoBehaviour
     {
         // set the peg's pegtype
         a_peg.m_pegType = a_pegType;
-        
+
         // if the peg was hit
         if (a_hit)
         {
@@ -137,43 +140,43 @@ public class PegManager : MonoBehaviour
         }
     }
 
-	public int GetAverageActivePegScore()
-	{
-		int totalScore = 0;
-		int activePegCount = 0;
-		
-		// loop for each peg
-		for (int i = 0; i < m_pegs.Count; ++i)
-		{
-			// if the peg is active and not hit
-			if (m_pegs[i] != null && !m_pegs[i].m_hit)
-			{
+    public int GetAverageActivePegScore()
+    {
+        int totalScore = 0;
+        int activePegCount = 0;
+
+        // loop for each peg
+        for (int i = 0; i < m_pegs.Count; ++i)
+        {
+            // if the peg is active and not hit
+            if (m_pegs[i] != null && !m_pegs[i].m_hit)
+            {
                 // increase the active peg counter by 1
                 ++activePegCount;
-				
-				// add score to the total depending on its peg type
-				switch (m_pegs[i].m_pegType)
-				{
-					case PegType.Blue:
-					totalScore += m_baseBluePegScore;
-						break;
-					case PegType.Orange:
-					totalScore += m_baseOrangePegScore;
-						break;
-					case PegType.Purple:
-					totalScore += m_basePurplePegScore;
-						break;
-					case PegType.Green:
-					totalScore += m_baseGreenPegScore;
-						break;
-	
-				}
-			}
-		}
-		
-		// return the average score or 0 if no active pegs were found
-		return (activePegCount > 0) ? totalScore/activePegCount : 0;
-	}
+
+                // add score to the total depending on its peg type
+                switch (m_pegs[i].m_pegType)
+                {
+                    case PegType.Blue:
+                        totalScore += m_baseBluePegScore;
+                        break;
+                    case PegType.Orange:
+                        totalScore += m_baseOrangePegScore;
+                        break;
+                    case PegType.Purple:
+                        totalScore += m_basePurplePegScore;
+                        break;
+                    case PegType.Green:
+                        totalScore += m_baseGreenPegScore;
+                        break;
+
+                }
+            }
+        }
+
+        // return the average score or 0 if no active pegs were found
+        return (activePegCount > 0) ? totalScore / activePegCount : 0;
+    }
 
     public void AddScore(int a_scoreIncrease)
     {
@@ -361,19 +364,19 @@ public class PegManager : MonoBehaviour
             // position the text using the screen position of the hit peg and the text's position offset as stored in the prefab
             scoreText.transform.position = m_camera.WorldToScreenPoint(m_pegs[a_pegID].transform.position) + m_pegScoreTextPrefab.transform.position;
 
-			// move the audio source to the hit peg
-			m_pegAudioSource.transform.position = m_pegs[a_pegID].transform.position;
-			// set the sound of the audio source to the current peg hit sound
-			m_pegAudioSource.clip = m_pegHitSounds[m_pegHitPitchIndex];
-			// play the audio
-			m_pegAudioSource.Play();
-			// if this peg hit sound is not the last
-			if (m_pegHitPitchIndex < m_pegHitSounds.Length - 1)
-			{
-				// increase the peg hit pitch index so the next audio clip plays next time a hit occurs
-				++m_pegHitPitchIndex;
-			}
-			
+            // move the audio source to the hit peg
+            m_pegAudioSource.transform.position = m_pegs[a_pegID].transform.position;
+            // set the sound of the audio source to the current peg hit sound
+            m_pegAudioSource.clip = m_pegHitSounds[m_pegHitPitchIndex];
+            // play the audio
+            m_pegAudioSource.Play();
+            // if this peg hit sound is not the last
+            if (m_pegHitPitchIndex < m_pegHitSounds.Length - 1)
+            {
+                // increase the peg hit pitch index so the next audio clip plays next time a hit occurs
+                ++m_pegHitPitchIndex;
+            }
+
             // update the score for this shoot phase with the score gained from the hit peg
             UpdatePhaseScore(m_hitPegScore);
 
@@ -398,27 +401,27 @@ public class PegManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        // if the current level is the last level of its set
-        if (m_currentLevel.transform.GetSiblingIndex() >= m_currentLevelSet.transform.childCount - 1)
+        // if the current level is the last level of its stage
+        if (m_currentLevelID >= m_levels[].count - 1)
         {
-            // if the current level is the last level of the last level set
-            if (m_currentLevelSet.transform.GetSiblingIndex() >= transform.childCount - 1)
+            // if the current level is the last level of the last stagw
+            if (m_currentStageID >= m_levels.count - 1)
             {
-                // load the first level of the first level set
-                LoadLevel(transform.GetChild(0).GetChild(0).gameObject);
+                // load the first level of the first stage
+                LoadLevel(0, 0);
             }
-            // if the current level is not the last level of the last level set
+            // if the current level is not the last level of the last stage
             else
             {
-                // get the first child of the next level set and load it as the current level
-                LoadLevel(transform.GetChild(m_currentLevelSet.transform.GetSiblingIndex() + 1).GetChild(0).gameObject);
+                // load the first level of the next stage
+                LoadLevel(m_currentStageID + 1, 0);
             }
         }
         // if the current level is not the last level of its set
         else
         {
-            // get the next child of the current level set and load it as the current level
-            LoadLevel(m_currentLevelSet.transform.GetChild(m_currentLevel.transform.GetSiblingIndex() + 1).gameObject);
+            // load the levwl of the next levelcbut the current stage
+            LoadLevel(m_currentStageID, m_currentLevelID + 1);
         }
     }
 
@@ -446,7 +449,7 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    public void LoadLevel(GameObject a_newLevel)
+    public void LoadLevel(int a_stageID, int a_levelID)
     {
         // ensure all the turn score trackers are at their initial state
         ResetTurnScore();
@@ -473,30 +476,31 @@ public class PegManager : MonoBehaviour
         m_bucket.SetActive(true);
 
         // store the argument gameobject as the current level
-        m_currentLevel = a_newLevel;
-        m_currentLevelSet = m_currentLevel.transform.parent.gameObject;
+        m_currentStageID = a_stageID;
+        m_currentLevelID = a_levelID;
 
-        // make each set of levels inactive
-        for (int i = 0; i < transform.childCount; ++i)
+        // make each stage inactive
+        for (int i = 0; i < m_levels[].count; ++i)
         {
-            transform.GetChild(i).gameObject.SetActive(false);
+            // set the stage gameobject, which is the parent transform of its levels, to be inactive
+            m_levels[i, 0].transform.parent.SetActive(false);
         }
 
         // make the current level set active
-        m_currentLevelSet.SetActive(true);
+        m_levels[m_currentStageID][0].transform.parent.SetActive(true);
 
         // make each level within the current level set inactive
-        for (int i = 0; i < m_currentLevel.transform.parent.childCount; ++i)
+        for (int i = 0; i < m_levels[m_currentStageID].count; ++i)
         {
-            m_currentLevelSet.transform.GetChild(i).gameObject.SetActive(false);
+            m_levels[m_currentStageID, i].SetActive(false);
         }
 
         // make the current level active
-        m_currentLevel.SetActive(true);
+        m_levels[m_currentStageID, m_currentLevelID].SetActive(true);
 
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
-        SearchForPegs(m_currentLevel.transform);
+        SearchForPegs(m_levels[m_currentStageID, m_currentLevelID].transform);
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -567,8 +571,12 @@ public class PegManager : MonoBehaviour
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
 
+        //initialise the levels array
+        m_levels = new GameObject[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
+
+
         // load the current level
-        LoadLevel(m_currentLevel);
+        LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
     }
 
     // Update is called once per frame
@@ -612,3 +620,4 @@ public class PegManager : MonoBehaviour
         //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
+
