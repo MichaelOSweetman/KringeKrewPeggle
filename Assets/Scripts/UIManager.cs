@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 30/12/2024
+    Last Modified: 13/01/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -81,10 +81,10 @@ public class UIManager : MonoBehaviour
         if (a_won)
         {
             // if the stored highscore for this level is lower than or equal to the scored achieved
-           if (m_saveFile.m_highScores[m_pegManager.m_currentLevel.transform.parent.GetSiblingIndex(), m_pegManager.m_currentLevel.transform.GetSiblingIndex()] <= m_pegManager.m_score)
+           if (m_saveFile.m_highScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
             {
                 // update the highscore
-                m_saveFile.m_highScores[m_pegManager.m_currentLevel.transform.parent.GetSiblingIndex(), m_pegManager.m_currentLevel.transform.GetSiblingIndex()] = m_pegManager.m_score;
+                m_saveFile.m_highScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
                 // store that the player has achieved a new high score
                 m_newHighScore = true;
             }
@@ -126,7 +126,7 @@ public class UIManager : MonoBehaviour
         // reactivate player controls
         m_playerControls.enabled = true;
         // reload the current level
-        m_pegManager.LoadLevel(m_pegManager.m_currentLevel);
+        m_pegManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
         // hide the try again screen
         m_tryAgain.SetActive(false);
     }

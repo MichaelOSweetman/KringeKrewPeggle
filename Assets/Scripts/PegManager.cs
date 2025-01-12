@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 06/01/2025
+	Last Modified: 13/01/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -24,12 +24,8 @@ public class PegManager : MonoBehaviour
     public PlayerControls m_playerControls;
 
     [Header("Levels")]
-    //public GameObject m_currentLevel;
-    //GameObject m_currentLevelSet;
-    //int m_levelPegCount;
+    int m_levelPegCount;
     public GameObject[,] m_levels;
-    int m_currentStageID = 0;
-    int m_currentLevelID = 0;
 
     [Header("Peg Visuals")]
     public Color m_bluePegColor;
@@ -402,10 +398,10 @@ public class PegManager : MonoBehaviour
     public void LoadNextLevel()
     {
         // if the current level is the last level of its stage
-        if (m_currentLevelID >= m_levels[].count - 1)
+        if (GlobalSettings.m_currentLevelID >= GlobalSettings.m_levelsPerStage - 1)
         {
-            // if the current level is the last level of the last stagw
-            if (m_currentStageID >= m_levels.count - 1)
+            // if the current stage is the last stage
+            if (GlobalSettings.m_currentStageID >= GlobalSettings.m_stageCount - 1)
             {
                 // load the first level of the first stage
                 LoadLevel(0, 0);
@@ -414,14 +410,14 @@ public class PegManager : MonoBehaviour
             else
             {
                 // load the first level of the next stage
-                LoadLevel(m_currentStageID + 1, 0);
+                LoadLevel(GlobalSettings.m_currentStageID + 1, 0);
             }
         }
-        // if the current level is not the last level of its set
+        // if the current level is not the last level of its stage
         else
         {
-            // load the levwl of the next levelcbut the current stage
-            LoadLevel(m_currentStageID, m_currentLevelID + 1);
+            // load the level of the next level but the current stage
+            LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID + 1);
         }
     }
 
@@ -476,31 +472,31 @@ public class PegManager : MonoBehaviour
         m_bucket.SetActive(true);
 
         // store the argument gameobject as the current level
-        m_currentStageID = a_stageID;
-        m_currentLevelID = a_levelID;
+        GlobalSettings.m_currentStageID = a_stageID;
+        GlobalSettings.m_currentLevelID = a_levelID;
 
         // make each stage inactive
-        for (int i = 0; i < m_levels[].count; ++i)
+        for (int i = 0; i < GlobalSettings.m_stageCount; ++i)
         {
             // set the stage gameobject, which is the parent transform of its levels, to be inactive
-            m_levels[i, 0].transform.parent.SetActive(false);
+            m_levels[i, 0].transform.parent.gameObject.SetActive(false);
         }
 
-        // make the current level set active
-        m_levels[m_currentStageID][0].transform.parent.SetActive(true);
+        // make the current stage active
+        m_levels[GlobalSettings.m_currentStageID, 0].transform.parent.gameObject.SetActive(true);
 
-        // make each level within the current level set inactive
-        for (int i = 0; i < m_levels[m_currentStageID].count; ++i)
+        // make each level within the current stage inactive
+        for (int i = 0; i < GlobalSettings.m_levelsPerStage; ++i)
         {
-            m_levels[m_currentStageID, i].SetActive(false);
+            m_levels[GlobalSettings.m_currentStageID, i].SetActive(false);
         }
 
         // make the current level active
-        m_levels[m_currentStageID, m_currentLevelID].SetActive(true);
+        m_levels[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].SetActive(true);
 
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
-        SearchForPegs(m_levels[m_currentStageID, m_currentLevelID].transform);
+        SearchForPegs(m_levels[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].transform);
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -573,6 +569,8 @@ public class PegManager : MonoBehaviour
 
         //initialise the levels array
         m_levels = new GameObject[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
+
+
 
 
         // load the current level

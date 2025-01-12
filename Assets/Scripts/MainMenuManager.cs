@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 06/01/2025
+	Last Modified: 13/01/2025
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -194,37 +194,37 @@ public class MainMenuManager : MonoBehaviour
     {
         // TEMP limit to levels completed in adventure
 
-        // get a random level set
-        GlobalSettings.m_currentLevelSetID = Random.Range(0, GlobalSettings.m_levelSetCount - 1);
+        // get a random stage
+        GlobalSettings.m_currentStageID = Random.Range(0, GlobalSettings.m_stageCount - 1);
         // get a random level
-        GlobalSettings.m_currentLevelID = Random.Range(0, GlobalSettings.m_levelsPerSet - 1);
+        GlobalSettings.m_currentLevelID = Random.Range(0, GlobalSettings.m_levelsPerStage - 1);
         // load the gameplay scene in quickplay mode
         LoadGameplayScene(false);
     }
 
-    public void NavigateLevelSet(int a_modifier)
+    public void NavigateStage(int a_modifier)
     {
-        // if the new level set ID would be within valid bounds
+        // if the new stage ID would be within valid bounds
         if (GlobalSettings.m_currentStageID + a_modifier >= 0 && GlobalSettings.m_currentStageID < GlobalSettings.m_stageCount)
         {
-            // set the level set ID to the new value
+            // set the stage ID to the new value
             GlobalSettings.m_currentStageID += a_modifier;
 
             // TEMP update level images
 
             // update stage number text
-            m_stageNumberText.text = m_stageNumberBaseText + m_writtenNumbers[GlobalSettings.m_currentLevelSetID];
+            m_stageNumberText.text = m_stageNumberBaseText + m_writtenNumbers[GlobalSettings.m_currentStageID];
 
-            // enable/disable the navigate buttons depending on if there is a level set in that direction of the current level set
-            m_navigateLeft.interactable = (GlobalSettings.m_currentLevelSetID > 0);
-            m_navigateRight.interactable = (GlobalSettings.m_currentLevelSetID < GlobalSettings.m_levelSetCount - 1);
+            // enable/disable the navigate buttons depending on if there is a stage in that direction of the current stage
+            m_navigateLeft.interactable = (GlobalSettings.m_currentStageID > 0);
+            m_navigateRight.interactable = (GlobalSettings.m_currentStageID < GlobalSettings.m_stageCount - 1);
 
         }
     }
 
     public void SelectLevel(int a_levelID)
     {
-        // set the level ID to load in the gamplay scene
+        // set the level ID to load in the gameplay scene
         GlobalSettings.m_currentLevelID = a_levelID;
         // load the gameplay scene in quickplay mode
         LoadGameplayScene(false);

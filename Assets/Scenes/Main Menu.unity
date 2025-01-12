@@ -614,7 +614,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1293811210}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: NavigateLevelSet
+        m_MethodName: NavigateStage
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1149,7 +1149,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1293811210}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: NavigateLevelSet
+        m_MethodName: NavigateStage
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5391,8 +5391,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_uiManager: {fileID: 0}
   m_mainMenuManager: {fileID: 1293811210}
-  m_levelSetCount: 2
-  m_levelsPerSet: 3
   m_saveFilePath: Saves/
   m_maxSaves: 3
   m_SaveFileCount: 0

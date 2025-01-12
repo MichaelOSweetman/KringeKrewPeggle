@@ -12,7 +12,7 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 06/01/2025
+	Last Modified: 13/01/2025
 */
 public class SaveFile : MonoBehaviour
 {
@@ -80,7 +80,7 @@ public class SaveFile : MonoBehaviour
                 line += m_highScores[i, j].ToString() + ",";
             }
 
-            // store the high scores of the level set in the save file
+            // store the high scores of the stage in the save file
             m_streamWriter.WriteLine(line);
         }
 
@@ -230,7 +230,7 @@ public class SaveFile : MonoBehaviour
         // determine the save file location using the application's save location and the specified location for the save file
         m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
         // initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[m_levelSetCount, m_levelsPerSet];
+        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
 
         string saveFileName = "";
 

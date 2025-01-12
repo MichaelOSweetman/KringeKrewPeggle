@@ -7,7 +7,7 @@ using UnityEngine;
     File name: GlobalSettings.cs
     Summary: Stores settings and variables that need to be passed between scenes
     Creation Date: 22/12/2024
-    Last Modified: 06/01/2025
+    Last Modified: 13/01/2025
 */
 public class GlobalSettings : MonoBehaviour
 {
@@ -20,5 +20,5 @@ public class GlobalSettings : MonoBehaviour
     [HideInInspector] public static int m_currentStageID = 0;
     [HideInInspector] public static int m_currentLevelID = 0;
     [HideInInspector] public static int m_stageCount = 2;
-    [HideInInspector] public static int m_levelsPerSet = 3;
+    [HideInInspector] public static int m_levelsPerStage = 3;
 }
