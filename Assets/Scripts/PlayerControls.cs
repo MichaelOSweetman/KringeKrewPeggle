@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 30/12/2024
+    Last Modified: 20/01/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -56,7 +56,7 @@ public class PlayerControls : MonoBehaviour
     [Header("Green Pegs")]
     public Text m_PowerChargesText;
     public delegate void GreenPegPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition);
-    public GreenPegPower m_greenPegPower;
+    public GreenPegPower m_greenPegPower = null;
     [HideInInspector] public int m_powerCharges = 0;
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     bool m_resolvePowerNextTurn = false;
@@ -174,7 +174,6 @@ public class PlayerControls : MonoBehaviour
                 m_greenPegPower = BenPower;
                 break;
         }
-
     }
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
@@ -267,7 +266,7 @@ public class PlayerControls : MonoBehaviour
         Vector3 minCorner = new Vector3(m_playAreaBounds.rect.x, m_playAreaBounds.rect.y, 1.0f);
         Vector3 maxCorner = new Vector3(m_playAreaBounds.rect.xMax, m_playAreaBounds.rect.yMax, 1.0f);
 
-        print(cursorPosition + "| " + (m_playAreaBounds.transform.position + minCorner) + "| " + (m_playAreaBounds.transform.localPosition + maxCorner));
+        //print(cursorPosition + "| " + (m_playAreaBounds.transform.position + minCorner) + "| " + (m_playAreaBounds.transform.localPosition + maxCorner));
 
         // return whether the cursor is within the play area bounds (converted to screen space)
         return
@@ -298,6 +297,9 @@ public class PlayerControls : MonoBehaviour
 
         // turn on the LookAtCursor component of the launcher
         m_LauncherLookControls.enabled = true;
+
+        // turn on the ball trajectory
+        m_ballTrajectory.ShowLine(true);
 
         // reduce the amount of power charges
         ModifyPowerCharges(-1);
@@ -921,8 +923,12 @@ public class PlayerControls : MonoBehaviour
 		m_defaultPurplePegScore = m_pegManager.m_basePurplePegScore;
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
-        // TEMP
-        m_greenPegPower = EthenPower;
+        // if the green peg power has not been set
+        if (m_greenPegPower == null)
+        {
+            // set it to the default power for the stage
+            SetGreenPegPower(m_pegManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID);
+        }
     }
 
     private void FixedUpdate()

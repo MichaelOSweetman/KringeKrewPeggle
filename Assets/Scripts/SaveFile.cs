@@ -12,11 +12,10 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 13/01/2025
+	Last Modified: 20/01/2025
 */
 public class SaveFile : MonoBehaviour
 {
-    public UIManager m_uiManager = null;
     public MainMenuManager m_mainMenuManager = null;
     public string m_saveFilePath = "";
     public int m_maxSaves = 3;
@@ -234,23 +233,27 @@ public class SaveFile : MonoBehaviour
 
         string saveFileName = "";
 
-        // loop for each save slot
-        for (int i = 0; i < m_maxSaves; ++i)
+        // if this is the main menu
+        if (m_mainMenuManager != null)
         {
-            // if a file exists for this slot
-            if (File.Exists(m_fullSavePath + m_fileName + i + m_fileType))
+            // loop for each save slot
+            for (int i = 0; i < m_maxSaves; ++i)
             {
-                // open the file and read the first line
-                m_streamReader = File.OpenText(m_fullSavePath + m_fileName + i + m_fileType);
-                saveFileName = m_streamReader.ReadLine();
-
-                // if the line is not empty
-                if (saveFileName != null && saveFileName != "")
+                // if a file exists for this slot
+                if (File.Exists(m_fullSavePath + m_fileName + i + m_fileType))
                 {
-                    // initialise the select save file button for this save file
-                    m_mainMenuManager.UpdateSaveFileButtonText(i, saveFileName);
-                    // close the file for reading
-                    m_streamReader.Dispose();
+                    // open the file and read the first line
+                    m_streamReader = File.OpenText(m_fullSavePath + m_fileName + i + m_fileType);
+                    saveFileName = m_streamReader.ReadLine();
+
+                    // if the line is not empty
+                    if (saveFileName != null && saveFileName != "")
+                    {
+                        // initialise the select save file button for this save file
+                        m_mainMenuManager.UpdateSaveFileButtonText(i, saveFileName);
+                        // close the file for reading
+                        m_streamReader.Dispose();
+                    }
                 }
             }
         }

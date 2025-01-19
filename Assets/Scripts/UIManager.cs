@@ -41,14 +41,14 @@ public class UIManager : MonoBehaviour
 
     public void LockInCharacter()
     {
+        // enable the player controls
+        m_playerControls.enabled = true;
+
         // have player controls set the green peg power
         m_playerControls.SetGreenPegPower(m_selectedCharacterID);
 
         // TEMP
         // set corresponding art assets for character, victory music, etc
-
-        // enable the player controls
-        m_playerControls.enabled = true;
 
         // set the character select screen to be inactive
         m_characterSelect.SetActive(false);

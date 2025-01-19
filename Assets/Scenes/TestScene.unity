@@ -3454,10 +3454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd22f703167cde4c8a0b91744b81bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uiManager: {fileID: 241605737}
   m_mainMenuManager: {fileID: 0}
-  m_levelSetCount: 2
-  m_levelsPerSet: 3
   m_saveFilePath: Saves/
   m_maxSaves: 3
   m_SaveFileCount: 0
@@ -4601,7 +4598,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 6
   m_minSpeed: 1
   m_secondPosition: {x: 4, y: -4.5, z: 0}
@@ -7257,7 +7253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
@@ -11015,7 +11010,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
@@ -12910,7 +12904,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 0.5
   m_secondPosition: {x: -2.5, y: -2, z: 0}
@@ -16467,7 +16460,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1, y: -3.7, z: 0}
@@ -30351,7 +30343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1.5, y: -1.44, z: 0}
@@ -30875,7 +30866,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1, y: -3.7, z: 0}
@@ -31253,7 +31243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf45ebff2418b14f8f77c631aa489ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
   m_maxSpeed: 3
   m_minSpeed: 1
   m_secondPosition: {x: 1, y: -3.7, z: 0}
@@ -31514,7 +31503,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
-  m_currentLevel: {fileID: 669709419}
+  m_stages:
+  - m_stageContainer: {fileID: 198342535}
+    m_levels:
+    - {fileID: 669709419}
+    - {fileID: 1460324340}
+    - {fileID: 242558810}
+    m_defaultPowerID: 6
+  - m_stageContainer: {fileID: 1196364581}
+    m_levels:
+    - {fileID: 1310540538}
+    m_defaultPowerID: 6
   m_bluePegColor: {r: 0, g: 0.5019608, b: 1, a: 1}
   m_hitBluePegColor: {r: 0.3443396, g: 0.6734554, b: 1, a: 1}
   m_orangePegColor: {r: 0.8301887, g: 0.37304664, b: 0, a: 1}

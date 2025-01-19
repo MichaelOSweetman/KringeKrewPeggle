@@ -6,11 +6,10 @@ using UnityEngine;
     File name: MoveToPoints.cs
     Summary: Automatically and repeatedly moves an object between 2 points
     Creation Date: 22/01/2024
-    Last Modified: 06/05/2024
+    Last Modified: 20/01/2025
 */
 public class MoveToPoints : MonoBehaviour
 {
-    public PlayerControls m_playerControls;
     public float m_maxSpeed = 10.0f;
     public float m_minSpeed = 0.01f;
     public Vector3 m_secondPosition = Vector3.zero;

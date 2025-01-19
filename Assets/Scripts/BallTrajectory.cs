@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallTrajectory.cs
     Summary: Uses a line renderer to show the player the predicted path of the ball if it were fired this frame
     Creation Date: 02/12/2024
-    Last Modified: 09/12/2024
+    Last Modified: 20/01/2025
 */
 public class BallTrajectory : MonoBehaviour
 {
@@ -72,8 +72,5 @@ public class BallTrajectory : MonoBehaviour
 
         // determine the amount of time the ball will travel along it's path before the next point is created, given the amount of points and the max length of the line
         m_timeStep = m_maxLineLength / m_linePointCount / 10.0f;
-        print("point count: " + m_linePointCount);
-        print("max length: " + m_maxLineLength);
-        print("point distance: " + m_timeStep);
     }
 }

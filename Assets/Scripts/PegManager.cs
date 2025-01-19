@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 13/01/2025
+	Last Modified: 20/01/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -20,12 +20,20 @@ public class PegManager : MonoBehaviour
         Green,
     }
 
+    [System.Serializable] public struct Stage
+    {
+        public GameObject m_stageContainer;
+        public GameObject[] m_levels;
+        public int m_defaultPowerID;
+    }
+
+
     [Header("Player Controls")]
     public PlayerControls m_playerControls;
 
     [Header("Levels")]
+    public Stage[] m_stages;
     int m_levelPegCount;
-    public GameObject[,] m_levels;
 
     [Header("Peg Visuals")]
     public Color m_bluePegColor;
@@ -398,10 +406,10 @@ public class PegManager : MonoBehaviour
     public void LoadNextLevel()
     {
         // if the current level is the last level of its stage
-        if (GlobalSettings.m_currentLevelID >= GlobalSettings.m_levelsPerStage - 1)
+        if (GlobalSettings.m_currentLevelID > m_stages[GlobalSettings.m_currentStageID].m_levels.Length)
         {
             // if the current stage is the last stage
-            if (GlobalSettings.m_currentStageID >= GlobalSettings.m_stageCount - 1)
+            if (GlobalSettings.m_currentStageID > m_stages.Length)
             {
                 // load the first level of the first stage
                 LoadLevel(0, 0);
@@ -476,27 +484,27 @@ public class PegManager : MonoBehaviour
         GlobalSettings.m_currentLevelID = a_levelID;
 
         // make each stage inactive
-        for (int i = 0; i < GlobalSettings.m_stageCount; ++i)
+        for (int i = 0; i < m_stages.Length; ++i)
         {
             // set the stage gameobject, which is the parent transform of its levels, to be inactive
-            m_levels[i, 0].transform.parent.gameObject.SetActive(false);
+            m_stages[i].m_stageContainer.SetActive(false);
         }
 
         // make the current stage active
-        m_levels[GlobalSettings.m_currentStageID, 0].transform.parent.gameObject.SetActive(true);
+        m_stages[GlobalSettings.m_currentStageID].m_stageContainer.SetActive(true);
 
         // make each level within the current stage inactive
-        for (int i = 0; i < GlobalSettings.m_levelsPerStage; ++i)
+        for (int i = 0; i < m_stages[GlobalSettings.m_currentStageID].m_levels.Length; ++i)
         {
-            m_levels[GlobalSettings.m_currentStageID, i].SetActive(false);
+            m_stages[GlobalSettings.m_currentStageID].m_levels[i].SetActive(false);
         }
 
         // make the current level active
-        m_levels[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].SetActive(true);
+        m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].SetActive(true);
 
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
-        SearchForPegs(m_levels[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].transform);
+        SearchForPegs(m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].transform);
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -566,12 +574,6 @@ public class PegManager : MonoBehaviour
         // create an array to store the orange peg thresholds at which the score multiplier will increase, with the last value as unreachable
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
-
-        //initialise the levels array
-        m_levels = new GameObject[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
-
-
-
 
         // load the current level
         LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
