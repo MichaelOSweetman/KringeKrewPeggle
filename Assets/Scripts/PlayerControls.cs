@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 20/01/2025
+    Last Modified: 27/01/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -55,11 +55,14 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Green Pegs")]
     public Text m_PowerChargesText;
-    public delegate void GreenPegPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition);
-    public GreenPegPower m_greenPegPower = null;
+    //public delegate void GreenPegPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition);
+    //public GreenPegPower m_greenPegPower = null;
     [HideInInspector] public int m_powerCharges = 0;
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
-    bool m_resolvePowerNextTurn = false;
+    [HideInInspector] public bool m_resolvePowerNextTurn = false;
+    // TEMP
+    public GreenPegPower m_TEMP;
+
 
     [Header("Ben Power")]
     public int m_benPowerChargesGained = 1;
@@ -144,36 +147,37 @@ public class PlayerControls : MonoBehaviour
 
     public void SetGreenPegPower(int a_characterID)
     {
-        switch (a_characterID)
-        {
-            case 0:
-                m_greenPegPower = SweetsPower;
-                break;
-            case 1:
-                m_greenPegPower = JackPower;
-                break;
-            case 2:
-                m_greenPegPower = MatejaPower;
-                break;
-            case 3:
-                m_greenPegPower = PhoebePower;
-                break;
-            case 4:
-                m_greenPegPower = DanielPower;
-                break;
-            case 5:
-                m_greenPegPower = KevinPower;
-                break;
-            case 6:
-                m_greenPegPower = EthenPower;
-                break;
-            case 7:
-                m_greenPegPower = LokiPower;
-                break;
-            case 8:
-                m_greenPegPower = BenPower;
-                break;
-        }
+        // TEMP
+        //switch (a_characterID)
+        //{
+        //    case 0:
+        //        m_greenPegPower = SweetsPower;
+        //        break;
+        //    case 1:
+        //        m_greenPegPower = JackPower;
+        //        break;
+        //    case 2:
+        //        m_greenPegPower = MatejaPower;
+        //        break;
+        //    case 3:
+        //        m_greenPegPower = PhoebePower;
+        //        break;
+        //    case 4:
+        //        m_greenPegPower = DanielPower;
+        //        break;
+        //    case 5:
+        //        m_greenPegPower = KevinPower;
+        //        break;
+        //    case 6:
+        //        m_greenPegPower = EthenPower;
+        //        break;
+        //    case 7:
+        //        m_greenPegPower = LokiPower;
+        //        break;
+        //    case 8:
+        //        m_greenPegPower = BenPower;
+        //        break;
+        //}
     }
 
     void BenPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition)
@@ -824,20 +828,21 @@ public class PlayerControls : MonoBehaviour
         // tell the peg manager to resolve the turn
         m_pegManager.ResolveTurn();
 
+        // TEMP
         // if the power is the Phoebe power, there are power charges, and the bocconcini array has been initialised
-        if (m_greenPegPower == PhoebePower && m_powerCharges > 0 && m_bocconcinis != null)
-        {
-            // loop through the bocconcini list
-            for (int i = 0; i < m_bocconcinis.Count; ++i)
-            {
-                // if the bocconcini's parent peg is still active
-                if (m_bocconcinis[i].transform.parent.gameObject.activeSelf)
-                {
-                    // update the color of the boccocinis
-                    m_bocconcinis[i].CopyParentPegColor();
-                }
-            }
-        }
+        //if (m_greenPegPower == PhoebePower && m_powerCharges > 0 && m_bocconcinis != null)
+        //{
+        //    // loop through the bocconcini list
+        //    for (int i = 0; i < m_bocconcinis.Count; ++i)
+        //    {
+        //        // if the bocconcini's parent peg is still active
+        //        if (m_bocconcinis[i].transform.parent.gameObject.activeSelf)
+        //        {
+        //            // update the color of the boccocinis
+        //            m_bocconcinis[i].CopyParentPegColor();
+        //        }
+        //    }
+        //}
     }
 
     public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false)
@@ -885,9 +890,13 @@ public class PlayerControls : MonoBehaviour
         // reset the power charges
         m_powerCharges = 0;
         m_PowerChargesText.text = m_powerCharges.ToString();
-		
-		// reload the power
-		m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
+
+        // TEMP
+
+        // reload the power
+        m_TEMP.Reload();
+		//m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
+        
 
         // set the game state to the Turn Set Up phase
         m_currentGameState = GameState.TurnSetUp;
@@ -923,12 +932,15 @@ public class PlayerControls : MonoBehaviour
 		m_defaultPurplePegScore = m_pegManager.m_basePurplePegScore;
 		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
+        // TEMP
         // if the green peg power has not been set
-        if (m_greenPegPower == null)
-        {
-            // set it to the default power for the stage
-            SetGreenPegPower(m_pegManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID);
-        }
+        //if (m_greenPegPower == null)
+        //{
+        //    // set it to the default power for the stage
+        //    SetGreenPegPower(m_pegManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID);
+        //}
+
+        
     }
 
     private void FixedUpdate()
@@ -976,16 +988,17 @@ public class PlayerControls : MonoBehaviour
             }
         }
 
+        // TEMP
         // if the green peg power is Kevin's and the show sniper scope button has been released
-        if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
-        {
-            // tell the camera to return to its default state
-            m_cameraZoom.ReturnToDefault();
-            // hide the scope overlay
-            m_scopeOverlay.SetActive(false);
-            // reset the time scale
-            ModifyTimeScale(m_defaultTimeScale);
-        }
+        //if (m_greenPegPower == KevinPower && Input.GetButtonUp("Show Sniper Scope"))
+        //{
+        //    // tell the camera to return to its default state
+        //    m_cameraZoom.ReturnToDefault();
+        //    // hide the scope overlay
+        //    m_scopeOverlay.SetActive(false);
+        //    // reset the time scale
+        //    ModifyTimeScale(m_defaultTimeScale);
+        //}
 
         // if the current game state is Turn Set Up
         if (m_currentGameState == GameState.TurnSetUp)
@@ -996,15 +1009,23 @@ public class PlayerControls : MonoBehaviour
             // if the power should be set up this turn
             if (m_setUpPowerNextTurn)
             {
+                // TEMP
+                m_TEMP.SetUp();
+                /*
                 // set up the power for this turn
                 m_greenPegPower(PowerFunctionMode.SetUp, Vector3.zero);
+                */
                 // set the Set Up Power Next Turn flag to false as the power has now been set up
                 m_setUpPowerNextTurn = false;
             }
             else if (m_resolvePowerNextTurn)
             {
+                // TEMP
+                m_TEMP.Resolve();
+                /*
                 // resolve the power
                 m_greenPegPower(PowerFunctionMode.Resolve, Vector3.zero);
+                */
                 // set the Resolve Power Next Turn flag to false as the power has now been resolved
                 m_resolvePowerNextTurn = false;
             }
@@ -1016,73 +1037,74 @@ public class PlayerControls : MonoBehaviour
         // if the current game state is Shoot
         if (m_currentGameState == GameState.Shoot)
         {
+            // TEMP
             // if the power is Ethen's power and drawing mode is on
-            if (m_drawing && m_greenPegPower == EthenPower)
-            {
-                // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
-                if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
-                {
-                    // if this was the first frame that the Shoot / Use Power input was pressed
-                    if (Input.GetButtonDown("Shoot / Use Power"))
-                    {
-                        // store that the player has started drawing a line
-                        m_lineBegun = true;
-                    }
-                    // otherwise, if the mouse has moved enough since last frame
-                    else if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
-                    {
-                        // if the player started drawing a line previously
-                        if (m_lineBegun == true)
-                        {
-                            // create a new line object and make it a child of the lines game object
-                            GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
-
-                            // store the line renderer for the current line
-                            m_currentLineRenderer = line.GetComponent<LineRenderer>();
-
-                            // Update the line with the previous point
-                            UpdateLine(Camera.main.ScreenToWorldPoint(m_previousMousePosition));
-
-                            // Update the line with the new point
-                            UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-                            // store that the line has no longer begun being drawn
-                            m_lineBegun = false;
-                        }
-
-                        // reduce the amount of ink the player has based on the amount the mouse moved
-                        m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
-
-                        // update the ink resource bar
-                        UpdateInkResourceBar();
-
-                        // Update the line with the new point
-                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                    }
-                }
-                // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
-                else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && Input.GetButtonUp("Shoot / Use Power"))
-                {
-                    // add an edge collider to the line
-                    EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
-
-                    // convert the line renderer points to vector2
-                    Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
-                    for (int i = 0; i < points.Length; ++i)
-                    {
-                        points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
-                    }
-
-                    // give the vector2 line points to the collider
-                    collider.points = points;
-                }
-
-                // store the mouse position for next frame
-                m_previousMousePosition = Input.mousePosition;
-            }
-            // if the power is not Ethens or if the drawing mode isn't on
-            else
-            {
+            //if (m_drawing && m_greenPegPower == EthenPower)
+            //{
+            //    // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
+            //    if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
+            //    {
+            //        // if this was the first frame that the Shoot / Use Power input was pressed
+            //        if (Input.GetButtonDown("Shoot / Use Power"))
+            //        {
+            //            // store that the player has started drawing a line
+            //            m_lineBegun = true;
+            //        }
+            //        // otherwise, if the mouse has moved enough since last frame
+            //        else if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
+            //        {
+            //            // if the player started drawing a line previously
+            //            if (m_lineBegun == true)
+            //            {
+            //                // create a new line object and make it a child of the lines game object
+            //                GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+            //
+            //                // store the line renderer for the current line
+            //                m_currentLineRenderer = line.GetComponent<LineRenderer>();
+            //
+            //                // Update the line with the previous point
+            //                UpdateLine(Camera.main.ScreenToWorldPoint(m_previousMousePosition));
+            //
+            //                // Update the line with the new point
+            //                UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            //
+            //                // store that the line has no longer begun being drawn
+            //                m_lineBegun = false;
+            //            }
+            //
+            //            // reduce the amount of ink the player has based on the amount the mouse moved
+            //            m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
+            //
+            //            // update the ink resource bar
+            //            UpdateInkResourceBar();
+            //
+            //            // Update the line with the new point
+            //            UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            //        }
+            //    }
+            //    // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
+            //    else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && Input.GetButtonUp("Shoot / Use Power"))
+            //    {
+            //        // add an edge collider to the line
+            //        EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
+            //
+            //        // convert the line renderer points to vector2
+            //        Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
+            //        for (int i = 0; i < points.Length; ++i)
+            //        {
+            //            points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
+            //        }
+            //
+            //        // give the vector2 line points to the collider
+            //        collider.points = points;
+            //    }
+            //
+            //    // store the mouse position for next frame
+            //    m_previousMousePosition = Input.mousePosition;
+            //}
+            //// if the power is not Ethens or if the drawing mode isn't on
+            //else
+            //{
                 // if the Shoot / Use Power input has been detected
                 if (Input.GetButtonDown("Shoot / Use Power"))
                 {
@@ -1092,8 +1114,12 @@ public class PlayerControls : MonoBehaviour
                     // if there are power charges
                     if (m_powerCharges > 0)
                     {
+                        // TEMP
+                        m_TEMP.OnShoot();
+                        /*
                         // have the power trigger its On Shoot effect
                         m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
+                        */
                     }
 
                     // change the current game state to Ball In Play
@@ -1117,110 +1143,111 @@ public class PlayerControls : MonoBehaviour
                     ModifyTimeScale(m_defaultTimeScale);
                 }
                 */
-            }
+            //}
         }
         // if the current gamestate is Ball In Play
         else if (m_currentGameState == GameState.BallInPlay)
         {
-            // if the green peg power is Kevin's and there are power charges
-            if (m_powerCharges > 0 && m_greenPegPower == KevinPower)
-            {
-                // if the show sniper scope button has been pressed
-                if (Input.GetButtonDown("Show Sniper Scope"))
-                {
-                    // tell the camera to zoom and track the cursor
-                    m_cameraZoom.ZoomAndTrack();
-                    // show the scope overlay
-                    m_scopeOverlay.SetActive(true);
-                    // set the time scale to the scoped time scale
-                    ModifyTimeScale(m_scopedTimeScale);
-                }
-
-                // if the shoot / use power button has been pressed and the camera is at max zoom
-                if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
-                {
-                    // reduce the power charges by 1
-                    ModifyPowerCharges(-1);
-                    // if there are now 0 charges
-                    if (m_powerCharges == 0)
-                    {
-                        // have the power resolve at the start of next turn
-                        m_resolvePowerNextTurn = true;
-                    }
-
-                    // if the camera is looking at a point on the ball
-                    if (m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_ball.transform.position.z)))
-                    {
-                        // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
-                        m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
-                    }
-                }
-            }
-            // otherwise, if the green peg power is Loki's
-            else if (m_greenPegPower == LokiPower)
-            {
-                // if the shoot / use power button is currently pressed
-                if (Input.GetButton("Shoot / Use Power"))
-                {
-                    // if there are power charges and this is the first frame the shoot / use power button has been pressed
-                    if (m_powerCharges > 0 && Input.GetButtonDown("Shoot / Use Power"))
-                    {
-                        // initialise the hook
-                        m_hook.SetActive(true);
-                        m_hook.transform.position = m_ball.transform.position;
-
-                        // have the end of the cord be the hook
-                        m_connectionPoint = m_hook;
-
-                        // shoot the hook towards the cursor
-                        m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_ball.transform.position).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
-
-                        // have the cord be active
-                        m_lokiPowerCord.gameObject.SetActive(true);
-
-                        // store that the ball is not currently connected to a peg
-                        m_connectedToPeg = false;
-                    }
-
-                    if (m_connectedToPeg)
-                    {
-                        // TEMP
-                        m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
-                    }
-                    
-
-                    // if the cord is currently active
-                    if (m_lokiPowerCord.gameObject.activeSelf)
-                    {
-                        // if the connection point is null or inactive, or if the cord has gone beyond its max length
-                        if (m_connectionPoint == null || !m_connectionPoint.activeSelf || (m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
-                        {
-                            // make the cord and hook inactive
-                            m_lokiPowerCord.gameObject.SetActive(false);
-                            m_hook.gameObject.SetActive(false);
-
-                            // store that the ball is not connected to a peg
-                            m_connectedToPeg = false;
-                        }
-                        // if the cord is still not too long
-                        else
-                        {
-                            // draw a line between the ball and the connection point
-                            m_lokiPowerCord.SetPosition(0, m_ball.transform.position);
-                            m_lokiPowerCord.SetPosition(1, m_connectionPoint.transform.position);
-                        }
-                    }
-                }
-                else
-                {
-                    // disable the cord
-                    m_lokiPowerCord.gameObject.SetActive(false);
-                    // disable the hook
-                    m_hook.SetActive(false);
-                    // store that the ball is not connected to a peg
-                    m_connectedToPeg = false;
-                }
-            }
+            // TEMP
+            //// if the green peg power is Kevin's and there are power charges
+            //if (m_powerCharges > 0 && m_greenPegPower == KevinPower)
+            //{
+            //    // if the show sniper scope button has been pressed
+            //    if (Input.GetButtonDown("Show Sniper Scope"))
+            //    {
+            //        // tell the camera to zoom and track the cursor
+            //        m_cameraZoom.ZoomAndTrack();
+            //        // show the scope overlay
+            //        m_scopeOverlay.SetActive(true);
+            //        // set the time scale to the scoped time scale
+            //        ModifyTimeScale(m_scopedTimeScale);
+            //    }
+            //
+            //    // if the shoot / use power button has been pressed and the camera is at max zoom
+            //    if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
+            //    {
+            //        // reduce the power charges by 1
+            //        ModifyPowerCharges(-1);
+            //        // if there are now 0 charges
+            //        if (m_powerCharges == 0)
+            //        {
+            //            // have the power resolve at the start of next turn
+            //            m_resolvePowerNextTurn = true;
+            //        }
+            //
+            //        // if the camera is looking at a point on the ball
+            //        if (m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_ball.transform.position.z)))
+            //        {
+            //            // shoot the ball in the direction opposite of where it got shot from, with a magnitude determined by m_forceToBall
+            //            m_ball.GetComponent<Rigidbody2D>().AddForce((m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+            //        }
+            //    }
+            //}
+            //// otherwise, if the green peg power is Loki's
+            //else if (m_greenPegPower == LokiPower)
+            //{
+            //    // if the shoot / use power button is currently pressed
+            //    if (Input.GetButton("Shoot / Use Power"))
+            //    {
+            //        // if there are power charges and this is the first frame the shoot / use power button has been pressed
+            //        if (m_powerCharges > 0 && Input.GetButtonDown("Shoot / Use Power"))
+            //        {
+            //            // initialise the hook
+            //            m_hook.SetActive(true);
+            //            m_hook.transform.position = m_ball.transform.position;
+            //
+            //            // have the end of the cord be the hook
+            //            m_connectionPoint = m_hook;
+            //
+            //            // shoot the hook towards the cursor
+            //            m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_ball.transform.position).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
+            //
+            //            // have the cord be active
+            //            m_lokiPowerCord.gameObject.SetActive(true);
+            //
+            //            // store that the ball is not currently connected to a peg
+            //            m_connectedToPeg = false;
+            //        }
+            //
+            //        if (m_connectedToPeg)
+            //        {
+            //            // TEMP
+            //            m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
+            //        }
+            //        
+            //
+            //        // if the cord is currently active
+            //        if (m_lokiPowerCord.gameObject.activeSelf)
+            //        {
+            //            // if the connection point is null or inactive, or if the cord has gone beyond its max length
+            //            if (m_connectionPoint == null || !m_connectionPoint.activeSelf || (m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
+            //            {
+            //                // make the cord and hook inactive
+            //                m_lokiPowerCord.gameObject.SetActive(false);
+            //                m_hook.gameObject.SetActive(false);
+            //
+            //                // store that the ball is not connected to a peg
+            //                m_connectedToPeg = false;
+            //            }
+            //            // if the cord is still not too long
+            //            else
+            //            {
+            //                // draw a line between the ball and the connection point
+            //                m_lokiPowerCord.SetPosition(0, m_ball.transform.position);
+            //                m_lokiPowerCord.SetPosition(1, m_connectionPoint.transform.position);
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        // disable the cord
+            //        m_lokiPowerCord.gameObject.SetActive(false);
+            //        // disable the hook
+            //        m_hook.SetActive(false);
+            //        // store that the ball is not connected to a peg
+            //        m_connectedToPeg = false;
+            //    }
+            //}
 
             // if the ball is in play and has fallen low enough (or high enough with the Sweets Power)
             if (m_ball != null && (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor))
