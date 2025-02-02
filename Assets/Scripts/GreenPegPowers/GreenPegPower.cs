@@ -1,18 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
 	File name: SweetsPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 27/01/2025
+	Last Modified: 03/02/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
 	public PlayerControls m_playerControls;
+	public int m_gainedPowerCharges = 0;
+    public Text m_PowerChargesText;
+    int m_powerCharges = 0;
 
-	public virtual void Trigger(Vector3 a_greenPegPosition)
+    public void ModifyPowerCharges(int a_modifier)
+    {
+        // increase the power charges by the modifier
+        m_powerCharges += a_modifier;
+        // update the UI text
+        m_PowerChargesText.text = m_powerCharges.ToString();
+    }
+
+    public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
 		// if there are 0 power charges
 		if (m_playerControls.m_powerCharges == 0)
@@ -21,7 +33,7 @@ public abstract class GreenPegPower : MonoBehaviour
 			m_playerControls.m_setUpPowerNextTurn = true;
 		}
 		// add the charges
-		m_playerControls.ModifyPowerCharges();
+		ModifyPowerCharges(m_gainedPowerCharges);
 	}
 
 	public abstract void SetUp();
@@ -38,7 +50,15 @@ public abstract class GreenPegPower : MonoBehaviour
 		}
 	}
 
-	public abstract void Resolve();
+	public virtual void Resolve()
+	{
+		// if there are 0 power charges
+		if (m_powerCharges == 0)
+		{
+			// resolve the power using the same logic used had the power been reloaded
+			Reload();
+		}
+	}
 
 	public abstract void Reload();
 }

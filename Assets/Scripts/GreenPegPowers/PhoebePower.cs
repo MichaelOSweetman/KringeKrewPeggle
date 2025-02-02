@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
-	File name: SweetsPower.cs
+	File name: PhoebePower.cs
 	Summary: Manages the power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 27/01/2025
+	Last Modified: 03/02/2025
 */
 public class PhoebePower : GreenPegPower
 {
-	public int m_phoebePowerChargesGained = 3;
+	public new int m_gainedPowerCharges = 3;
 	public GameObject m_bocconciniPrefab;
 	List<Bocconcini> m_bocconcinis;
 
@@ -37,33 +37,20 @@ public class PhoebePower : GreenPegPower
         }
     }
 
-    void RemoveBocconcini()
-    {
-        // loop through the bocconcini list
-        for (int i = 0; i < m_bocconcinis.Count; ++i)
-        {
-            // if the bocconcini hasn't already been destroyed
-            if (m_bocconcinis[i] != null)
-            {
-                // replace it with the peg it replaced
-                m_bocconcinis[i].ReenableParentPeg();
-            }
-        }
-    }
-
-	public override void Resolve()
-	{
-        if (m_bocconcinis != null && m_playerControls.m_powerCharges == 0)
-        {
-            RemoveBocconcini();
-        }
-	}
-
 	public override void Reload()
 	{
         if (m_bocconcinis != null)
         {
-            RemoveBocconcini();
+            // loop through the bocconcini list
+            for (int i = 0; i < m_bocconcinis.Count; ++i)
+            {
+                // if the bocconcini hasn't already been destroyed
+                if (m_bocconcinis[i] != null)
+                {
+                    // replace it with the peg it replaced
+                    m_bocconcinis[i].ReenableParentPeg();
+                }
+            }
         }
 	}
 }

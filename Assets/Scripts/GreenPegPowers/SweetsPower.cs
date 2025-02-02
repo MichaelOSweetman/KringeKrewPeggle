@@ -6,11 +6,11 @@ using UnityEngine;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 27/01/2025
+	Last Modified: 03/02/2025
 */
 public class SweetsPower : GreenPegPower
 {
-	public int m_sweetsPowerChargesGained = 3;
+	public new int m_gainedPowerCharges = 3;
 	public MoveToPoints m_bucket;
 	public GameObject m_victoryBuckets;
 	public GameObject m_launcher;
@@ -57,15 +57,6 @@ public class SweetsPower : GreenPegPower
 	{
 		// flip the bucket, launcher and gravity
 		ToggleHillside();
-	}
-
-	public override void Resolve()
-	{
-		if (m_playerControls.m_powerCharges == 0)
-		{
-			// flip the bucket, launcher and gravity
-			ToggleHillside();
-		}
 	}
 
 	public override void Reload()
