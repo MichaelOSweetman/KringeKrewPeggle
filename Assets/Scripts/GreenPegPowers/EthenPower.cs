@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 10/02/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -114,7 +114,13 @@ public class EthenPower : GreenPegPower
 
 	}
 
-	public override void Resolve()
+    public override void ResolveTurn()
+    {
+        // Destroy any active lines
+        DestroyLines();
+    }
+
+    public override void ResolvePower()
 	{
 
 	}
@@ -137,5 +143,73 @@ public class EthenPower : GreenPegPower
 
         // ensure the LookAtCursor component of the launcher is on
         m_playerControls.m_LauncherLookControls.enabled = true;
+    }
+
+    public override void Update()
+    {
+        // if the current game state is 'Shoot' and drawing mode is on
+        if (m_playerControls.m_currentGameState == PlayerControls.GameState.Shoot && m_drawing)
+        {
+            // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
+            if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
+            {
+                // if this was the first frame that the Shoot / Use Power input was pressed
+                if (Input.GetButtonDown("Shoot / Use Power"))
+                {
+                    // store that the player has started drawing a line
+                    m_lineBegun = true;
+                }
+                // otherwise, if the mouse has moved enough since last frame
+                else if ((Input.mousePosition - m_previousMousePosition).sqrMagnitude >= m_minValidSquareMouseMovement)
+                {
+                    // if the player started drawing a line previously
+                    if (m_lineBegun == true)
+                    {
+                        // create a new line object and make it a child of the lines game object
+                        GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+
+                        // store the line renderer for the current line
+                        m_currentLineRenderer = line.GetComponent<LineRenderer>();
+
+                        // Update the line with the previous point
+                        UpdateLine(Camera.main.ScreenToWorldPoint(m_previousMousePosition));
+
+                        // Update the line with the new point
+                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+                        // store that the line has no longer begun being drawn
+                        m_lineBegun = false;
+                    }
+
+                    // reduce the amount of ink the player has based on the amount the mouse moved
+                    m_ink -= (Input.mousePosition - m_previousMousePosition).magnitude;
+
+                    // update the ink resource bar
+                    UpdateInkResourceBar();
+
+                    // Update the line with the new point
+                    UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                }
+            }
+            // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
+            else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && Input.GetButtonUp("Shoot / Use Power"))
+            {
+                // add an edge collider to the line
+                EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
+
+                // convert the line renderer points to vector2
+                Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
+                for (int i = 0; i < points.Length; ++i)
+                {
+                    points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
+                }
+
+                // give the vector2 line points to the collider
+                collider.points = points;
+            }
+
+            // store the mouse position for next frame
+            m_previousMousePosition = Input.mousePosition;
+        }
     }
 }

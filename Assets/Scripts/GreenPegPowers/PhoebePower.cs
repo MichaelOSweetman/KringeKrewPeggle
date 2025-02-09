@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 10/02/2025
 */
 public class PhoebePower : GreenPegPower
 {
@@ -37,7 +37,25 @@ public class PhoebePower : GreenPegPower
         }
     }
 
-	public override void Reload()
+    public override void ResolveTurn()
+    {
+        // if there are power charges, and the bocconcini array has been initialised
+        if (m_powerCharges > 0 && m_bocconcinis != null)
+        {
+            // loop through the bocconcini list
+            for (int i = 0; i < m_bocconcinis.Count; ++i)
+            {
+                // if the bocconcini's parent peg is still active
+                if (m_bocconcinis[i].transform.parent.gameObject.activeSelf)
+                {
+                    // update the color of the boccocinis
+                    m_bocconcinis[i].CopyParentPegColor();
+                }
+            }
+        }
+    }
+
+    public override void Reload()
 	{
         if (m_bocconcinis != null)
         {

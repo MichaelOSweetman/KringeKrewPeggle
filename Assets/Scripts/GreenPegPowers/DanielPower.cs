@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: DanielPower.cs
 	Summary: Manages the power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 10/02/2025
 */
 public class DanielPower : GreenPegPower
 {
@@ -50,7 +50,7 @@ public class DanielPower : GreenPegPower
 
 	}
 
-	public override void Resolve()
+	public override void ResolvePower()
 	{
 
 	}

@@ -6,15 +6,15 @@ using UnityEngine;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 10/02/2025
 */
 public class SweetsPower : GreenPegPower
 {
-	public new int m_gainedPowerCharges = 3;
+	[HideInInspector] public new int m_gainedPowerCharges = 3;
 	public MoveToPoints m_bucket;
 	public GameObject m_victoryBuckets;
 	public GameObject m_launcher;
-	public GameObject m_topPlayAreaCollider;
+	public GameObject m_topWall;
 	public GameObject m_gameOverlay;
 	public GameObject m_hillsideGameOverlay;
 	public LauncherRotation m_LauncherLookControls;
@@ -41,9 +41,9 @@ public class SweetsPower : GreenPegPower
 		// invert the rotation center of the launcher
 		m_LauncherLookControls.m_validRotationCentre *= -1.0f;
 
-		// flip the Top Play Area Collider around the x axis
-		m_topPlayAreaCollider.transform.position = new Vector3(m_topPlayAreaCollider.transform.position.x, -m_topPlayAreaCollider.transform.position.y);
-		m_topPlayAreaCollider.transform.rotation = Quaternion.Euler(m_topPlayAreaCollider.transform.rotation.eulerAngles.x, m_topPlayAreaCollider.transform.rotation.eulerAngles.y, m_topPlayAreaCollider.transform.rotation.eulerAngles.z + 180.0f);
+		// flip the Top Wall around the x axis
+		m_topWall.transform.position = new Vector3(m_topWall.transform.position.x, -m_topWall.transform.position.y);
+		m_topWall.transform.rotation = Quaternion.Euler(m_topWall.transform.rotation.eulerAngles.x, m_topWall.transform.rotation.eulerAngles.y, m_topWall.transform.rotation.eulerAngles.z + 180.0f);
 
 		// swap the active state of the game overlays
 		m_gameOverlay.SetActive(!m_gameOverlay.activeSelf);

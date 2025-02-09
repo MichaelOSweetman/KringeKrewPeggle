@@ -7,14 +7,14 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 10/02/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
 	public PlayerControls m_playerControls;
-	public int m_gainedPowerCharges = 0;
     public Text m_PowerChargesText;
-    int m_powerCharges = 0;
+	[HideInInspector] public int m_gainedPowerCharges = 0;
+    [HideInInspector] public int m_powerCharges = 0;
 
     public void ModifyPowerCharges(int a_modifier)
     {
@@ -27,7 +27,7 @@ public abstract class GreenPegPower : MonoBehaviour
     public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
 		// if there are 0 power charges
-		if (m_playerControls.m_powerCharges == 0)
+		if (m_powerCharges == 0)
 		{
 			// have the power set up next turn
 			m_playerControls.m_setUpPowerNextTurn = true;
@@ -40,17 +40,25 @@ public abstract class GreenPegPower : MonoBehaviour
 
 	public virtual void OnShoot()
 	{
-		// reduce the power charges by 1
-		m_playerControls.ModifyPowerCharges(-1);
-		// if there are now 0 charges
-		if (m_playerControls.m_powerCharges == 0)
+		if (m_powerCharges > 0)
 		{
-			// have the power resolve at the start of next turn
-			m_playerControls.m_resolvePowerNextTurn = true;
+			// reduce the power charges by 1
+			ModifyPowerCharges(-1);
+			// if there are now 0 charges
+			if (m_powerCharges == 0)
+			{
+				// have the power resolve at the start of next turn
+				m_playerControls.m_resolvePowerNextTurn = true;
+			}
 		}
 	}
 
-	public virtual void Resolve()
+	public virtual void ResolveTurn()
+	{
+
+	}
+
+	public virtual void ResolvePower()
 	{
 		// if there are 0 power charges
 		if (m_powerCharges == 0)
@@ -61,4 +69,9 @@ public abstract class GreenPegPower : MonoBehaviour
 	}
 
 	public abstract void Reload();
+
+	public virtual void Update()
+	{
+
+	}
 }

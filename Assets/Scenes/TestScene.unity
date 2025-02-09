@@ -4098,15 +4098,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 289750357}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b36aede156b73f54a8788878c208f2c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e250f0846129d74f80db765d727c956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
-  m_sweetsPowerChargesGained: 3
+  m_PowerChargesText: {fileID: 631596763}
+  m_gainedPowerCharges: 3
+  m_powerCharges: 0
+  m_gainedPowerCharges: 3
   m_bucket: {fileID: 308680432}
   m_victoryBuckets: {fileID: 1901099215}
   m_launcher: {fileID: 1327515134}
-  m_topPlayAreaCollider: {fileID: 561992431}
+  m_topWall: {fileID: 561992431}
   m_gameOverlay: {fileID: 571884302}
   m_hillsideGameOverlay: {fileID: 1947776465}
   m_LauncherLookControls: {fileID: 711364716}
