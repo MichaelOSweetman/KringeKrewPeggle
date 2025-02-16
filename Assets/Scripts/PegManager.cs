@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 27/01/2025
+	Last Modified: 17/02/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -89,7 +89,7 @@ public class PegManager : MonoBehaviour
 
 
     [HideInInspector] public List<Peg> m_pegs;
-    Queue<Peg> m_hitPegs;
+    [HideInInspector] public Queue<GameObject> m_hitPegs;
     List<Peg> m_activeBluePegs;
     Peg m_purplePeg = null;
 
@@ -288,7 +288,7 @@ public class PegManager : MonoBehaviour
         if (m_pegs[a_pegID])
         {
             // add the peg to the hit pegs queue
-            m_hitPegs.Enqueue(m_pegs[a_pegID]);
+            m_hitPegs.Enqueue(m_pegs[a_pegID].gameObject);
 
             // set the peg's colour to the hit version of its colour
             SetPegType(m_pegs[a_pegID], m_pegs[a_pegID].m_pegType, true);
@@ -511,7 +511,7 @@ public class PegManager : MonoBehaviour
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
         // initialise the hit pegs queue
-        m_hitPegs = new Queue<Peg>();
+        m_hitPegs = new Queue<GameObject>();
 
         // create a hash set to store the IDs of all pegs that will start as orange or green
         HashSet<int> orangeAndGreenPegIDs = new HashSet<int>();
@@ -599,6 +599,13 @@ public class PegManager : MonoBehaviour
             // if the enough time has passed since the last peg was cleared from the queue
             if (m_clearHitPegQueueTimer >= m_clearHitPegDelay)
             {
+                // loop until the next peg has not been destroyed
+                while (m_hitPegs.Peek() == null)
+                {
+                    // remove this destroyed gameobject from the queue
+                    m_hitPegs.Dequeue();
+                }
+
                 // position the peg audio source at the next peg
                 m_pegAudioSource.transform.position = m_hitPegs.Peek().transform.position;
                 // play the peg remove sound

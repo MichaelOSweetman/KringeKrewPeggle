@@ -7,7 +7,7 @@ using UnityEngine;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 03/06/2024
+    Last Modified: 17/02/2025
 */
 public class Isaac : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class Isaac : MonoBehaviour
 		// create a copy of the tear prefab
 		GameObject tear = Instantiate(m_isaacTearPrefab);
 		// set the tear's position to Isaac's
-		tear.transform.position = this.transform.position;
+		tear.transform.position = transform.position;
 		// shoot the tear in the specified direction
 		tear.GetComponent<Rigidbody2D>().AddForce(m_direction * m_tearSpeed, ForceMode2D.Impulse);
 		// tell the tear how long it should last

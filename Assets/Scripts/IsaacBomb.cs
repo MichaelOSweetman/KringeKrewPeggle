@@ -6,7 +6,7 @@ using UnityEngine;
     File name: IsaacBomb.cs
     Summary: Manages a bomb created by Isaac, which explodes after a set time, hitting all pegs in its blast radius
     Creation Date: 27/05/2024
-    Last Modified: 03/06/2024
+    Last Modified: 17/02/2025
 */
 public class IsaacBomb : MonoBehaviour
 {
@@ -40,7 +40,7 @@ public class IsaacBomb : MonoBehaviour
             }
 
             // destroy this bomb
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 }

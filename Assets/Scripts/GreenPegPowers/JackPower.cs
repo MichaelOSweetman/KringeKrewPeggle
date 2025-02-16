@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: JackPower.cs
 	Summary: Manages the power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 03/02/2025
+	Last Modified: 17/02/2025
 */
 public class JackPower : GreenPegPower
 {
@@ -17,7 +17,16 @@ public class JackPower : GreenPegPower
     int m_defaultPurplePegScore = 0;
     int m_defaultGreenPegScore = 0;
 
-	public override void SetUp()
+    public override void Initialize()
+    {
+        // store the base peg scores of each type
+        m_defaultBluePegScore = m_playerControls.m_pegManager.m_baseBluePegScore;
+        m_defaultOrangePegScore = m_playerControls.m_pegManager.m_baseOrangePegScore;
+        m_defaultPurplePegScore = m_playerControls.m_pegManager.m_basePurplePegScore;
+        m_defaultGreenPegScore = m_playerControls.m_pegManager.m_baseGreenPegScore;
+    }
+
+    public override void SetUp()
 	{
         // get the average of the scores of all the active pegs
         m_communistPegScore = m_playerControls.m_pegManager.GetAverageActivePegScore();
@@ -36,5 +45,8 @@ public class JackPower : GreenPegPower
         m_playerControls.m_pegManager.m_baseOrangePegScore = m_defaultOrangePegScore;
         m_playerControls.m_pegManager.m_basePurplePegScore = m_defaultPurplePegScore;
         m_playerControls.m_pegManager.m_baseGreenPegScore = m_defaultGreenPegScore;
+
+        // reset the power charges
+        ResetPowerCharges();
     }
 }

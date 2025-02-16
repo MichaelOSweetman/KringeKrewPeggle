@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class LokiPower : GreenPegPower
 {
@@ -38,16 +38,6 @@ public class LokiPower : GreenPegPower
         ModifyPowerCharges(m_gainedPowerCharges);
     }
 
-	public override void SetUp()
-	{
-
-	}
-
-	public override void OnShoot()
-	{
-
-	}
-
     public override void ResolveTurn()
     {
         // hide the cord if it is visible
@@ -56,11 +46,6 @@ public class LokiPower : GreenPegPower
         // disable the hook
         m_hook.SetActive(false);
     }
-
-    public override void ResolvePower()
-	{
-
-	}
 
 	public override void Reload()
 	{
@@ -73,6 +58,9 @@ public class LokiPower : GreenPegPower
 
         // store that the ball is not connected to a peg
         m_connectedToPeg = false;
+
+        // reset the power charges
+        ResetPowerCharges();
     }
 
     public override void Update()

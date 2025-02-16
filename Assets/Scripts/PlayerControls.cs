@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 10/02/2025
+    Last Modified: 17/02/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -17,15 +17,6 @@ public class PlayerControls : MonoBehaviour
         Shoot,
         BallInPlay,
         ResolveTurn,
-    }
-
-    public enum PowerFunctionMode
-    {
-        Trigger,
-        SetUp,
-        OnShoot,
-        Resolve,
-		Reload
     }
 
     [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
@@ -61,7 +52,7 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     [HideInInspector] public bool m_resolvePowerNextTurn = false;
     // TEMP
-    public GreenPegPower m_TEMP;
+    public GreenPegPower m_TEMP; 
 
     [Header("Buckets")]
     public MoveToPoints m_bucket;
@@ -251,12 +242,7 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
         m_ballCountText.text = m_ballCount.ToString();
 
-        // reset the power charges
-        m_powerCharges = 0;
-        m_PowerChargesText.text = m_powerCharges.ToString();
-
         // TEMP
-
         // reload the power
         m_TEMP.Reload();
 		//m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
@@ -283,18 +269,6 @@ public class PlayerControls : MonoBehaviour
 
         // initialise the ball count
         m_ballCount = m_startingBallCount;
-
-        // get the child of the ink resource bar background as the ink resource bar
-        m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();
-
-        // get the width of the ink resource bar background
-        m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
-
-		// store the base peg scores of each type for the Jack Power
-		m_defaultBluePegScore = m_pegManager.m_baseBluePegScore;
-		m_defaultOrangePegScore = m_pegManager.m_baseOrangePegScore;
-		m_defaultPurplePegScore = m_pegManager.m_basePurplePegScore;
-		m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // TEMP
         // if the green peg power has not been set
@@ -394,17 +368,12 @@ public class PlayerControls : MonoBehaviour
             {
                 // shoot a ball
                 m_ball = Shoot();
-
-                // if there are power charges
-                if (m_powerCharges > 0)
-                {
-                    // TEMP
-                    m_TEMP.OnShoot();
-                    /*
-                    // have the power trigger its On Shoot effect
-                    m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
-                    */
-                }
+                // TEMP
+                m_TEMP.OnShoot();
+                /*
+                // have the power trigger its On Shoot effect
+                m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
+                */
 
                 // change the current game state to Ball In Play
                 m_currentGameState = GameState.BallInPlay;

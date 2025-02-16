@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class BenPower : GreenPegPower
 {
@@ -21,11 +21,6 @@ public class BenPower : GreenPegPower
         // spawn isaac instead of the ball next turn
         m_spawnIsaac = true;
     }
-
-	public override void SetUp()
-	{
-
-	}
 
 	public override void OnShoot()
 	{
@@ -49,5 +44,8 @@ public class BenPower : GreenPegPower
         // ensure the ball is spawned instead of Isaac next shoot phase
         m_spawnIsaac = false;
         m_playerControls.m_bucket.gameObject.SetActive(true);
+
+        // reset the power charges
+        ResetPowerCharges();
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
@@ -24,6 +24,18 @@ public abstract class GreenPegPower : MonoBehaviour
         m_PowerChargesText.text = m_powerCharges.ToString();
     }
 
+	public void ResetPowerCharges()
+	{
+		// reset the power charges
+		m_powerCharges = 0;
+		m_PowerChargesText.text = m_powerCharges.ToString();
+	}
+
+	public virtual void Initialize()
+	{
+
+	}
+
     public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
 		// if there are 0 power charges
@@ -36,7 +48,10 @@ public abstract class GreenPegPower : MonoBehaviour
 		ModifyPowerCharges(m_gainedPowerCharges);
 	}
 
-	public abstract void SetUp();
+	public virtual void SetUp()
+	{
+
+	}
 
 	public virtual void OnShoot()
 	{
@@ -68,7 +83,10 @@ public abstract class GreenPegPower : MonoBehaviour
 		}
 	}
 
-	public abstract void Reload();
+	public virtual void Reload()
+	{
+
+	}
 
 	public virtual void Update()
 	{

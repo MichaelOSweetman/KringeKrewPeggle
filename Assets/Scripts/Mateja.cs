@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 01/04/2024
+    Last Modified: 17/02/2025
 */
 public class Mateja : MonoBehaviour
 {
@@ -132,7 +132,7 @@ public class Mateja : MonoBehaviour
             // resolve the turn
             m_playerControls.ResolveTurn();
             // destroy Mateja
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         // otherwise, if the hit collider is a peg
         else if (a_collision.GetComponent<Peg>() != null)

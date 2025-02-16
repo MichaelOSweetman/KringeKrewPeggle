@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class SweetsPower : GreenPegPower
 {
@@ -67,5 +67,8 @@ public class SweetsPower : GreenPegPower
 			// flip the bucket, launcher and gravity back to default positions
 			ToggleHillside();
 		}
+
+		// reset the power charges
+		ResetPowerCharges();
 	}
 }

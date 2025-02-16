@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class MatejaPower : GreenPegPower
 {
@@ -34,7 +34,7 @@ public class MatejaPower : GreenPegPower
         }
     }
 
-	public override void Trigger(Vector3 a_greenPegPosition)
+    public override void Trigger(Vector3 a_greenPegPosition)
 	{
         CreateMateja();
 	}
@@ -42,16 +42,6 @@ public class MatejaPower : GreenPegPower
 	public override void SetUp()
 	{
         CreateMateja();
-	}
-
-	public override void OnShoot()
-	{
-
-	}
-
-	public override void ResolvePower()
-	{
-
 	}
 
 	public override void Reload()

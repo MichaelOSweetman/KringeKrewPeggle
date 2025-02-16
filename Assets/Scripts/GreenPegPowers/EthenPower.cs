@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -71,21 +71,26 @@ public class EthenPower : GreenPegPower
         m_inkResourceBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Clamp01(m_ink / m_maxInk) * m_inkResourceBarMaxWidth);
     }
 
-    public void DestroyLines(bool a_onlyDestroyIfHit = false)
+    public void DestroyLines()
     {
         // loop for each line
         for (int i = m_lines.transform.childCount - 1; i >= 0; --i)
         {
-            // if the line should be destroyed regardless or if the line has been hit and the only destroy if hit arguement is true
-            if (!a_onlyDestroyIfHit || m_lines.transform.GetChild(i).GetComponent<Line>().m_hit)
-            {
-                // destroy the current line
-                Destroy(m_lines.transform.GetChild(i).gameObject);
-            }
+            // destroy the current line
+            Destroy(m_lines.transform.GetChild(i).gameObject);
         }
     }
 
-	public override void SetUp()
+    public override void Initialize()
+    {
+        // get the child of the ink resource bar background as the ink resource bar
+        m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();
+
+        // get the width of the ink resource bar background
+        m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
+    }
+
+    public override void SetUp()
 	{
         // set the UI elements required for drawing to be active
         m_endDrawButton.SetActive(true);
@@ -109,21 +114,11 @@ public class EthenPower : GreenPegPower
         m_previousMousePosition = Input.mousePosition;
     }
 
-	public override void OnShoot()
-	{
-
-	}
-
     public override void ResolveTurn()
     {
         // Destroy any active lines
         DestroyLines();
     }
-
-    public override void ResolvePower()
-	{
-
-	}
 
 	public override void Reload()
 	{
@@ -143,6 +138,9 @@ public class EthenPower : GreenPegPower
 
         // ensure the LookAtCursor component of the launcher is on
         m_playerControls.m_LauncherLookControls.enabled = true;
+
+        // reset the power charges
+        ResetPowerCharges();
     }
 
     public override void Update()
@@ -167,6 +165,9 @@ public class EthenPower : GreenPegPower
                     {
                         // create a new line object and make it a child of the lines game object
                         GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+
+                        // give the line the peg manager
+                        line.GetComponent<Line>().m_pegManager = m_playerControls.m_pegManager;
 
                         // store the line renderer for the current line
                         m_currentLineRenderer = line.GetComponent<LineRenderer>();

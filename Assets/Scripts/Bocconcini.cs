@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Bocconcini.cs
     Summary: Manages the Bocconcini pegs created by PhoebePower
     Creation Date: 01/07/2024
-    Last Modified: 15/07/2024
+    Last Modified: 17/02/2025
 */
 public class Bocconcini : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class Bocconcini : MonoBehaviour
         m_parentPegRenderer.enabled = true;
 
         // destroy this bocconcini
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     public void CopyParentPegColor()

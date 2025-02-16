@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Ball.cs
     Summary: Prevents the ball from getting stuck
     Creation Date: 30/10/2023
-    Last Modified: 26/02/2024
+    Last Modified: 17/02/2025
 */
 public class Ball : MonoBehaviour
 {
@@ -38,8 +38,6 @@ public class Ball : MonoBehaviour
             {
                 // have the Peg Manager clear the hit pegs
                 m_pegManager.ClearHitPegs();
-                // have PlayerControls destroy hit lines
-                m_playerControls.DestroyLines(true);
                 // reset the timer
                 m_timer = 0.0f;
             }

@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: DanielPower.cs
 	Summary: Manages the power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 10/02/2025
+	Last Modified: 17/02/2025
 */
 public class DanielPower : GreenPegPower
 {
@@ -35,25 +35,10 @@ public class DanielPower : GreenPegPower
                 // give the wasp the peg as its target
                 wasp.GetComponent<Wasp>().m_targetPeg = peg;
                 // give the wasp access to this script
-                //TEMP wasp.GetComponent<Wasp>.m_danielPower = this;
+                wasp.GetComponent<Wasp>().m_danielPower = this;
             }
         }
     }
-
-	public override void SetUp()
-	{
-
-	}
-
-	public override void OnShoot()
-	{
-
-	}
-
-	public override void ResolvePower()
-	{
-
-	}
 
 	public override void Reload()
 	{
