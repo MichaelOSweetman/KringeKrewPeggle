@@ -6,43 +6,57 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class BenPower : GreenPegPower
 {
-    public new int m_gainedPowerCharges = 1;
     public GameObject m_IsaacPrefab;
-    bool m_spawnIsaac = false;
+    public Vector3 m_isaacSpawnPosition;
 
     public override void Trigger(Vector3 a_greenPegPosition)
 	{
         // add the charges
         ModifyPowerCharges(m_gainedPowerCharges);
-        // spawn isaac instead of the ball next turn
-        m_spawnIsaac = true;
     }
 
-	public override void OnShoot()
+	public override bool OnShoot()
 	{
-        if (m_powerCharges > 0)
+        if (m_powerCharges == 0)
         {
-            // reduce the power charges by 1
-            ModifyPowerCharges(-1);
-            // disable the bucket
-            m_playerControls.m_bucket.gameObject.SetActive(false);
-            // if there are now 0 charges
-            if (m_powerCharges == 0)
-            {
-                // have the power resolve at the start of next turn
-                m_playerControls.m_resolvePowerNextTurn = true;
-            }
+            // return that this function should not override the default shoot function
+            return false;
         }
+
+        // reduce the power charges by 1
+        ModifyPowerCharges(-1);
+        // disable the bucket
+        m_playerControls.m_bucket.gameObject.SetActive(false);
+        // if there are now 0 charges
+        if (m_powerCharges == 0)
+        {
+            // have the power resolve at the start of next turn
+            m_playerControls.m_resolvePowerNextTurn = true;
+        }
+
+        // create a copy of the Isaac prefab
+        GameObject Isaac = Instantiate(m_IsaacPrefab);
+        // set its position to be the Isaac Spawn Position
+        Isaac.transform.position = m_isaacSpawnPosition;
+        // give Isaac the player controls component
+        Isaac.GetComponent<Isaac>().m_playerControls = m_playerControls;
+
+        // reduce the ball count by one as a the Isaac counts as a ball for the purposes of the ball count
+        --m_playerControls.m_ballCount;
+        // update the ball count text
+        m_playerControls.m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+
+        // return that this function should override the default shoot function
+        return true;
     }
 
 	public override void Reload()
 	{
-        // ensure the ball is spawned instead of Isaac next shoot phase
-        m_spawnIsaac = false;
+        // set the bucket to be active
         m_playerControls.m_bucket.gameObject.SetActive(true);
 
         // reset the power charges

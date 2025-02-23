@@ -6,11 +6,10 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class EthenPower : GreenPegPower
 {
-	public new int m_gainedPowerCharges = 2;
     public RectTransform m_drawingBounds;
     public GameObject m_lines;
     public GameObject m_linePrefab;
@@ -145,8 +144,8 @@ public class EthenPower : GreenPegPower
 
     public override void Update()
     {
-        // if the current game state is 'Shoot' and drawing mode is on
-        if (m_playerControls.m_currentGameState == PlayerControls.GameState.Shoot && m_drawing)
+        // if the ball is not in play and drawing mode is on
+        if (!m_playerControls.m_ballInPlay && m_drawing)
         {
             // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
             if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())

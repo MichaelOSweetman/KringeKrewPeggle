@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class MatejaPower : GreenPegPower
 {
@@ -44,7 +44,29 @@ public class MatejaPower : GreenPegPower
         CreateMateja();
 	}
 
-	public override void Reload()
+    public override bool BallRemovalCheck(GameObject a_ball)
+    {
+        // if Mateja does not currently exist
+        if (m_mateja == null)
+        {
+            // return that this function should not override the default ball removal check
+            return false;
+        }
+
+        // if the ball is in play and has fallen low enough
+        if (a_ball.transform.position.y <= m_playerControls.m_ballKillFloor)
+        {
+            // have mateja launch back up
+            m_mateja.GetComponent<Mateja>().JiuJitsuBall(a_ball);
+            // destroy the ball
+            Destroy(a_ball);
+        }
+
+        // return that this function should override the default ball removal check
+        return true;
+    }
+
+    public override void Reload()
 	{
         // destroy Mateja
         Destroy(m_mateja);

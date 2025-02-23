@@ -4025,8 +4025,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06e0389fc2b46e44d9a3a937b4634a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_currentGameState: 1
   m_playAreaBounds: {fileID: 363654200}
+  m_setUpPowerNextTurn: 0
+  m_resolvePowerNextTurn: 0
+  m_ballInPlay: 0
+  m_power: {fileID: 0}
   m_UIManager: {fileID: 241605737}
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
@@ -4040,45 +4043,7 @@ MonoBehaviour:
   m_startingBallCount: 10
   m_ballKillFloor: -7
   m_ball: {fileID: 0}
-  m_PowerChargesText: {fileID: 631596763}
-  m_powerCharges: 0
-  m_setUpPowerNextTurn: 0
-  m_resolvePowerNextTurn: 0
-  m_TEMP: {fileID: 289750360}
-  m_benPowerChargesGained: 1
-  m_IsaacPrefab: {fileID: 1503201037274521672, guid: 3bf3a41acc99fa9409346901b58404b1, type: 3}
-  m_wasp: {fileID: 9221240970569109631, guid: f08068c35f1347f44aa0b9ce790dfca5, type: 3}
-  m_searchRadius: 2
-  m_wasps: []
-  m_ethenPowerChargesGained: 2
-  m_lines: {fileID: 879736977}
-  m_linePrefab: {fileID: 3989778212776657580, guid: 836673e1555ec684eb3348b26ea8496c, type: 3}
-  m_endDrawButton: {fileID: 1093665511}
-  m_clearButton: {fileID: 1506952131}
-  m_inkResourceBarBackground: {fileID: 26892247}
-  m_maxInk: 500
-  m_minValidSquareMouseMovement: 0.05
-  m_ink: 0
-  m_drawing: 0
-  m_jackPowerChargesGained: 4
-  m_kevinPowerChargesGained: 2
-  m_scopeOverlay: {fileID: 541950793}
-  m_forceToBall: 2000
-  m_scopedTimeScale: 0.3
-  m_lokiPowerChargesGained: 2
-  m_lokiPowerCord: {fileID: 6294972222161617348}
-  m_maxCordLength: 3
-  m_hook: {fileID: 1690397437}
-  m_hookLaunchSpeed: 50
-  m_pullSpeed: 7.5
-  m_matejaPrefab: {fileID: 5672377063983417263, guid: 7f9a0a7fdbc0c2546a5638fe7057ed6e, type: 3}
-  m_phoebePowerChargesGained: 3
-  m_bocconciniPrefab: {fileID: 2744897691126921942, guid: a8806b9926f23304688a558507d86ae1, type: 3}
-  m_sweetsPowerChargesGained: 3
-  m_launcher: {fileID: 1327515134}
-  m_topPlayAreaCollider: {fileID: 561992431}
-  m_gameOverlay: {fileID: 571884302}
-  m_hillsideGameOverlay: {fileID: 1947776465}
+  m_ballCount: 0
   m_bucket: {fileID: 308680432}
   m_victoryBuckets: {fileID: 1901099215}
   m_spedUpTimeScale: 5
@@ -4105,7 +4070,6 @@ MonoBehaviour:
   m_PowerChargesText: {fileID: 631596763}
   m_gainedPowerCharges: 3
   m_powerCharges: 0
-  m_gainedPowerCharges: 3
   m_bucket: {fileID: 308680432}
   m_victoryBuckets: {fileID: 1901099215}
   m_launcher: {fileID: 1327515134}
@@ -26076,7 +26040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a59d1695e39e54f930abb90d617431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerControls: {fileID: 289750359}
+  m_lokiPower: {fileID: 0}
 --- !u!1 &1691065709
 GameObject:
   m_ObjectHideFlags: 0

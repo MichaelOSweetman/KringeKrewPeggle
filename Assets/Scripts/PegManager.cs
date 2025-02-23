@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -210,8 +210,6 @@ public class PegManager : MonoBehaviour
         ResetTurnScore();
         // assign a random blue peg to be purple
         ReplacePurplePeg();
-        // set the GameState to Round Set Up as the Turn has resolved
-        m_playerControls.m_currentGameState = PlayerControls.GameState.TurnSetUp;
     }
 
     void UpdateFreeBallProgressBar()
@@ -354,9 +352,7 @@ public class PegManager : MonoBehaviour
                 case PegType.Green:
                     m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // trigger the player's current power
-                    // TEMP
-                    //m_playerControls.m_greenPegPower(PlayerControls.PowerFunctionMode.Trigger, m_pegs[a_pegID].transform.position);
-                    m_playerControls.m_TEMP.Trigger(m_pegs[a_pegID].transform.position);
+                    m_playerControls.m_power.Trigger(m_pegs[a_pegID].transform.position);
                     break;
 
             }

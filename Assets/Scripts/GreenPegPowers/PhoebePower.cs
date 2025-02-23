@@ -6,11 +6,10 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class PhoebePower : GreenPegPower
 {
-	public new int m_gainedPowerCharges = 3;
 	public GameObject m_bocconciniPrefab;
 	List<Bocconcini> m_bocconcinis;
 

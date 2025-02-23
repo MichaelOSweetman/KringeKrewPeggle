@@ -7,11 +7,10 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class LokiPower : GreenPegPower
 {
-	public new int m_gainedPowerCharges = 2;
     public LineRenderer m_cord;
     public float m_maxCordLength = 5.0f;
     public GameObject m_hook;
@@ -65,8 +64,8 @@ public class LokiPower : GreenPegPower
 
     public override void Update()
     {
-        // if the current gamestate is 'Ball in Play'
-        if (m_playerControls.m_currentGameState == PlayerControls.GameState.BallInPlay)
+        // if the ball is in play
+        if (m_playerControls.m_ballInPlay)
         {
             // if the shoot / use power button is currently pressed
             if (Input.GetButton("Shoot / Use Power"))

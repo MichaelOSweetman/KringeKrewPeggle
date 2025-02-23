@@ -7,21 +7,17 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 17/02/2025
+    Last Modified: 24/02/2025
 */
 public class PlayerControls : MonoBehaviour
 {
-    public enum GameState
-    {
-        TurnSetUp,
-        Shoot,
-        BallInPlay,
-        ResolveTurn,
-    }
-
-    [HideInInspector] public GameState m_currentGameState = GameState.Shoot;
-
     public RectTransform m_playAreaBounds;
+
+    [HideInInspector] public bool m_setUpPowerNextTurn = false;
+    [HideInInspector] public bool m_resolvePowerNextTurn = false;
+    [HideInInspector] public bool m_ballInPlay = false;
+    // TEMP
+    public GreenPegPower m_power;
 
     [Header("Other Scripts")]
     public UIManager m_UIManager;
@@ -42,17 +38,7 @@ public class PlayerControls : MonoBehaviour
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
-    int m_ballCount = 0;
-
-    //[Header("Green Pegs")]
-    //public Text m_PowerChargesText;
-    ////public delegate void GreenPegPower(PowerFunctionMode a_powerFunctionMode, Vector3 a_greenPegPosition);
-    ////public GreenPegPower m_greenPegPower = null;
-    //[HideInInspector] public int m_powerCharges = 0;
-    [HideInInspector] public bool m_setUpPowerNextTurn = false;
-    [HideInInspector] public bool m_resolvePowerNextTurn = false;
-    // TEMP
-    public GreenPegPower m_TEMP; 
+    [HideInInspector] public int m_ballCount = 0;
 
     [Header("Buckets")]
     public MoveToPoints m_bucket;
@@ -105,66 +91,61 @@ public class PlayerControls : MonoBehaviour
 
 	public void RemoveBall()
 	{
-		// if there is a mateja in play
-        if (m_mateja != null)
+        // if the ball count is over 0
+        if (m_ballCount > 0)
         {
-            // have mateja launch back up
-            m_mateja.GetComponent<Mateja>().JiuJitsuBall(m_ball);
-            // destroy the ball
-            Destroy(m_ball);
+            // resolve the turn
+            ResolveTurn();
         }
-        // if there is not a mateja in play
+        // if the player has run out of balls
         else
         {
-            // if the ball count is over 0
-            if (m_ballCount > 0)
-            {
-                // resolve the turn
-                ResolveTurn();
-            }
-            // if the player has run out of balls
-            else
-            {
-                // destroy the ball
-                Destroy(m_ball);
-                // tell the UI Manager that the level is over and the player failed
-                m_UIManager.LevelOver(false);
-            }
+            // destroy the ball
+            Destroy(m_ball);
+            // tell the UI Manager that the level is over and the player failed
+            m_UIManager.LevelOver(false);
         }
 	}
+
+    public void SetUpTurn()
+    {
+        // enable the ball trajectory line
+        m_ballTrajectory.ShowLine(true);
+
+        // if the power should be set up
+        if (m_setUpPowerNextTurn)
+        {
+            // set up the power
+            m_power.SetUp();
+            // store that the power has been set up
+            m_setUpPowerNextTurn = false;
+        }
+
+        // if the power should be resolved
+        if (m_resolvePowerNextTurn)
+        {
+            // resolve the power
+            m_power.ResolvePower();
+            // store that the power has been resolved
+            m_resolvePowerNextTurn = false;
+        }
+    }
 
     GameObject Shoot()
     {
         // switch the time scale back to default
         ModifyTimeScale(m_defaultTimeScale);
-		
-		GameObject Ball = null;
-		
-		// if Isaac should be spawned instead of the ball
-		if (m_spawnIsaac)
-		{
-			// create a copy of the Isaac prefab
-			Ball = Instantiate(m_IsaacPrefab);
-			// set its position to be the same as this game object
-			Ball.transform.position = transform.position;
-			// give Isaac this component
-			Ball.GetComponent<Isaac>().m_playerControls = this;
-		}
-		// if the ball should be spawned, not Isaac
-		else
-		{
-			// create a copy of the ball prefab
-			Ball = Instantiate(m_ballPrefab) as GameObject;
-			// set its position to be the same as this game object
-			Ball.transform.position = transform.position;
-			// apply the launch speed force to the ball, in the direction this gameobject is facing
-			Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
-			// give the ball the peg manager
-			Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
-			// give the ball this component
-			Ball.GetComponent<Ball>().m_playerControls = this;
-		}
-        
+
+        // create a copy of the ball prefab
+        GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
+		// set its position to be the same as this game object
+		Ball.transform.position = transform.position;
+		// apply the launch speed force to the ball, in the direction this gameobject is facing
+		Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
+		// give the ball the peg manager
+		Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
+		// give the ball this component
+		Ball.GetComponent<Ball>().m_playerControls = this;
 
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;
@@ -183,8 +164,8 @@ public class PlayerControls : MonoBehaviour
             Destroy(m_ball);
         }
 
-        // set the game state to Resolve Turn
-        m_currentGameState = GameState.ResolveTurn;
+        // store that the ball is not in play
+        m_ballInPlay = false;
 
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
@@ -198,6 +179,8 @@ public class PlayerControls : MonoBehaviour
         // tell the peg manager to resolve the turn
         m_pegManager.ResolveTurn();
 
+        // set up the next turn
+        SetUpTurn();
     }
 
     public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false)
@@ -242,14 +225,8 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
         m_ballCountText.text = m_ballCount.ToString();
 
-        // TEMP
         // reload the power
-        m_TEMP.Reload();
-		//m_greenPegPower(PowerFunctionMode.Reload, Vector3.zero);
-        
-
-        // set the game state to the Turn Set Up phase
-        m_currentGameState = GameState.TurnSetUp;
+        m_power.Reload();
 		
 		// destroy the ball if one exists
 		if (m_ball != null)
@@ -259,6 +236,9 @@ public class PlayerControls : MonoBehaviour
 		
 		// reset the time scale
 		ModifyTimeScale(m_defaultTimeScale);
+
+        // set up the turn
+        SetUpTurn();
     }
 
     void Start()
@@ -283,8 +263,8 @@ public class PlayerControls : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // if the current game state is shoot
-        if (m_currentGameState == GameState.Shoot)
+        // if the ball is not currently in play
+        if (!m_ballInPlay)
         {
             // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
             m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);
@@ -326,85 +306,35 @@ public class PlayerControls : MonoBehaviour
             }
         }
 
-        // if the current game state is Turn Set Up
-        if (m_currentGameState == GameState.TurnSetUp)
+        // if the ball is in play
+        if (m_ballInPlay)
         {
-            // enable the ball trajectory line
-            m_ballTrajectory.ShowLine(true);
-
-            // if the power should be set up this turn
-            if (m_setUpPowerNextTurn)
+            // if the ball exists, trigger the power's ball removal check function. If it does not override the default ball removal check and the ball has fallen low enough
+            if (m_ball != null && !m_power.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
             {
-                // TEMP
-                m_TEMP.SetUp();
-                /*
-                // set up the power for this turn
-                m_greenPegPower(PowerFunctionMode.SetUp, Vector3.zero);
-                */
-                // set the Set Up Power Next Turn flag to false as the power has now been set up
-                m_setUpPowerNextTurn = false;
-            }
-            else if (m_resolvePowerNextTurn)
-            {
-                // TEMP
-                m_TEMP.ResolvePower();
-                /*
-                // resolve the power
-                m_greenPegPower(PowerFunctionMode.Resolve, Vector3.zero);
-                */
-                // set the Resolve Power Next Turn flag to false as the power has now been resolved
-                m_resolvePowerNextTurn = false;
+                // remove the ball from play
+                RemoveBall();
             }
             
-            // change the game state to shoot
-            m_currentGameState = GameState.Shoot;
         }
-
-        // if the current game state is Shoot
-        if (m_currentGameState == GameState.Shoot)
+        // if the ball does not exist, allow the player to shoot a ball
+        else
         {
             // if the Shoot / Use Power input has been detected
             if (Input.GetButtonDown("Shoot / Use Power"))
             {
-                // shoot a ball
-                m_ball = Shoot();
-                // TEMP
-                m_TEMP.OnShoot();
-                /*
-                // have the power trigger its On Shoot effect
-                m_greenPegPower(PowerFunctionMode.OnShoot, Vector3.zero);
-                */
+                // trigger the power's on shoot function. If it should not override the default shoot function
+                if (!m_power.OnShoot())
+                {
+                    // shoot a ball
+                    m_ball = Shoot();
+                }
 
-                // change the current game state to Ball In Play
-                m_currentGameState = GameState.BallInPlay;
+                // store that the ball is now in play
+                m_ballInPlay = true;
 
                 // disable the ball trajectory line
                 m_ballTrajectory.ShowLine(false);
-            }
-            // TEMP
-            /*
-            // otherwise, if the Speed Up Time input has been detected
-            else if (Input.GetButton("Speed Up Time"))
-            {
-                // change the timescale to the sped up timescale
-                ModifyTimeScale(m_spedUpTimeScale);
-            }
-            // otherwise, if the Speed Up Time button has been released
-            else if (Input.GetButtonUp("Speed Up Time"))
-            {
-                // reset the timescale
-                ModifyTimeScale(m_defaultTimeScale);
-            }
-            */
-        }
-        // if the current gamestate is Ball In Play
-        else if (m_currentGameState == GameState.BallInPlay)
-        {
-            // if the ball is in play and has fallen low enough (or high enough with the Sweets Power)
-            if (m_ball != null && (m_ball.transform.position.y <= m_ballKillFloor || m_ball.transform.position.y >= -m_ballKillFloor))
-            {
-				// remove the ball from play
-				RemoveBall();
             }
         }
     }

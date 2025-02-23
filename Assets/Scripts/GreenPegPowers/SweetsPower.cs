@@ -6,11 +6,10 @@ using UnityEngine;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class SweetsPower : GreenPegPower
 {
-	[HideInInspector] public new int m_gainedPowerCharges = 3;
 	public MoveToPoints m_bucket;
 	public GameObject m_victoryBuckets;
 	public GameObject m_launcher;
@@ -59,7 +58,20 @@ public class SweetsPower : GreenPegPower
 		ToggleHillside();
 	}
 
-	public override void Reload()
+    public override bool BallRemovalCheck(GameObject a_ball)
+    {
+		// if the ball is in play and has fallen low enough (or high enough if Hillside is active)
+		if (a_ball.transform.position.y <= m_playerControls.m_ballKillFloor || a_ball.transform.position.y >= -m_playerControls.m_ballKillFloor)
+		{
+            // have player controls remove the ball from play
+            m_playerControls.RemoveBall();
+        }
+
+		// return that this function should override the default ball removal check
+		return true;
+    }
+
+    public override void Reload()
 	{
 		// if the power has flipped gravity to be positive
 		if (Physics2D.gravity.y > 0)

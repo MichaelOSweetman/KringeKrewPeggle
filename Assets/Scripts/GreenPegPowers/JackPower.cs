@@ -6,11 +6,10 @@ using UnityEngine;
 	File name: JackPower.cs
 	Summary: Manages the power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 24/02/2025
 */
 public class JackPower : GreenPegPower
 {
-	public new int m_gainedPowerCharges = 4;
     int m_communistPegScore = 0;
     int m_defaultBluePegScore = 0;
     int m_defaultOrangePegScore = 0;
