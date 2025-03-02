@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 03/03/2025
 */
 public class BenPower : GreenPegPower
 {
@@ -44,6 +44,9 @@ public class BenPower : GreenPegPower
         Isaac.transform.position = m_isaacSpawnPosition;
         // give Isaac the player controls component
         Isaac.GetComponent<Isaac>().m_playerControls = m_playerControls;
+
+        // give player controls Isaac in place of the ball
+        m_playerControls.m_ball = Isaac;
 
         // reduce the ball count by one as a the Isaac counts as a ball for the purposes of the ball count
         --m_playerControls.m_ballCount;

@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 24/02/2025
+    Last Modified: 03/03/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -258,13 +258,15 @@ public class PlayerControls : MonoBehaviour
         //    SetGreenPegPower(m_pegManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID);
         //}
 
+        // TEMP
+        m_power.Initialize();
         
     }
 
     private void FixedUpdate()
     {
-        // if the ball is not currently in play
-        if (!m_ballInPlay)
+        // if the ball is not currently in play and the ball trajectory line is currently active
+        if (!m_ballInPlay && m_ballTrajectory.enabled)
         {
             // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
             m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);

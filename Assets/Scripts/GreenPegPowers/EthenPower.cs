@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 03/03/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -25,6 +25,47 @@ public class EthenPower : GreenPegPower
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
+
+    public void EndDrawButtonPressed()
+    {
+        // turn off the drawing UI elements
+        m_endDrawButton.SetActive(false);
+        m_clearButton.SetActive(false);
+        m_inkResourceBarBackground.SetActive(false);
+
+        // take the player out of drawing mode
+        m_drawing = false;
+
+        // enable player controls
+        m_playerControls.enabled = true;
+
+        // turn on the LookAtCursor component of the launcher
+        m_playerControls.m_LauncherLookControls.enabled = true;
+
+        // turn on the ball trajectory
+        m_playerControls.m_ballTrajectory.ShowLine(true);
+
+        // reduce the amount of power charges
+        ModifyPowerCharges(-1);
+
+        // if there are still power charges
+        if (m_powerCharges > 0)
+        {
+            // have the drawing power get set up next turn
+            m_playerControls.m_setUpPowerNextTurn = true;
+        }
+    }
+
+    public void ClearDrawingButtonPressed()
+    {
+        // reset the amount of ink
+        m_ink = m_maxInk;
+        UpdateInkResourceBar();
+
+        // destroy all lines
+        DestroyLines();
+
+    }
 
     public bool CursorWithinPlayArea()
     {
@@ -106,11 +147,19 @@ public class EthenPower : GreenPegPower
         // turn off the LookAtCursor component of the launcher
         m_playerControls.m_LauncherLookControls.enabled = false;
 
+        // disable player controls
+        m_playerControls.enabled = false;
+
         // put the player in drawing mode
         m_drawing = true;
 
         // initialise the previous mouse position variable
         m_previousMousePosition = Input.mousePosition;
+    }
+
+    public override bool OnShoot()
+    {
+        return false;
     }
 
     public override void ResolveTurn()
@@ -135,8 +184,14 @@ public class EthenPower : GreenPegPower
         // store that a line has not begun being drawn
         m_lineBegun = false;
 
+        // ensure that player controls is enabled
+        m_playerControls.enabled = true;
+
         // ensure the LookAtCursor component of the launcher is on
         m_playerControls.m_LauncherLookControls.enabled = true;
+
+        // turn on the ball trajectory
+        m_playerControls.m_ballTrajectory.ShowLine(true);
 
         // reset the power charges
         ResetPowerCharges();
@@ -144,8 +199,8 @@ public class EthenPower : GreenPegPower
 
     public override void Update()
     {
-        // if the ball is not in play and drawing mode is on
-        if (!m_playerControls.m_ballInPlay && m_drawing)
+        // if drawing mode is on
+        if (m_drawing)
         {
             // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
             if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
