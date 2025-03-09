@@ -6,7 +6,7 @@ using UnityEngine;
     File name: NearVictoryDetector.cs
     Summary: Prompts the camera to zoom in towards the ball when it is in the detector's space
     Creation Date: 04/12/2023
-    Last Modified: 16/12/2024
+    Last Modified: 10/03/2025
 */
 public class NearVictoryDetector : MonoBehaviour
 {
@@ -60,7 +60,7 @@ public class NearVictoryDetector : MonoBehaviour
                 // tell the camera to return to its default zoom and position
                 m_cameraZoom.ReturnToDefault();
                 // reset the time scale
-                m_playerControls.ModifyTimeScale(m_playerControls.m_defaultTimeScale);
+                m_playerControls.ModifyTimeScale();
             }
         }
     }

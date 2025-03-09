@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 10/03/2025
 */
 public class PhoebePower : GreenPegPower
 {
@@ -34,6 +34,24 @@ public class PhoebePower : GreenPegPower
                 m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
             }
         }
+    }
+
+    public override bool OnShoot()
+    {
+        if (m_powerCharges > 0)
+        {
+            // reduce the power charges by 1
+            ModifyPowerCharges(-1);
+            // if there are now 0 charges
+            if (m_powerCharges == 0)
+            {
+                // have the power resolve at the start of next turn
+                m_playerControls.m_resolvePowerNextTurn = true;
+            }
+        }
+
+        // return that this function should not override the default ball removal check
+        return false;
     }
 
     public override void ResolveTurn()

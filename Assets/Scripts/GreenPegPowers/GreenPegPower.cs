@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /*
-	File name: SweetsPower.cs
+	File name: GreenPegPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 10/03/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
@@ -38,15 +38,19 @@ public abstract class GreenPegPower : MonoBehaviour
 
     public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
-		// if there are 0 power charges
-		if (m_powerCharges == 0)
+		// if there are 0 power charges and the power was not about to be resolved (and therefore already active)
+		if (m_powerCharges == 0 && !m_playerControls.m_resolvePowerNextTurn)
 		{
 			// have the power set up next turn
 			m_playerControls.m_setUpPowerNextTurn = true;
-		}
+        }
+
 		// add the charges
 		ModifyPowerCharges(m_gainedPowerCharges);
-	}
+
+        // ensure the power doesn't resolve at the end of this turn
+        m_playerControls.m_resolvePowerNextTurn = false;
+    }
 
 	public virtual void SetUp()
 	{
@@ -55,20 +59,9 @@ public abstract class GreenPegPower : MonoBehaviour
 
 	public virtual bool OnShoot()
 	{
-		if (m_powerCharges > 0)
-		{
-			// reduce the power charges by 1
-			ModifyPowerCharges(-1);
-			// if there are now 0 charges
-			if (m_powerCharges == 0)
-			{
-                // have the power resolve at the start of next turn
-                m_playerControls.m_resolvePowerNextTurn = true;
-			}
-		}
-
-		return false;
-	}
+        // return that this function should not override the default shoot function
+        return false;
+    }
 
 	public virtual bool BallRemovalCheck(GameObject a_ball)
 	{

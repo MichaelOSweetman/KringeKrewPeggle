@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 03/03/2025
+    Last Modified: 10/03/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -134,7 +134,7 @@ public class PlayerControls : MonoBehaviour
     GameObject Shoot()
     {
         // switch the time scale back to default
-        ModifyTimeScale(m_defaultTimeScale);
+        ModifyTimeScale();
 
         // create a copy of the ball prefab
         GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
@@ -211,10 +211,10 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    public void ModifyTimeScale(float a_newTimeScale)
+    public void ModifyTimeScale(float a_newTimeScale = -1.0f)
     {
-        // set the time scale to the new value
-        Time.timeScale = a_newTimeScale;
+        // set the time scale to the new value (use the default time scale if the value is below 0 or if no argument value has been provided)
+        Time.timeScale = (a_newTimeScale < 0.0f) ? m_defaultTimeScale: a_newTimeScale;
         // ensure fixedUpdate is called with the same frequency regardless of time scale so physics remains smooth
         Time.fixedDeltaTime = m_defaultDeltaTime * Time.timeScale;
     }
@@ -235,7 +235,7 @@ public class PlayerControls : MonoBehaviour
 		}
 		
 		// reset the time scale
-		ModifyTimeScale(m_defaultTimeScale);
+		ModifyTimeScale();
 
         // set up the turn
         SetUpTurn();
@@ -288,7 +288,7 @@ public class PlayerControls : MonoBehaviour
         else if (Input.GetButtonUp("Speed Up Time"))
         {
             // reset the timescale
-            ModifyTimeScale(m_defaultTimeScale);
+            ModifyTimeScale();
         }
         // TEMP
 

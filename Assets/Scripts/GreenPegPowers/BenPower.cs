@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 03/03/2025
+	Last Modified: 10/03/2025
 */
 public class BenPower : GreenPegPower
 {
@@ -17,6 +17,8 @@ public class BenPower : GreenPegPower
 	{
         // add the charges
         ModifyPowerCharges(m_gainedPowerCharges);
+        // ensure the power doesn't resolve at the end of this turn
+        m_playerControls.m_resolvePowerNextTurn = false;
     }
 
 	public override bool OnShoot()

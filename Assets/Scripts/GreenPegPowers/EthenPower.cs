@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 03/03/2025
+	Last Modified: 10/03/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -155,11 +155,6 @@ public class EthenPower : GreenPegPower
 
         // initialise the previous mouse position variable
         m_previousMousePosition = Input.mousePosition;
-    }
-
-    public override bool OnShoot()
-    {
-        return false;
     }
 
     public override void ResolveTurn()

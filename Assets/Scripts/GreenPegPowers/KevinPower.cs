@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 10/03/2025
 */
 public class KevinPower : GreenPegPower
 {
@@ -21,7 +21,7 @@ public class KevinPower : GreenPegPower
         ModifyPowerCharges(m_gainedPowerCharges);
     }
 
-	public override void Reload()
+    public override void Reload()
 	{
         // tell the camera to return to its default state instantly
         m_playerControls.m_cameraZoom.ReturnToDefault(true);
@@ -34,8 +34,19 @@ public class KevinPower : GreenPegPower
 
     public override void Update()
     {
-		// if the ball is in play and there are power charges
-		if (m_playerControls.m_ballInPlay && m_powerCharges > 0)
+        // if the show sniper scope button has been released
+        if (Input.GetButtonUp("Show Sniper Scope"))
+        {
+            // tell the camera to return to its default state
+            m_cameraZoom.ReturnToDefault();
+            // hide the scope overlay
+            m_scopeOverlay.SetActive(false);
+            // reset the time scale
+            m_playerControls.ModifyTimeScale();
+        }
+
+        // if the ball is in play and there are power charges
+        if (m_playerControls.m_ballInPlay && m_powerCharges > 0)
 		{
             // if the show sniper scope button has been pressed
             if (Input.GetButtonDown("Show Sniper Scope"))
@@ -68,5 +79,6 @@ public class KevinPower : GreenPegPower
                 }
             }
         }
+        
     }
 }
