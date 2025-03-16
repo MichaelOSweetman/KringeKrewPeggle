@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 10/03/2025
+    Last Modified: 17/03/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -53,41 +53,6 @@ public class PlayerControls : MonoBehaviour
     [Header("Audio")]
     public AudioSource m_freeBallAudioSource;
     public AudioClip[] m_freeBallSounds;
-
-    public void SetGreenPegPower(int a_characterID)
-    {
-        // TEMP
-        //switch (a_characterID)
-        //{
-        //    case 0:
-        //        m_greenPegPower = SweetsPower;
-        //        break;
-        //    case 1:
-        //        m_greenPegPower = JackPower;
-        //        break;
-        //    case 2:
-        //        m_greenPegPower = MatejaPower;
-        //        break;
-        //    case 3:
-        //        m_greenPegPower = PhoebePower;
-        //        break;
-        //    case 4:
-        //        m_greenPegPower = DanielPower;
-        //        break;
-        //    case 5:
-        //        m_greenPegPower = KevinPower;
-        //        break;
-        //    case 6:
-        //        m_greenPegPower = EthenPower;
-        //        break;
-        //    case 7:
-        //        m_greenPegPower = LokiPower;
-        //        break;
-        //    case 8:
-        //        m_greenPegPower = BenPower;
-        //        break;
-        //}
-    }
 
 	public void RemoveBall()
 	{
@@ -225,8 +190,11 @@ public class PlayerControls : MonoBehaviour
         m_ballCount = m_startingBallCount;
         m_ballCountText.text = m_ballCount.ToString();
 
-        // reload the power
-        m_power.Reload();
+        // reload the power if it exists
+        if (m_power != null)
+        {
+            m_power.Reload();
+        }
 		
 		// destroy the ball if one exists
 		if (m_ball != null)
@@ -259,7 +227,7 @@ public class PlayerControls : MonoBehaviour
         //}
 
         // TEMP
-        m_power.Initialize();
+        //m_power.Initialize();
         
     }
 

@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /*
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 13/01/2025
+    Last Modified: 17/03/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -34,18 +35,34 @@ public class UIManager : MonoBehaviour
     public AudioSource m_feverAudioSource;
     public AudioSource m_soundEffectAudioSource;
 
+    [Header("Character Select")]
+    public GameObject m_launcher;
+    public RectTransform m_selectedBorder;
+    public GameObject[] m_characterPrefabs;
+    public Text m_powerChargesText;
+    GameObject m_playerIcon;
+
     bool m_newHighScore = false;
     SaveFile m_saveFile;
-    int m_playableCharacterCount = 9;
     int m_selectedCharacterID = 0;
 
     public void LockInCharacter()
     {
         // enable the player controls
         m_playerControls.enabled = true;
+        
+        // set the player icon to be the prefab for the corresponding character
+        m_playerIcon = Instantiate(m_characterPrefabs[m_selectedCharacterID], m_launcher.transform) as GameObject;
 
-        // have player controls set the green peg power
-        m_playerControls.SetGreenPegPower(m_selectedCharacterID);
+        // give player controls access to the character's power
+        m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
+
+        // give the character's power script access to player controls and the power charges text
+        m_playerControls.m_power.m_playerControls = m_playerControls;
+        m_playerControls.m_power.m_PowerChargesText = m_powerChargesText;
+
+        // initialise the power
+        m_playerControls.m_power.Initialize();
 
         // TEMP
         // set corresponding art assets for character, victory music, etc
@@ -57,16 +74,20 @@ public class UIManager : MonoBehaviour
     public void SelectCharacter(int a_characterID)
     {
         // if the character ID is greater than the amount of characters, the random option has been selected
-        if (a_characterID >= m_playableCharacterCount)
+        if (a_characterID >= m_characterPrefabs.Length)
         {
             // get a random character
-            m_selectedCharacterID = Random.Range(0, m_playableCharacterCount);
+            m_selectedCharacterID = Random.Range(0, m_characterPrefabs.Length);
         }
         else
         {
             // set the selected character to the character clicked on
             m_selectedCharacterID = a_characterID;
         }
+
+        // TEMP
+        m_selectedBorder.position = EventSystem.current.currentSelectedGameObject.transform.position;
+
         // TEMP
         // Put gold border around small art
         // put set big image to corresponding character art
