@@ -96,16 +96,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 0}
-  m_PowerChargesText: {fileID: 0}
+  m_powerChargesText: {fileID: 0}
   m_gainedPowerCharges: 2
   m_powerCharges: 0
-  m_drawingBounds: {fileID: 0}
-  m_lines: {fileID: 0}
+  m_drawingBoundsPrefab: {fileID: 2467824702774284529, guid: 60247e27402022b44a01df75ef5fb79e, type: 3}
+  m_endDrawButtonPrefab: {fileID: 3688060022993961037, guid: d5621cc64d4c7c640853ed6c56bb15f4, type: 3}
+  m_clearButtonPrefab: {fileID: 6550358559629027742, guid: 8590ae26a80c20247903fda9ef4d1c56, type: 3}
+  m_inkResourceBarPrefab: {fileID: 8363524120243464843, guid: bc9f5cd19c52a0c4b890598d094ee4cf, type: 3}
   m_linePrefab: {fileID: 3989778212776657580, guid: 836673e1555ec684eb3348b26ea8496c, type: 3}
-  m_endDrawButton: {fileID: 0}
-  m_clearButton: {fileID: 0}
-  m_inkResourceBarBackground: {fileID: 0}
   m_maxInk: 500
   m_minValidSquareMouseMovement: 0.05
-  m_ink: 0
-  m_drawing: 0

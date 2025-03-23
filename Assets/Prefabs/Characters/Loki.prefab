@@ -96,11 +96,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 0}
-  m_PowerChargesText: {fileID: 0}
+  m_powerChargesText: {fileID: 0}
   m_gainedPowerCharges: 2
   m_powerCharges: 0
-  m_cord: {fileID: 0}
+  m_cordPrefab: {fileID: 4793078581500905344, guid: 8123dc93e4c7d2847b0f505308c268e5, type: 3}
+  m_hookPrefab: {fileID: 6419538886355020805, guid: 22e1ff098bcbe964da2db315c121743d, type: 3}
   m_maxCordLength: 5
-  m_hook: {fileID: 0}
   m_hookLaunchSpeed: 30
   m_pullSpeed: 7.5

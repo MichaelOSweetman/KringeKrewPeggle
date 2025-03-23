@@ -6,20 +6,25 @@ using UnityEngine;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 24/03/2025
 */
 public class EthenPower : GreenPegPower
 {
-    public RectTransform m_drawingBounds;
-    public GameObject m_lines;
+    public GameObject m_drawingBoundsPrefab;
+    public GameObject m_endDrawButtonPrefab;
+    public GameObject m_clearButtonPrefab;
+    public GameObject m_inkResourceBarPrefab;
     public GameObject m_linePrefab;
-    public GameObject m_endDrawButton;
-    public GameObject m_clearButton;
-    public GameObject m_inkResourceBarBackground;
     public float m_maxInk = 500.0f;
     public float m_minValidSquareMouseMovement = 0.05f;
-    [HideInInspector] public float m_ink = 0.0f;
-    [HideInInspector] public bool m_drawing = false;
+
+    float m_ink = 0.0f;
+    bool m_drawing = false;
+    GameObject m_lines;
+    RectTransform m_drawingBounds;
+    GameObject m_endDrawButton;
+    GameObject m_clearButton;
+    GameObject m_inkResourceBarBackground;
     bool m_lineBegun = false;
     LineRenderer m_currentLineRenderer;
     RectTransform m_inkResourceBar;
@@ -123,6 +128,17 @@ public class EthenPower : GreenPegPower
 
     public override void Initialize()
     {
+        // create an empty gameobject to store created lines and set its position to 0
+        m_lines = new GameObject();
+        m_lines.transform.position = Vector3.zero;
+
+        // create the end draw button, clear button, ink resource bar and drawing bounds and set their parent to be the parent of the power charges text so they are on the canvas
+        m_endDrawButton = Instantiate(m_endDrawButtonPrefab, m_powerChargesText.rectTransform.parent);
+        m_clearButton = Instantiate(m_clearButtonPrefab, m_powerChargesText.rectTransform.parent);
+        m_inkResourceBarBackground = Instantiate(m_inkResourceBarPrefab, m_powerChargesText.rectTransform.parent);
+        GameObject drawingBounds = Instantiate(m_drawingBoundsPrefab, m_powerChargesText.rectTransform.parent);
+        m_drawingBounds = drawingBounds.GetComponent<RectTransform>();
+
         // get the child of the ink resource bar background as the ink resource bar
         m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();
 

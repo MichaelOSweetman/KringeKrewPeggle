@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 17/03/2025
+    Last Modified: 24/03/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -59,7 +59,7 @@ public class UIManager : MonoBehaviour
 
         // give the character's power script access to player controls and the power charges text
         m_playerControls.m_power.m_playerControls = m_playerControls;
-        m_playerControls.m_power.m_PowerChargesText = m_powerChargesText;
+        m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
         // initialise the power
         m_playerControls.m_power.Initialize();

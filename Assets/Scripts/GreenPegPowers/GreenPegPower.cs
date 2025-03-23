@@ -7,13 +7,13 @@ using UnityEngine.UI;
 	File name: GreenPegPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 24/03/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
-	public PlayerControls m_playerControls;
-    public Text m_PowerChargesText;
 	public int m_gainedPowerCharges = 0;
+	[HideInInspector] public PlayerControls m_playerControls;
+    [HideInInspector] public Text m_powerChargesText;
     [HideInInspector] public int m_powerCharges = 0;
 
     public void ModifyPowerCharges(int a_modifier)
@@ -21,14 +21,14 @@ public abstract class GreenPegPower : MonoBehaviour
         // increase the power charges by the modifier
         m_powerCharges += a_modifier;
         // update the UI text
-        m_PowerChargesText.text = m_powerCharges.ToString();
+        m_powerChargesText.text = m_powerCharges.ToString();
     }
 
 	public void ResetPowerCharges()
 	{
 		// reset the power charges
 		m_powerCharges = 0;
-		m_PowerChargesText.text = m_powerCharges.ToString();
+		m_powerChargesText.text = m_powerCharges.ToString();
 	}
 
 	public virtual void Initialize()

@@ -7,15 +7,18 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 24/02/2025
+	Last Modified: 24/03/2025
 */
 public class LokiPower : GreenPegPower
 {
-    public LineRenderer m_cord;
+
+    public GameObject m_cordPrefab;
+    public GameObject m_hookPrefab;
     public float m_maxCordLength = 5.0f;
-    public GameObject m_hook;
     public float m_hookLaunchSpeed = 30.0f;
     public float m_pullSpeed = 7.5f;
+    LineRenderer m_cord;
+    GameObject m_hook;
     GameObject m_connectionPoint;
     bool m_connectedToPeg = false;
 
@@ -29,6 +32,14 @@ public class LokiPower : GreenPegPower
         m_hook.SetActive(false);
         // expend a power charge
         ModifyPowerCharges(-1);
+    }
+
+    public override void Initialize()
+    {
+        // create the hook and cord
+        m_hook = Instantiate(m_hookPrefab);
+        GameObject cord = Instantiate(m_cordPrefab);
+        m_cord = cord.GetComponent<LineRenderer>();
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)

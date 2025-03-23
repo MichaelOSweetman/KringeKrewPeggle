@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 24/03/2025
 */
 public class SweetsPower : GreenPegPower
 {
@@ -15,7 +15,8 @@ public class SweetsPower : GreenPegPower
 	public GameObject m_launcher;
 	public GameObject m_topWall;
 	public GameObject m_gameOverlay;
-	public GameObject m_hillsideGameOverlay;
+	public GameObject m_hillsideGameOverlayPrefab;
+	GameObject m_hillsideGameOverlay;
 	public LauncherRotation m_LauncherLookControls;
 
 	void ToggleHillside()
@@ -50,6 +51,12 @@ public class SweetsPower : GreenPegPower
 
 		// invert gravity
 		Physics2D.gravity *= -1;
+	}
+
+	public override void Initialize()
+	{
+		// create the hillside game overlay
+		m_hillsideGameOverlay = Instantiate(m_hillsideGameOverlayPrefab);
 	}
 
 	public override void SetUp()

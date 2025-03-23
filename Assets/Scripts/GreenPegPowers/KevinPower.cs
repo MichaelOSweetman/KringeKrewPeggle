@@ -6,14 +6,21 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 24/03/2025
 */
 public class KevinPower : GreenPegPower
 {
+    public GameObject m_scopeOverlayPrefab;
     public CameraZoom m_cameraZoom;
-    public GameObject m_scopeOverlay;
+    GameObject m_scopeOverlay;
     public float m_forceToBall = 2000.0f;
     public float m_scopedTimeScale = 0.3f;
+
+    public override void Initialize()
+    {
+        // create the scope overlay and set its parent to be the parent of the power charges text so they are on the canvas
+        m_scopeOverlay = Instantiate(m_scopeOverlayPrefab, m_powerChargesText.rectTransform.parent);
+    }
 
     public override void Trigger(Vector3 a_greenPegPosition)
 	{

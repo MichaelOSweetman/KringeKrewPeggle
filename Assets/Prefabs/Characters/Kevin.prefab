@@ -96,10 +96,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 0}
-  m_PowerChargesText: {fileID: 0}
+  m_powerChargesText: {fileID: 0}
   m_gainedPowerCharges: 2
   m_powerCharges: 0
+  m_scopeOverlayPrefab: {fileID: 131653030405220605, guid: 4dc3a594be6c1954584073384062b90d, type: 3}
   m_cameraZoom: {fileID: 0}
-  m_scopeOverlay: {fileID: 0}
   m_forceToBall: 2000
   m_scopedTimeScale: 0.3
