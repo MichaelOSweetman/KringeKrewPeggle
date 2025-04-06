@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 31/03/2025
+	Last Modified: 07/03/2025
 */
 public class LokiPower : GreenPegPower
 {
@@ -36,8 +36,9 @@ public class LokiPower : GreenPegPower
 
     public override void Initialize()
     {
-        // create the hook and cord
+        // create the hook and cord. Give the hook access to this component
         m_hook = Instantiate(m_hookPrefab);
+        m_hook.GetComponent<Hook>().m_lokiPower = this;
         GameObject cord = Instantiate(m_cordPrefab);
         m_cord = cord.GetComponent<LineRenderer>();
     }

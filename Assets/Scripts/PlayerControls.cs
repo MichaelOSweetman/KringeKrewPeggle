@@ -143,6 +143,8 @@ public class PlayerControls : MonoBehaviour
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn
         m_pegManager.ResolveTurn();
+        // tell the power to resolve the turn
+        m_power.ResolveTurn();
 
         // set up the next turn
         SetUpTurn();

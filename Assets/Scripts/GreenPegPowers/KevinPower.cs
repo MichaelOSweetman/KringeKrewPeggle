@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 31/03/2025
+	Last Modified: 07/04/2025
 */
 public class KevinPower : GreenPegPower
 {
@@ -16,10 +16,26 @@ public class KevinPower : GreenPegPower
     public float m_forceToBall = 2000.0f;
     public float m_scopedTimeScale = 0.3f;
 
+    void HideSniperScope(bool a_instant = false)
+    {
+        // tell the camera to return to its default state
+        m_cameraZoom.ReturnToDefault(a_instant);
+        // hide the scope overlay
+        m_scopeOverlay.SetActive(false);
+        // reset the time scale
+        m_playerControls.ModifyTimeScale();
+    }
+
     public override void Initialize()
     {
         // create the scope overlay and set its parent to be the parent of the power charges text so they are on the canvas
         m_scopeOverlay = Instantiate(m_scopeOverlayPrefab, m_powerChargesText.rectTransform.parent);
+
+        // give the sniper ball indicator access to player controls so it can access the ball
+        m_scopeOverlay.transform.GetChild(0).GetComponent<RotateToBall>().m_playerControls = m_playerControls;
+
+        // get access to the camera zoom component from player controls
+        m_cameraZoom = m_playerControls.m_cameraZoom;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -28,19 +44,10 @@ public class KevinPower : GreenPegPower
         ModifyPowerCharges(m_gainedPowerCharges);
     }
 
-    public override void ResolvePower()
+    public override void ResolveTurn()
     {
-        if (m_powerCharges == 0)
-        {
-            // tell the camera to return to its default state instantly
-            m_playerControls.m_cameraZoom.ReturnToDefault(true);
-
-            // hide the scope overlay
-            m_scopeOverlay.SetActive(false);
-
-            // reset the power charges
-            ResetPowerCharges();
-        }
+        // hide the sniper scope and return to the default camera position and zoom immediately
+        HideSniperScope(true);
     }
 
     public override void Reload()
@@ -60,12 +67,8 @@ public class KevinPower : GreenPegPower
         // if the show sniper scope button has been released
         if (Input.GetButtonUp("Show Sniper Scope"))
         {
-            // tell the camera to return to its default state
-            m_cameraZoom.ReturnToDefault();
-            // hide the scope overlay
-            m_scopeOverlay.SetActive(false);
-            // reset the time scale
-            m_playerControls.ModifyTimeScale();
+            // hide the sniper scope
+            HideSniperScope();
         }
 
         // if the ball is in play and there are power charges
@@ -90,8 +93,8 @@ public class KevinPower : GreenPegPower
                 // if there are now 0 charges
                 if (m_powerCharges == 0)
                 {
-                    // have the power resolve at the start of next turn
-                    m_playerControls.m_resolvePowerNextTurn = true;
+                    // hide the sniper scope
+                    HideSniperScope();
                 }
 
                 // if the camera is looking at the ball
