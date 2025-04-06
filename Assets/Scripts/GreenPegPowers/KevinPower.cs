@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 24/03/2025
+	Last Modified: 31/03/2025
 */
 public class KevinPower : GreenPegPower
 {
@@ -28,12 +28,28 @@ public class KevinPower : GreenPegPower
         ModifyPowerCharges(m_gainedPowerCharges);
     }
 
+    public override void ResolvePower()
+    {
+        if (m_powerCharges == 0)
+        {
+            // tell the camera to return to its default state instantly
+            m_playerControls.m_cameraZoom.ReturnToDefault(true);
+
+            // hide the scope overlay
+            m_scopeOverlay.SetActive(false);
+
+            // reset the power charges
+            ResetPowerCharges();
+        }
+    }
+
     public override void Reload()
-	{
+    {
         // tell the camera to return to its default state instantly
         m_playerControls.m_cameraZoom.ReturnToDefault(true);
-        // hide the scope overlay
-        m_scopeOverlay.SetActive(false);
+
+        // destroy the scope overlay
+        Destroy(m_scopeOverlay);
 
         // reset the power charges
         ResetPowerCharges();

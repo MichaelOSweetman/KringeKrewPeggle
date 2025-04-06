@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 24/03/2025
+	Last Modified: 31/03/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -144,6 +145,10 @@ public class EthenPower : GreenPegPower
 
         // get the width of the ink resource bar background
         m_inkResourceBarMaxWidth = m_inkResourceBarBackground.GetComponent<RectTransform>().sizeDelta.x;
+
+        // set the buttons to trigger their corresponding functions when clicked
+        m_endDrawButton.GetComponent<Button>().onClick.AddListener(EndDrawButtonPressed);
+        m_clearButton.GetComponent<Button>().onClick.AddListener(ClearDrawingButtonPressed);
     }
 
     public override void SetUp()
@@ -175,19 +180,30 @@ public class EthenPower : GreenPegPower
 
     public override void ResolveTurn()
     {
-        // Destroy any active lines
+        // destroy any active lines
         DestroyLines();
     }
 
-	public override void Reload()
+    public override void ResolvePower()
+    {
+
+    }
+
+    public override void Reload()
 	{
-        // Destroy all lines
+        // destroy all lines
         DestroyLines();
 
-        // turn off the drawing UI elements
-        m_endDrawButton.SetActive(false);
-        m_clearButton.SetActive(false);
-        m_inkResourceBarBackground.SetActive(false);
+        // destroy the line container
+        Destroy(m_lines);
+
+        // destroy the drawing UI elements
+        Destroy(m_endDrawButton);
+        Destroy(m_clearButton);
+        Destroy(m_inkResourceBarBackground);
+
+        // destroy the drawing bounds
+        Destroy(m_drawingBounds.gameObject);
 
         // take the player out of drawing mode
         m_drawing = false;
