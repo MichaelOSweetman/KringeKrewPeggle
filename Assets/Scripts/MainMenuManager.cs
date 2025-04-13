@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 13/01/2025
+	Last Modified: 14/04/2025
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -59,13 +59,34 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // loop for each save file
+        for (int i = 0; i < m_saveFile.m_maxSaves; ++i)
+        {
+            // get the file name for this save file
+            string fileName = m_saveFile.GetSaveFileName(i);
 
+            // if there is no file
+            if (fileName == "")
+            {
+                // set the save file button corresponding to this save file to be inactive
+                m_saveFileButtons[i].transform.gameObject.SetActive(false);
+            }
+            else
+            { 
+                // set the save file button's text to be the name of the file
+                UpdateSaveFileButtonText(i, m_saveFile.GetSaveFileName(i));
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        //TEMP
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            print(GlobalSettings.m_currentSaveID);
+        }
     }
 
     public void UpdateSaveFileButtonText(int a_saveFileID, string a_saveFileName)
@@ -93,6 +114,9 @@ public class MainMenuManager : MonoBehaviour
     {
         // read the selected save file selected
         m_saveFile.ReadSaveFile(m_selectedSaveFile);
+
+        // hide the change save menu
+        m_changeSaveMenu.SetActive(false);
     }
 
     public void SaveMenuDelete()

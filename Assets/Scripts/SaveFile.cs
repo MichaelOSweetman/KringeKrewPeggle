@@ -12,11 +12,10 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 20/01/2025
+	Last Modified: 14/04/2025
 */
 public class SaveFile : MonoBehaviour
 {
-    public MainMenuManager m_mainMenuManager = null;
     public string m_saveFilePath = "";
     public int m_maxSaves = 3;
     string m_fullSavePath = "";
@@ -25,7 +24,8 @@ public class SaveFile : MonoBehaviour
     [HideInInspector] public int m_lastCompletedLevel = 0;
     StreamWriter m_streamWriter;
     StreamReader m_streamReader;
-
+    // TEMP
+    bool m_initialized = false;
 
     [Header("Save File Data")]
     public string m_saveName = "";
@@ -37,6 +37,52 @@ public class SaveFile : MonoBehaviour
     public int m_volumeSavePrecision = 2;
     string m_fileName = "SaveFile";
     string m_fileType = ".txt";
+
+    void Initialize()
+    {
+        // determine the save file location using the application's save location and the specified location for the save file
+        m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
+        // initialise the high scores array to have an element for each level in the game
+        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
+
+        // read the current save, if it does not exist
+        if (!ReadSaveFile(GlobalSettings.m_currentSaveID))
+        {
+            // TEMP
+            print("could not read file");
+            // CREATE NEW SAVE
+        }
+
+        // store that this component has been initialised
+        m_initialized = true;
+    }
+
+    public string GetSaveFileName(int a_saveID)
+    {
+        // if this component has not yet initialised
+        if (!m_initialized)
+        {
+            // initialise
+            Initialize();
+        }
+
+        // if a file exists for this slot
+        if (File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType))
+        {
+            // open the file
+            m_streamReader = File.OpenText(m_fullSavePath + m_fileName + a_saveID + m_fileType);
+            // read and store the first line
+            string saveFileName = m_streamReader.ReadLine();
+            // close the file
+            m_streamReader.Dispose();
+            // return the save file name
+            return saveFileName;
+        }
+        else
+        {
+            return "";
+        }
+    }
 
     public void DeleteSaveFile(int a_saveID)
     {
@@ -90,7 +136,7 @@ public class SaveFile : MonoBehaviour
         print("File accessed and written to");
     }
 
-    public void ReadSaveFile(int a_saveID = 0)
+    public bool ReadSaveFile(int a_saveID = 0)
     {
         // store that the active save file is now this file
         GlobalSettings.m_currentSaveID = a_saveID;
@@ -103,22 +149,8 @@ public class SaveFile : MonoBehaviour
             // create a variable to store the data from each line. Get the first line
             string line = m_streamReader.ReadLine();
 
-            // if the line is empty
-            if (line == null || line == "")
-            {
-                // TEMP
-                print("File not found, creating file");
-
-                // close the file for reading
-                m_streamReader.Dispose();
-                // create the save file
-                UpdateSaveFile(a_saveID);
-                // exit this function
-                return;
-
-            }
-            // otherwise, if the line is not empty
-            else
+            // if the line is not empty
+            if (line != null && line != "")
             {
                 int settingIndex = 0;
                 string settingValue = "";
@@ -166,100 +198,66 @@ public class SaveFile : MonoBehaviour
                         settingValue += line[i];
                     }
                 }
-            }
 
-            // loop for each stage
-            for (int i = 0; i < GlobalSettings.m_stageCount; ++i)
-            {
-                // read the next line
-                line = m_streamReader.ReadLine();
+                // loop for each stage
+                for (int i = 0; i < GlobalSettings.m_stageCount; ++i)
+                {
+                    // read the next line
+                    line = m_streamReader.ReadLine();
 
-                // if the line is empty, the reader has gathered all data required
-                if (line == null || line == "")
-                {
-                    // exit the loop
-                    break;
-                }
-                // otherwise, if the line is not empty
-                else
-                {
-                    int levelNumber = 0;
-                    string highScore = "";
-                    // loop through the line
-                    for (int j = 0; j < line.Length; ++j)
+                    // if the line is empty, the reader has gathered all data required
+                    if (line == null || line == "")
                     {
-                        if (line[j] == ',')
+                        // exit the loop
+                        break;
+                    }
+                    // otherwise, if the line is not empty
+                    else
+                    {
+                        int levelNumber = 0;
+                        string highScore = "";
+                        // loop through the line
+                        for (int j = 0; j < line.Length; ++j)
                         {
-                            // add the high score to the high scores array
-                            m_highScores[i, levelNumber] = int.Parse(highScore);
-                            // move to the next level
-                            ++levelNumber;
-                            // reset the highscore variable for the next level
-                            highScore = "";
-                        }
-                        else
-                        {
-                            // add the character to the current high score value
-                            highScore += line[j];
+                            if (line[j] == ',')
+                            {
+                                // add the high score to the high scores array
+                                m_highScores[i, levelNumber] = int.Parse(highScore);
+                                // move to the next level
+                                ++levelNumber;
+                                // reset the highscore variable for the next level
+                                highScore = "";
+                            }
+                            else
+                            {
+                                // add the character to the current high score value
+                                highScore += line[j];
+                            }
                         }
                     }
                 }
+
+                // close the file
+                m_streamReader.Dispose();
+                return true;
             }
 
             // close the file
             m_streamReader.Dispose();
-
-            // TEMP
-            print("File found and read");
         }
-        // otherwise, if the save file does not exist
-        else
-        {
-            // TEMP
-            print("File not found, creating file");
 
-            // create the save file
-            UpdateSaveFile(a_saveID);
-        }
+        return false;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        // determine the save file location using the application's save location and the specified location for the save file
-        m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
-        // initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
-
-        string saveFileName = "";
-
-        // if this is the main menu
-        if (m_mainMenuManager != null)
+        // if this component has not yet initialised
+        if (!m_initialized)
         {
-            // loop for each save slot
-            for (int i = 0; i < m_maxSaves; ++i)
-            {
-                // if a file exists for this slot
-                if (File.Exists(m_fullSavePath + m_fileName + i + m_fileType))
-                {
-                    // open the file and read the first line
-                    m_streamReader = File.OpenText(m_fullSavePath + m_fileName + i + m_fileType);
-                    saveFileName = m_streamReader.ReadLine();
-
-                    // if the line is not empty
-                    if (saveFileName != null && saveFileName != "")
-                    {
-                        // initialise the select save file button for this save file
-                        m_mainMenuManager.UpdateSaveFileButtonText(i, saveFileName);
-                        // close the file for reading
-                        m_streamReader.Dispose();
-                    }
-                }
-            }
+            // initialise
+            Initialize();
         }
-
-        // read the first save file
-        ReadSaveFile();
     }
 
     // Update is called once per frame
