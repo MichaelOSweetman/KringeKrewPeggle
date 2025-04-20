@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 24/03/2025
+    Last Modified: 21/04/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
-    int m_selectedCharacterID = 0;
+    [HideInInspector] public int m_selectedCharacterID = 0;
 
     public void LockInCharacter()
     {
@@ -67,7 +67,7 @@ public class UIManager : MonoBehaviour
         // TEMP
         // set corresponding art assets for character, victory music, etc
 
-        // set the character select screen to be inactive
+        // set the character select screen to be inactive if it was active
         m_characterSelect.SetActive(false);
     }
 
@@ -120,6 +120,14 @@ public class UIManager : MonoBehaviour
             // show the try again screen
             m_tryAgain.SetActive(true);
         }
+    }
+
+    public void CloseDialogueScreen()
+    {
+        // enable player controls
+        m_playerControls.enabled = true;
+        // hide the dialogue screen
+        m_dialogueScreen.SetActive(false);
     }
 
 	public void SwitchToDialogue(int a_dialogueIndex)

@@ -2564,12 +2564,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c24b08b620153a44ad884b883f1e3ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_pegManager: {fileID: 2117815010}
+  m_uiManager: {fileID: 241605737}
   m_characterPortrait: {fileID: 1335586195}
   m_speakerText: {fileID: 555320079}
   m_generationSpeed: 0.05
   m_generateEachMessageOverSameDuration: 1
-  m_loadNextLevelOnComplete: 1
   m_characters:
   - m_title: Isaac
     m_expressions:
@@ -3382,6 +3381,7 @@ MonoBehaviour:
   - {fileID: 5969855082896416360, guid: 52e770bae1016be4ea33a383b9d13019, type: 3}
   - {fileID: 1640484969442033771, guid: d953f3e71b5ae4f49984bb01f22efd03, type: 3}
   m_powerChargesText: {fileID: 631596763}
+  m_selectedCharacterID: 0
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3394,7 +3394,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd22f703167cde4c8a0b91744b81bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_mainMenuManager: {fileID: 0}
   m_saveFilePath: Saves/
   m_maxSaves: 3
   m_SaveFileCount: 0
@@ -26422,7 +26421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1779825543
 RectTransform:
   m_ObjectHideFlags: 0
@@ -30627,16 +30626,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_uiManager: {fileID: 241605737}
   m_stages:
   - m_stageContainer: {fileID: 198342535}
     m_levels:
-    - {fileID: 669709419}
-    - {fileID: 1460324340}
-    - {fileID: 242558810}
+    - m_level: {fileID: 669709419}
+      m_dialogueIndex: 0
+    - m_level: {fileID: 1460324340}
+      m_dialogueIndex: -1
+    - m_level: {fileID: 242558810}
+      m_dialogueIndex: -1
     m_defaultPowerID: 6
   - m_stageContainer: {fileID: 1196364581}
     m_levels:
-    - {fileID: 1310540538}
+    - m_level: {fileID: 1310540538}
+      m_dialogueIndex: -1
     m_defaultPowerID: 6
   m_bluePegColor: {r: 0, g: 0.5019608, b: 1, a: 1}
   m_hitBluePegColor: {r: 0.3443396, g: 0.6734554, b: 1, a: 1}

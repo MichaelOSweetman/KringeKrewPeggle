@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 24/02/2025
+	Last Modified: 21/04/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -20,16 +20,23 @@ public class PegManager : MonoBehaviour
         Green,
     }
 
+    [System.Serializable] public struct Level
+    {
+        public GameObject m_level;
+        public int m_dialogueIndex;
+    }
+
     [System.Serializable] public struct Stage
     {
         public GameObject m_stageContainer;
-        public GameObject[] m_levels;
+        public Level[] m_levels;
         public int m_defaultPowerID;
     }
 
 
-    [Header("Player Controls")]
+    [Header("Other Scripts")]
     public PlayerControls m_playerControls;
+    public UIManager m_uiManager;
 
     [Header("Levels")]
     public Stage[] m_stages;
@@ -477,7 +484,7 @@ public class PegManager : MonoBehaviour
         m_victoryBuckets.SetActive(false);
         m_bucket.SetActive(true);
 
-        // store the argument gameobject as the current level
+        // store the argument stage and level as the current level
         GlobalSettings.m_currentStageID = a_stageID;
         GlobalSettings.m_currentLevelID = a_levelID;
 
@@ -494,15 +501,15 @@ public class PegManager : MonoBehaviour
         // make each level within the current stage inactive
         for (int i = 0; i < m_stages[GlobalSettings.m_currentStageID].m_levels.Length; ++i)
         {
-            m_stages[GlobalSettings.m_currentStageID].m_levels[i].SetActive(false);
+            m_stages[GlobalSettings.m_currentStageID].m_levels[i].m_level.SetActive(false);
         }
 
         // make the current level active
-        m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].SetActive(true);
+        m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].m_level.SetActive(true);
 
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
-        SearchForPegs(m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].transform);
+        SearchForPegs(m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].m_level.transform);
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -555,6 +562,23 @@ public class PegManager : MonoBehaviour
 
         // have the player controls reset for the new level
         m_playerControls.Reload();
+
+        // if the game is not in adventure mode
+        if (!GlobalSettings.m_adventureMode)
+        {
+            // TEMP
+            // have character select pop up appear
+        }
+        // otherwise, if the game is in adventure mode and this level has a valid dialogue index
+        else if (m_stages[a_stageID].m_levels[a_levelID].m_dialogueIndex >= 0)
+        {
+            // set the selected character to the default character for this stage
+            m_uiManager.m_selectedCharacterID = m_stages[a_stageID].m_defaultPowerID;
+            // have the UI Manager set assets for this character
+            m_uiManager.LockInCharacter();
+            // have the ui manager switch to the dialogue screen and use the dialogue specified by the level's dialogue index
+            m_uiManager.SwitchToDialogue(m_stages[a_stageID].m_levels[a_levelID].m_dialogueIndex);
+        }
     }
 
     // Start is called before the first frame update

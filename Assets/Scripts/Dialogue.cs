@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 25/08/2024
+    Last Modified: 21/04/2025
 */
 public class Dialogue : MonoBehaviour
 {
@@ -31,12 +31,11 @@ public class Dialogue : MonoBehaviour
 
 
 	Text m_dialogueTextBox;
-	public PegManager m_pegManager;
+	public UIManager m_uiManager;
 	public RawImage m_characterPortrait;
 	public Text m_speakerText;
 	public float m_generationSpeed = 0.2f;
 	public bool m_generateEachMessageOverSameDuration = false;
-	public bool m_loadNextLevelOnComplete = true;
 	public List<Character> m_characters;
 	public List<MessageSet> m_dialogueSets;
 	[HideInInspector] public int m_dialogueIndex = 0;
@@ -88,15 +87,8 @@ public class Dialogue : MonoBehaviour
 			// otherwise, if there are no more messages to display
 			else if (m_messageIndex == m_dialogueSets[m_dialogueIndex].m_messages.Length - 1)
 			{
-				// if the next level should be loaded now that the dialogue has completed
-				if (m_loadNextLevelOnComplete)
-				{
-					// have the peg manager load the next level
-					m_pegManager.LoadNextLevel();
-				}
-
-				// make this textbox inactive
-				gameObject.SetActive(false);
+				// have the ui manager close this dialogue screen
+				m_uiManager.CloseDialogueScreen();
 			}
 			// otherwise, if there are more messages to display and the current message is finished
 			else

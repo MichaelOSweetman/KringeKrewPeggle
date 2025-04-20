@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 17/03/2025
+    Last Modified: 21/04/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -77,6 +77,9 @@ public class PlayerControls : MonoBehaviour
         // enable the ball trajectory line
         m_ballTrajectory.ShowLine(true);
 
+        // store that the ball is not in play
+        m_ballInPlay = false;
+
         // if the power should be set up
         if (m_setUpPowerNextTurn)
         {
@@ -128,9 +131,6 @@ public class PlayerControls : MonoBehaviour
             // destroy it
             Destroy(m_ball);
         }
-
-        // store that the ball is not in play
-        m_ballInPlay = false;
 
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
