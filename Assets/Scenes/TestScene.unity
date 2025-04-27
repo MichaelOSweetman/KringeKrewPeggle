@@ -3285,6 +3285,7 @@ GameObject:
   - component: {fileID: 241605734}
   - component: {fileID: 241605737}
   - component: {fileID: 241605738}
+  - component: {fileID: 241605739}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -3353,6 +3354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_levelManager: {fileID: 241605739}
   m_pegManager: {fileID: 2117815010}
   m_dialogue: {fileID: 191030509}
   m_levelComplete: {fileID: 1268357385}
@@ -3381,7 +3383,6 @@ MonoBehaviour:
   - {fileID: 5969855082896416360, guid: 52e770bae1016be4ea33a383b9d13019, type: 3}
   - {fileID: 1640484969442033771, guid: d953f3e71b5ae4f49984bb01f22efd03, type: 3}
   m_powerChargesText: {fileID: 631596763}
-  m_selectedCharacterID: 0
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3405,6 +3406,35 @@ MonoBehaviour:
   m_fullscreenToggle: {fileID: 476794879}
   m_colorblindToggle: {fileID: 1907779088}
   m_volumeSavePrecision: 2
+--- !u!114 &241605739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241605733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb31de6ba05d9db4a8378c0e08f08b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_pegManager: {fileID: 2117815010}
+  m_uiManager: {fileID: 241605737}
+  m_stages:
+  - m_stageContainer: {fileID: 198342535}
+    m_levels:
+    - m_level: {fileID: 669709419}
+      m_dialogueIndex: 0
+    - m_level: {fileID: 1460324340}
+      m_dialogueIndex: -1
+    - m_level: {fileID: 242558810}
+      m_dialogueIndex: -1
+    m_defaultPowerID: 0
+  - m_stageContainer: {fileID: 1196364581}
+    m_levels:
+    - m_level: {fileID: 1310540538}
+      m_dialogueIndex: -1
+    m_defaultPowerID: 6
 --- !u!1 &242558810
 GameObject:
   m_ObjectHideFlags: 0
@@ -30626,22 +30656,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
-  m_uiManager: {fileID: 241605737}
-  m_stages:
-  - m_stageContainer: {fileID: 198342535}
-    m_levels:
-    - m_level: {fileID: 669709419}
-      m_dialogueIndex: 0
-    - m_level: {fileID: 1460324340}
-      m_dialogueIndex: -1
-    - m_level: {fileID: 242558810}
-      m_dialogueIndex: -1
-    m_defaultPowerID: 6
-  - m_stageContainer: {fileID: 1196364581}
-    m_levels:
-    - m_level: {fileID: 1310540538}
-      m_dialogueIndex: -1
-    m_defaultPowerID: 6
   m_bluePegColor: {r: 0, g: 0.5019608, b: 1, a: 1}
   m_hitBluePegColor: {r: 0.3443396, g: 0.6734554, b: 1, a: 1}
   m_orangePegColor: {r: 0.8301887, g: 0.37304664, b: 0, a: 1}

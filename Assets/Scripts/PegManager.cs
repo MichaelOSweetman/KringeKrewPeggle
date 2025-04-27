@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 21/04/2025
+	Last Modified: 27/04/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -20,27 +20,8 @@ public class PegManager : MonoBehaviour
         Green,
     }
 
-    [System.Serializable] public struct Level
-    {
-        public GameObject m_level;
-        public int m_dialogueIndex;
-    }
-
-    [System.Serializable] public struct Stage
-    {
-        public GameObject m_stageContainer;
-        public Level[] m_levels;
-        public int m_defaultPowerID;
-    }
-
-
     [Header("Other Scripts")]
     public PlayerControls m_playerControls;
-    public UIManager m_uiManager;
-
-    [Header("Levels")]
-    public Stage[] m_stages;
-    int m_levelPegCount;
 
     [Header("Peg Visuals")]
     public Color m_bluePegColor;
@@ -55,6 +36,7 @@ public class PegManager : MonoBehaviour
     [Header("Starting Pegs")]
     public int m_startingOrangePegCount = 6;
     public int m_startingGreenPegCount = 2;
+    int m_levelPegCount;
 
     [Header("Score")]
     public GameObject m_pegScoreTextPrefab;
@@ -103,6 +85,9 @@ public class PegManager : MonoBehaviour
     public float m_clearHitPegDelay = 0.25f;
     bool m_clearHitPegQueue = false;
     float m_clearHitPegQueueTimer = 0.0f;
+
+    // TEMP
+    bool m_initialized = false;
 
     void SetPegType(Peg a_peg, PegType a_pegType, bool a_hit)
     {
@@ -221,6 +206,13 @@ public class PegManager : MonoBehaviour
 
     void UpdateFreeBallProgressBar()
     {
+        // if this component has not yet initialised
+        if (!m_initialized)
+        {
+            // initialise
+            Initialize();
+        }
+
         // if the max amount of free balls have been awarded
         if (m_freeBallsAwarded >= m_freeBallProgressBarColors.Length)
         {
@@ -408,32 +400,6 @@ public class PegManager : MonoBehaviour
         return false;
     }
 
-    public void LoadNextLevel()
-    {
-        // if the current level is the last level of its stage
-        if (GlobalSettings.m_currentLevelID > m_stages[GlobalSettings.m_currentStageID].m_levels.Length)
-        {
-            // if the current stage is the last stage
-            if (GlobalSettings.m_currentStageID > m_stages.Length)
-            {
-                // load the first level of the first stage
-                LoadLevel(0, 0);
-            }
-            // if the current level is not the last level of the last stage
-            else
-            {
-                // load the first level of the next stage
-                LoadLevel(GlobalSettings.m_currentStageID + 1, 0);
-            }
-        }
-        // if the current level is not the last level of its stage
-        else
-        {
-            // load the level of the next level but the current stage
-            LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID + 1);
-        }
-    }
-
     void SearchForPegs(Transform a_transform)
     {
         // if the transform has the peg container tag
@@ -458,7 +424,7 @@ public class PegManager : MonoBehaviour
         }
     }
 
-    public void LoadLevel(int a_stageID, int a_levelID)
+    public void LoadLevel(Transform a_transform)
     {
         // ensure all the turn score trackers are at their initial state
         ResetTurnScore();
@@ -484,32 +450,9 @@ public class PegManager : MonoBehaviour
         m_victoryBuckets.SetActive(false);
         m_bucket.SetActive(true);
 
-        // store the argument stage and level as the current level
-        GlobalSettings.m_currentStageID = a_stageID;
-        GlobalSettings.m_currentLevelID = a_levelID;
-
-        // make each stage inactive
-        for (int i = 0; i < m_stages.Length; ++i)
-        {
-            // set the stage gameobject, which is the parent transform of its levels, to be inactive
-            m_stages[i].m_stageContainer.SetActive(false);
-        }
-
-        // make the current stage active
-        m_stages[GlobalSettings.m_currentStageID].m_stageContainer.SetActive(true);
-
-        // make each level within the current stage inactive
-        for (int i = 0; i < m_stages[GlobalSettings.m_currentStageID].m_levels.Length; ++i)
-        {
-            m_stages[GlobalSettings.m_currentStageID].m_levels[i].m_level.SetActive(false);
-        }
-
-        // make the current level active
-        m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].m_level.SetActive(true);
-
         // initisialse the peg array and search for pegs to add to it
         m_pegs = new List<Peg>();
-        SearchForPegs(m_stages[GlobalSettings.m_currentStageID].m_levels[GlobalSettings.m_currentLevelID].m_level.transform);
+        SearchForPegs(a_transform);
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -562,34 +505,16 @@ public class PegManager : MonoBehaviour
 
         // have the player controls reset for the new level
         m_playerControls.Reload();
-
-        // if the game is not in adventure mode
-        if (!GlobalSettings.m_adventureMode)
-        {
-            // TEMP
-            // have character select pop up appear
-        }
-        // otherwise, if the game is in adventure mode and this level has a valid dialogue index
-        else if (m_stages[a_stageID].m_levels[a_levelID].m_dialogueIndex >= 0)
-        {
-            // set the selected character to the default character for this stage
-            m_uiManager.m_selectedCharacterID = m_stages[a_stageID].m_defaultPowerID;
-            // have the UI Manager set assets for this character
-            m_uiManager.LockInCharacter();
-            // have the ui manager switch to the dialogue screen and use the dialogue specified by the level's dialogue index
-            m_uiManager.SwitchToDialogue(m_stages[a_stageID].m_levels[a_levelID].m_dialogueIndex);
-        }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Initialize()
     {
         // get the current height of the free ball progress bar
         m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
         // get the raw image component of the progress bar
         m_freeBallProgressBarImage = m_freeBallProgressBar.GetComponent<RawImage>();
         // initialise the progress bar height
-        UpdateFreeBallProgressBar();
+        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0.0f);
 
         // create an array to store the different score multipliers
         m_scoreMultipliers = new int[5] { 1, 2, 3, 5, 10 };
@@ -597,19 +522,26 @@ public class PegManager : MonoBehaviour
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
 
-        // load the current level
-        LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
+        // store that this component has been initialised
+        m_initialized = true;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // if this component has not yet initialised
+        if (!m_initialized)
+        {
+            // initialise
+            Initialize();
+        }
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        // TEMP
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            LoadNextLevel();
-        }
-
         // if the hit peg queue should be cleared
         if (m_clearHitPegQueue)
         {

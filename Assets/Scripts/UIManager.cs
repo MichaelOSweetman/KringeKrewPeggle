@@ -8,11 +8,12 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 21/04/2025
+    Last Modified: 27/04/2025
 */
 public class UIManager : MonoBehaviour
 {
     public PlayerControls m_playerControls;
+    public LevelManager m_levelManager;
     public PegManager m_pegManager;
 	public Dialogue m_dialogue;
 
@@ -44,10 +45,17 @@ public class UIManager : MonoBehaviour
 
     bool m_newHighScore = false;
     SaveFile m_saveFile;
-    [HideInInspector] public int m_selectedCharacterID = 0;
+    int m_selectedCharacterID = 0;
 
-    public void LockInCharacter()
+    public void LockInCharacter(bool a_useLevelDefault = false)
     {
+        // if the level's default character should be used
+        if (a_useLevelDefault)
+        {
+            // set the selected character ID to the level's default
+            m_selectedCharacterID = m_levelManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID;
+        }
+
         // enable the player controls
         m_playerControls.enabled = true;
         
@@ -91,6 +99,14 @@ public class UIManager : MonoBehaviour
         // TEMP
         // Put gold border around small art
         // put set big image to corresponding character art
+    }
+
+    public void ShowCharacterSelectScreen()
+    {
+        // show the character select menu
+        m_characterSelect.SetActive(true);
+        // disable the player controls
+        m_playerControls.enabled = false;
     }
 
     public void LevelOver(bool a_won)
@@ -145,7 +161,7 @@ public class UIManager : MonoBehaviour
         // reactivate player controls
         m_playerControls.enabled = true;
         // load the next level
-        m_pegManager.LoadNextLevel();
+        m_levelManager.LoadNextLevel();
         // hide the level complete screen
         m_levelComplete.SetActive(false);
     }
@@ -155,7 +171,7 @@ public class UIManager : MonoBehaviour
         // reactivate player controls
         m_playerControls.enabled = true;
         // reload the current level
-        m_pegManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
+        m_levelManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
         // hide the try again screen
         m_tryAgain.SetActive(false);
     }
@@ -214,10 +230,8 @@ public class UIManager : MonoBehaviour
         // if the game scene has been launched in quickplay mode
         if (!GlobalSettings.m_adventureMode)
         {
-            // show the character select menu
-            m_characterSelect.SetActive(true);
-            // disable the player controls
-            m_playerControls.enabled = false;
+            // show the character select screen
+            ShowCharacterSelectScreen();
         }
     }
 
