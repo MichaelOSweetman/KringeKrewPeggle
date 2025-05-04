@@ -6,7 +6,7 @@ using UnityEngine;
     File name: MoveToPoints.cs
     Summary: Automatically and repeatedly moves an object between 2 points
     Creation Date: 22/01/2024
-    Last Modified: 20/01/2025
+    Last Modified: 04/05/2025
 */
 public class MoveToPoints : MonoBehaviour
 {
@@ -19,8 +19,7 @@ public class MoveToPoints : MonoBehaviour
     [HideInInspector] public Vector3 m_firstPosition = Vector3.zero;
     [HideInInspector] public Vector3 m_targetPosition = Vector3.zero;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // store the object's current position as the first position
         m_firstPosition = transform.position;

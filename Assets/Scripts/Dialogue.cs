@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 21/04/2025
+    Last Modified: 04/05/2025
 */
 public class Dialogue : MonoBehaviour
 {
@@ -45,8 +45,7 @@ public class Dialogue : MonoBehaviour
 	int m_characterIndex = 0;
 	
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
 		// get the text component on this textbox
 		m_dialogueTextBox = GetComponent<Text>();

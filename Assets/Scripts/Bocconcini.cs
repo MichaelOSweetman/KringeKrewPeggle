@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Bocconcini.cs
     Summary: Manages the Bocconcini pegs created by PhoebePower
     Creation Date: 01/07/2024
-    Last Modified: 17/02/2025
+    Last Modified: 04/05/2025
 */
 public class Bocconcini : MonoBehaviour
 {
@@ -31,8 +31,7 @@ public class Bocconcini : MonoBehaviour
         m_renderer.color = m_parentPegRenderer.color;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
 		// get the renderer component for this bocconcini
         m_renderer = GetComponent<SpriteRenderer>();

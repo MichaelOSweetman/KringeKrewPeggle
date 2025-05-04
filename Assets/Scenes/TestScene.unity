@@ -3354,6 +3354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_launcherRotation: {fileID: 711364716}
   m_levelManager: {fileID: 241605739}
   m_pegManager: {fileID: 2117815010}
   m_dialogue: {fileID: 191030509}
@@ -27177,7 +27178,7 @@ MonoBehaviour:
       - m_Target: {fileID: 241605737}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: LockInCharacter
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

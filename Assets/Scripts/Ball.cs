@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Ball.cs
     Summary: Prevents the ball from getting stuck
     Creation Date: 30/10/2023
-    Last Modified: 17/02/2025
+    Last Modified: 04/05/2025
 */
 public class Ball : MonoBehaviour
 {
@@ -17,8 +17,7 @@ public class Ball : MonoBehaviour
     public float m_maxLowVelocityDuration = 1.0f;
     float m_timer = 0.0f;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the rigidbody2D component
         m_rigidbody = GetComponent<Rigidbody2D>();

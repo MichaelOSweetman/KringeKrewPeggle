@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallTrajectory.cs
     Summary: Uses a line renderer to show the player the predicted path of the ball if it were fired this frame
     Creation Date: 02/12/2024
-    Last Modified: 20/01/2025
+    Last Modified: 04/05/2025
 */
 public class BallTrajectory : MonoBehaviour
 {
@@ -64,8 +64,7 @@ public class BallTrajectory : MonoBehaviour
         m_lineRenderer.enabled = a_showLine;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the line renderer component from this gameobject
         m_lineRenderer = GetComponent<LineRenderer>();

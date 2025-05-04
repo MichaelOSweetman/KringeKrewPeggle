@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CenterEyes.cs
     Summary: Replaces the images of the player character's eyes with one where the pupils are centered when the cursor is on the launcher
     Creation Date: 29/07/2024
-    Last Modified: 12/08/2024
+    Last Modified: 04/05/2025
 */
 public class CenterEyes : MonoBehaviour
 {
@@ -44,8 +44,7 @@ public class CenterEyes : MonoBehaviour
         m_rightEyeRotator.enabled = true;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the RotateToBall components from the eyes
         m_leftEyeRotator = m_leftEye.GetComponent<RotateToBall>();

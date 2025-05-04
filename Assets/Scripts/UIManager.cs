@@ -8,11 +8,12 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 27/04/2025
+    Last Modified: 04/05/2025
 */
 public class UIManager : MonoBehaviour
 {
     public PlayerControls m_playerControls;
+    public LauncherRotation m_launcherRotation;
     public LevelManager m_levelManager;
     public PegManager m_pegManager;
 	public Dialogue m_dialogue;
@@ -56,8 +57,8 @@ public class UIManager : MonoBehaviour
             m_selectedCharacterID = m_levelManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID;
         }
 
-        // enable the player controls
-        m_playerControls.enabled = true;
+        // enable the peg launcher
+        TogglePegLauncher(true);
         
         // set the player icon to be the prefab for the corresponding character
         m_playerIcon = Instantiate(m_characterPrefabs[m_selectedCharacterID], m_launcher.transform) as GameObject;
@@ -105,14 +106,14 @@ public class UIManager : MonoBehaviour
     {
         // show the character select menu
         m_characterSelect.SetActive(true);
-        // disable the player controls
-        m_playerControls.enabled = false;
+        // disable the peg launcher
+        TogglePegLauncher(false);
     }
 
     public void LevelOver(bool a_won)
     {
-        // turn off the player controls
-        m_playerControls.enabled = false;
+        // disable the peg launcher
+        TogglePegLauncher(false);
 
         // if the player won the level
         if (a_won)
@@ -140,26 +141,26 @@ public class UIManager : MonoBehaviour
 
     public void CloseDialogueScreen()
     {
-        // enable player controls
-        m_playerControls.enabled = true;
+        // enable the peg launcher
+        TogglePegLauncher(true);
         // hide the dialogue screen
         m_dialogueScreen.SetActive(false);
     }
 
 	public void SwitchToDialogue(int a_dialogueIndex)
 	{
-		// disable player controls
-		m_playerControls.enabled = false;
-		// show the dialogue screen
-		m_dialogueScreen.SetActive(true);
+        // disable the peg launcher
+        TogglePegLauncher(false);
+        // show the dialogue screen
+        m_dialogueScreen.SetActive(true);
 		// give the dialogue script the dialogue set to run through
 		m_dialogue.m_dialogueIndex = a_dialogueIndex;
 	}
 
     public void NextLevel()
     {
-        // reactivate player controls
-        m_playerControls.enabled = true;
+        // enable the peg launcher
+        TogglePegLauncher(true);
         // load the next level
         m_levelManager.LoadNextLevel();
         // hide the level complete screen
@@ -168,8 +169,8 @@ public class UIManager : MonoBehaviour
 
     public void RetryLevel()
     {
-        // reactivate player controls
-        m_playerControls.enabled = true;
+        // enable the peg launcher
+        TogglePegLauncher(true);
         // reload the current level
         m_levelManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
         // hide the try again screen
@@ -208,15 +209,21 @@ public class UIManager : MonoBehaviour
 
     public void TogglePauseMenu()
     {
-        // swap the active state of player controls
-        m_playerControls.enabled = !m_playerControls.enabled;
+        // swap the active state of the peg launcher
+        TogglePegLauncher(!m_playerControls.enabled);
         // swap the active state of the pause menu
         m_pauseMenu.SetActive(!m_pauseMenu.activeSelf);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void TogglePegLauncher(bool a_enabled)
     {
+        m_playerControls.enabled = a_enabled;
+        m_launcherRotation.enabled = a_enabled;
+    }
+
+    void Awake()
+    {
+        // get the save file component
         m_saveFile = GetComponent<SaveFile>();
 
         // initialise volume
@@ -224,9 +231,12 @@ public class UIManager : MonoBehaviour
         UpdateFeverVolume();
         UpdateSoundEffectVolume();
 
-        // initialse the color blind setting
+        // initialise the color blind setting
         m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
+    }
 
+    private void Start()
+    {
         // if the game scene has been launched in quickplay mode
         if (!GlobalSettings.m_adventureMode)
         {

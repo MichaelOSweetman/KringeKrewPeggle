@@ -12,7 +12,7 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 14/04/2025
+	Last Modified: 04/05/2025
 */
 public class SaveFile : MonoBehaviour
 {
@@ -24,8 +24,6 @@ public class SaveFile : MonoBehaviour
     [HideInInspector] public int m_lastCompletedLevel = 0;
     StreamWriter m_streamWriter;
     StreamReader m_streamReader;
-    // TEMP
-    bool m_initialized = false;
 
     [Header("Save File Data")]
     public string m_saveName = "";
@@ -38,34 +36,8 @@ public class SaveFile : MonoBehaviour
     string m_fileName = "SaveFile";
     string m_fileType = ".txt";
 
-    void Initialize()
-    {
-        // determine the save file location using the application's save location and the specified location for the save file
-        m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
-        // initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
-
-        // read the current save, if it does not exist
-        if (!ReadSaveFile(GlobalSettings.m_currentSaveID))
-        {
-            // TEMP
-            print("could not read file");
-            // CREATE NEW SAVE
-        }
-
-        // store that this component has been initialised
-        m_initialized = true;
-    }
-
     public string GetSaveFileName(int a_saveID)
     {
-        // if this component has not yet initialised
-        if (!m_initialized)
-        {
-            // initialise
-            Initialize();
-        }
-
         // if a file exists for this slot
         if (File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType))
         {
@@ -249,14 +221,19 @@ public class SaveFile : MonoBehaviour
         return false;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        // if this component has not yet initialised
-        if (!m_initialized)
+        // determine the save file location using the application's save location and the specified location for the save file
+        m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
+        // initialise the high scores array to have an element for each level in the game
+        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
+
+        // read the current save, if it does not exist
+        if (!ReadSaveFile(GlobalSettings.m_currentSaveID))
         {
-            // initialise
-            Initialize();
+            // TEMP
+            print("could not read file");
+            // CREATE NEW SAVE
         }
     }
 

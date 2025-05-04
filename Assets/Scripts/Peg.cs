@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Peg.cs
     Summary: Detects if the ball has hit this peg and reports to the peg manager 
     Creation Date: 09/10/2023
-    Last Modified: 15/04/2024
+    Last Modified: 04/05/2025
 */
 public class Peg : MonoBehaviour
 {
@@ -28,8 +28,7 @@ public class Peg : MonoBehaviour
         m_hit = true;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // store that this peg's manager is it's parent
         m_pegManager = transform.GetComponentInParent<PegManager>();

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CameraZoom.cs
     Summary: Allows the camera to zoom in and track a target or return to its default state
     Creation Date: 04/12/2023
-    Last Modified: 06/05/2024
+    Last Modified: 04/05/2025
 */
 public class CameraZoom : MonoBehaviour
 {
@@ -70,8 +70,7 @@ public class CameraZoom : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the camera component
         m_camera = GetComponent<Camera>();

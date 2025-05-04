@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
     File name: CursorMoveable.cs
     Summary: Allows a UI object to be moved by the cursor when it is held over the object
     Creation Date: 07/10/2024
-    Last Modified: 18/11/2024
+    Last Modified: 04/05/2025
 */
 public class CursorMoveable : MonoBehaviour, IDragHandler
 {
@@ -17,8 +17,7 @@ public class CursorMoveable : MonoBehaviour, IDragHandler
     RectTransform m_rectTransform;
     Vector3 m_clampedPosition = Vector3.zero;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the rect transform of this object
         m_rectTransform = GetComponent<RectTransform>();

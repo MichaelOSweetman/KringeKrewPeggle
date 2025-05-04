@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Wasp.cs
     Summary: Manages the movement and behaviour of a wasp created by the Daniel Power
     Creation Date: 27/11/2023
-    Last Modified: 17/02/2025
+    Last Modified: 04/05/2025
 */
 public class Wasp : MonoBehaviour
 {
@@ -19,8 +19,7 @@ public class Wasp : MonoBehaviour
     Vector3 m_bobDirection = Vector3.up;
     float m_timer = 0.0f;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // store the wasp's sprite renderer component
         m_spriteRenderer = GetComponent<SpriteRenderer>();

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 17/02/2025
+    Last Modified: 04/05/2025
 */
 public class Mateja : MonoBehaviour
 {
@@ -52,8 +52,7 @@ public class Mateja : MonoBehaviour
         m_matejaState = MatejaState.Launched;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // move to the spawn position
         transform.position = m_spawnPosition;

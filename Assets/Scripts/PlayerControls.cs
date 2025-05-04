@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 21/04/2025
+    Last Modified: 04/05/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -211,7 +211,7 @@ public class PlayerControls : MonoBehaviour
         SetUpTurn();
     }
 
-    void Start()
+    void Awake()
     {
         // initialise default time variables
         m_defaultTimeScale = Time.timeScale;

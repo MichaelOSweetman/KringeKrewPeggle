@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: TextFadeOut.cs
     Summary: Sets a text object to reduce its opacity to 0 over time after a set duration and then destroy itself
     Creation Date: 06/11/2023
-    Last Modified: 17/02/2025
+    Last Modified: 04/05/2025
 */
 
 public class TextFadeOut : MonoBehaviour
@@ -17,8 +17,7 @@ public class TextFadeOut : MonoBehaviour
     Text m_text;
     Color m_textColor;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // get the text component
         m_text = GetComponent<Text>();

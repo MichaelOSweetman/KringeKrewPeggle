@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 27/04/2025
+	Last Modified: 04/05/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -85,9 +85,6 @@ public class PegManager : MonoBehaviour
     public float m_clearHitPegDelay = 0.25f;
     bool m_clearHitPegQueue = false;
     float m_clearHitPegQueueTimer = 0.0f;
-
-    // TEMP
-    bool m_initialized = false;
 
     void SetPegType(Peg a_peg, PegType a_pegType, bool a_hit)
     {
@@ -206,13 +203,6 @@ public class PegManager : MonoBehaviour
 
     void UpdateFreeBallProgressBar()
     {
-        // if this component has not yet initialised
-        if (!m_initialized)
-        {
-            // initialise
-            Initialize();
-        }
-
         // if the max amount of free balls have been awarded
         if (m_freeBallsAwarded >= m_freeBallProgressBarColors.Length)
         {
@@ -507,7 +497,7 @@ public class PegManager : MonoBehaviour
         m_playerControls.Reload();
     }
 
-    void Initialize()
+    void Awake()
     {
         // get the current height of the free ball progress bar
         m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
@@ -521,22 +511,6 @@ public class PegManager : MonoBehaviour
         // create an array to store the orange peg thresholds at which the score multiplier will increase, with the last value as unreachable
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
-
-        // store that this component has been initialised
-        m_initialized = true;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        // if this component has not yet initialised
-        if (!m_initialized)
-        {
-            // initialise
-            Initialize();
-        }
-
-
     }
 
     // Update is called once per frame
