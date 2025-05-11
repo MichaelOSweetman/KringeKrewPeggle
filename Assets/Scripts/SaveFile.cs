@@ -12,7 +12,7 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 04/05/2025
+	Last Modified: 12/05/2025
 */
 public class SaveFile : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class SaveFile : MonoBehaviour
     public int m_maxSaves = 3;
     string m_fullSavePath = "";
     [HideInInspector] public int m_SaveFileCount;
-    [HideInInspector] public int[,] m_highScores;
+    [HideInInspector] public int[,] m_topScores;
     [HideInInspector] public int m_lastCompletedLevel = 0;
     StreamWriter m_streamWriter;
     StreamReader m_streamReader;
@@ -93,8 +93,8 @@ public class SaveFile : MonoBehaviour
             // loop for each level within a stage
             for (int j = 0; j < GlobalSettings.m_levelsPerStage; ++j)
             {
-                // add the high score to the line
-                line += m_highScores[i, j].ToString() + ",";
+                // add the top score to the line
+                line += m_topScores[i, j].ToString() + ",";
             }
 
             // store the high scores of the stage in the save file
@@ -187,23 +187,23 @@ public class SaveFile : MonoBehaviour
                     else
                     {
                         int levelNumber = 0;
-                        string highScore = "";
+                        string topScore = "";
                         // loop through the line
                         for (int j = 0; j < line.Length; ++j)
                         {
                             if (line[j] == ',')
                             {
-                                // add the high score to the high scores array
-                                m_highScores[i, levelNumber] = int.Parse(highScore);
+                                // add the top score to the top scores array
+                                m_topScores[i, levelNumber] = int.Parse(topScore);
                                 // move to the next level
                                 ++levelNumber;
-                                // reset the highscore variable for the next level
-                                highScore = "";
+                                // reset the topscore variable for the next level
+                                topScore = "";
                             }
                             else
                             {
-                                // add the character to the current high score value
-                                highScore += line[j];
+                                // add the character to the current top score value
+                                topScore += line[j];
                             }
                         }
                     }
@@ -226,7 +226,7 @@ public class SaveFile : MonoBehaviour
         // determine the save file location using the application's save location and the specified location for the save file
         m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
         // initialise the high scores array to have an element for each level in the game
-        m_highScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
+        m_topScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
 
         // read the current save, if it does not exist
         if (!ReadSaveFile(GlobalSettings.m_currentSaveID))

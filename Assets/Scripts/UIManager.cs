@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 04/05/2025
+    Last Modified: 12/05/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     public LevelManager m_levelManager;
     public PegManager m_pegManager;
 	public Dialogue m_dialogue;
+    public Camera m_camera;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -44,7 +45,19 @@ public class UIManager : MonoBehaviour
     public Text m_powerChargesText;
     GameObject m_playerIcon;
 
-    bool m_newHighScore = false;
+    [Header("Free Ball Progress Bar")]
+    public RectTransform m_freeBallProgressBar;
+    public RawImage m_freeBallProgressBarBackground;
+    public Color[] m_freeBallProgressBarColors;
+    RawImage m_freeBallProgressBarImage;
+    float m_freeBallProgressBarHeight = 0.0f;
+
+    [Header("Score")]
+    public Text m_levelScoreText;
+    public Text m_topScoreText;
+    public GameObject m_pegScoreTextPrefab;
+    public Transform m_pegScoreTextContainer;
+
     SaveFile m_saveFile;
     int m_selectedCharacterID = 0;
 
@@ -118,13 +131,14 @@ public class UIManager : MonoBehaviour
         // if the player won the level
         if (a_won)
         {
-            // if the stored highscore for this level is lower than or equal to the scored achieved
-           if (m_saveFile.m_highScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
+            // if the stored top score for this level is lower than or equal to the scored achieved
+           if (m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
             {
-                // update the highscore
-                m_saveFile.m_highScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
-                // store that the player has achieved a new high score
-                m_newHighScore = true;
+                // update the top score
+                m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
+
+                // update the top score text
+                UpdateTopScoreText();
             }
             
 
@@ -156,6 +170,60 @@ public class UIManager : MonoBehaviour
 		// give the dialogue script the dialogue set to run through
 		m_dialogue.m_dialogueIndex = a_dialogueIndex;
 	}
+
+    public void UpdateFreeBallProgressBar(int a_currentShotScore, int a_freeBallsAwarded)
+    {
+        // if the max amount of free balls have been awarded
+        if (a_freeBallsAwarded >= m_freeBallProgressBarColors.Length)
+        {
+            // set the colours of the background and foreground to the final colour
+            m_freeBallProgressBarBackground.color = m_freeBallProgressBarColors[m_freeBallProgressBarColors.Length];
+            m_freeBallProgressBarImage.color = m_freeBallProgressBarColors[m_freeBallProgressBarColors.Length];
+        }
+        else
+        {
+            // set the colours of the background and foreground based on the amount of free balls that have been awarded
+            m_freeBallProgressBarBackground.color = m_freeBallProgressBarColors[a_freeBallsAwarded];
+            m_freeBallProgressBarImage.color = m_freeBallProgressBarColors[a_freeBallsAwarded + 1];
+        }
+
+        // modify the free ball progress bar to be representative of the score progress of reaching the next free ball milestone
+        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(a_currentShotScore - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1])) / (float)(m_pegManager.m_freeBallScores[a_freeBallsAwarded] - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1]))) * m_freeBallProgressBarHeight);
+    }
+
+    public void UpdateTopScoreText()
+    {
+        // set the text to be the top score stored for the current level
+        m_topScoreText.text = m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString();
+    }
+
+    public void UpdateLevelScoreText(int a_score)
+    {
+        // set the level score text to the new value
+        m_levelScoreText.text = a_score.ToString();
+    }
+
+    public void DestroyPegScoreTexts()
+    {
+        // loop for each peg score text in the container
+        for (int i = m_pegScoreTextContainer.transform.childCount - 1; i >= 0; --i)
+        {
+            // destroy the peg score text
+            Destroy(m_pegScoreTextContainer.transform.GetChild(i).gameObject);
+        }
+    }
+
+    public void ShowPegScore(int a_pegScore, Vector3 a_pegPosition)
+    {
+        // instantiate the peg score text prefab
+        GameObject scoreText = Instantiate(m_pegScoreTextPrefab) as GameObject;
+        // set the text's parent to be the peg score text container
+        scoreText.transform.SetParent(m_pegScoreTextContainer, false);
+        // set the text to display the score gained for hitting the peg
+        scoreText.GetComponent<Text>().text = a_pegScore.ToString();
+        // position the text using the screen position of the peg and the text's position offset as stored in the prefab
+        scoreText.transform.position = m_camera.WorldToScreenPoint(a_pegPosition) + m_pegScoreTextPrefab.transform.position;
+    }
 
     public void NextLevel()
     {
@@ -233,6 +301,13 @@ public class UIManager : MonoBehaviour
 
         // initialise the color blind setting
         m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
+
+        // get the current height of the free ball progress bar
+        m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
+        // get the raw image component of the progress bar
+        m_freeBallProgressBarImage = m_freeBallProgressBar.GetComponent<RawImage>();
+        // initialise the progress bar height
+        m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0.0f);
     }
 
     private void Start()
