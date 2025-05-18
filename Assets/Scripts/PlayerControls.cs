@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 04/05/2025
+    Last Modified: 19/05/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -23,7 +23,6 @@ public class PlayerControls : MonoBehaviour
     public UIManager m_UIManager;
     public PegManager m_pegManager;
     public CameraZoom m_cameraZoom;
-    public LauncherRotation m_LauncherLookControls;
     public BallTrajectory m_ballTrajectory;
 
     [Header("UI")]
@@ -39,10 +38,6 @@ public class PlayerControls : MonoBehaviour
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
     [HideInInspector] public int m_ballCount = 0;
-
-    [Header("Buckets")]
-    public MoveToPoints m_bucket;
-    public GameObject m_victoryBuckets;
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;

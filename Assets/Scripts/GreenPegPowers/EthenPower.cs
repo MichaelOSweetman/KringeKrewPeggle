@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 31/03/2025
+	Last Modified: 19/05/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -19,6 +19,7 @@ public class EthenPower : GreenPegPower
     public float m_maxInk = 500.0f;
     public float m_minValidSquareMouseMovement = 0.05f;
 
+    LauncherRotation m_launcherRotation;
     float m_ink = 0.0f;
     bool m_drawing = false;
     GameObject m_lines;
@@ -45,8 +46,8 @@ public class EthenPower : GreenPegPower
         // enable player controls
         m_playerControls.enabled = true;
 
-        // turn on the LookAtCursor component of the launcher
-        m_playerControls.m_LauncherLookControls.enabled = true;
+        // turn on the launcher rotation component of the launcher
+        m_launcherRotation.enabled = true;
 
         // turn on the ball trajectory
         m_playerControls.m_ballTrajectory.ShowLine(true);
@@ -129,6 +130,9 @@ public class EthenPower : GreenPegPower
 
     public override void Initialize()
     {
+        // get access to the ui manager through player controls and use it to access and store the launcher's LauncherRotation component
+        m_launcherRotation = m_playerControls.m_UIManager.m_launcherRotation;
+
         // create an empty gameobject to store created lines and set its position to 0
         m_lines = new GameObject();
         m_lines.transform.position = Vector3.zero;
@@ -165,8 +169,8 @@ public class EthenPower : GreenPegPower
         // disable the ball trajectory
         m_playerControls.m_ballTrajectory.ShowLine(false);
 
-        // turn off the LookAtCursor component of the launcher
-        m_playerControls.m_LauncherLookControls.enabled = false;
+        // turn off the launcher rotation component of the launcher
+        m_launcherRotation.enabled = false;
 
         // disable player controls
         m_playerControls.enabled = false;
@@ -215,7 +219,7 @@ public class EthenPower : GreenPegPower
         m_playerControls.enabled = true;
 
         // ensure the LookAtCursor component of the launcher is on
-        m_playerControls.m_LauncherLookControls.enabled = true;
+        m_launcherRotation.enabled = true;
 
         // turn on the ball trajectory
         m_playerControls.m_ballTrajectory.ShowLine(true);

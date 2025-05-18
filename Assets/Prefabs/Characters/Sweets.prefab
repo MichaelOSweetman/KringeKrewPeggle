@@ -95,14 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e250f0846129d74f80db765d727c956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gainedPowerCharges: 3
   m_playerControls: {fileID: 0}
   m_powerChargesText: {fileID: 0}
-  m_gainedPowerCharges: 3
   m_powerCharges: 0
-  m_bucket: {fileID: 0}
-  m_victoryBuckets: {fileID: 0}
-  m_launcher: {fileID: 0}
-  m_topWall: {fileID: 0}
-  m_gameOverlay: {fileID: 0}
-  m_hillsideGameOverlayPrefab: {fileID: 3004178602505879966, guid: cf3373301af2cdd4e92f73b110b7e4bc, type: 3}
-  m_LauncherLookControls: {fileID: 0}
+  m_hillsideOverlay: {fileID: 2800000, guid: 8ec8c63de9437ac4d86c71c9ddbc068e, type: 3}

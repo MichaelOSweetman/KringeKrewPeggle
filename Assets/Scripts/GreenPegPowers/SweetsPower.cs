@@ -1,23 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 24/03/2025
+	Last Modified: 19/05/2025
 */
 public class SweetsPower : GreenPegPower
 {
-	public MoveToPoints m_bucket;
-	public GameObject m_victoryBuckets;
-	public GameObject m_launcher;
-	public GameObject m_topWall;
-	public GameObject m_gameOverlay;
-	public GameObject m_hillsideGameOverlayPrefab;
-	GameObject m_hillsideGameOverlay;
-	public LauncherRotation m_LauncherLookControls;
+	MoveToPoints m_bucket;
+	GameObject m_victoryBuckets;
+	GameObject m_topWall;
+	LauncherRotation m_launcherRotation;
+	RawImage m_gameOverlay;
+	Texture m_defaultOverlay;
+	public Texture m_hillsideOverlay;
 
 	void ToggleHillside()
 	{
@@ -34,20 +34,21 @@ public class SweetsPower : GreenPegPower
 		m_victoryBuckets.transform.position = new Vector3(m_victoryBuckets.transform.position.x, -m_victoryBuckets.transform.position.y);
 		m_victoryBuckets.transform.rotation = Quaternion.Euler(m_victoryBuckets.transform.rotation.eulerAngles.x, m_victoryBuckets.transform.rotation.eulerAngles.y, m_victoryBuckets.transform.rotation.eulerAngles.z + 180.0f);
 
+        // flip the Top Wall around the x axis
+        m_topWall.transform.position = new Vector3(m_topWall.transform.position.x, -m_topWall.transform.position.y);
+        m_topWall.transform.rotation = Quaternion.Euler(m_topWall.transform.rotation.eulerAngles.x, m_topWall.transform.rotation.eulerAngles.y, m_topWall.transform.rotation.eulerAngles.z + 180.0f);
+
+		/* TEMP
 		// flip the launcher around the x axis
-		m_launcher.transform.position = new Vector3(m_launcher.transform.position.x, -m_launcher.transform.position.y);
-		m_launcher.transform.rotation = Quaternion.Euler(m_launcher.transform.rotation.eulerAngles.x, m_launcher.transform.rotation.eulerAngles.y, m_launcher.transform.rotation.eulerAngles.z + 180.0f);
+		m_launcherRotation.transform.position = new Vector3(m_launcherRotation.transform.position.x, -m_launcherRotation.transform.position.y);
+		m_launcherRotation.transform.rotation = Quaternion.Euler(m_launcherRotation.transform.rotation.eulerAngles.x, m_launcherRotation.transform.rotation.eulerAngles.y, m_launcherRotation.transform.rotation.eulerAngles.z + 180.0f);
 
 		// invert the rotation center of the launcher
-		m_LauncherLookControls.m_validRotationCentre *= -1.0f;
+		m_launcherRotation.m_validRotationCentre *= -1.0f;
+		*/
 
-		// flip the Top Wall around the x axis
-		m_topWall.transform.position = new Vector3(m_topWall.transform.position.x, -m_topWall.transform.position.y);
-		m_topWall.transform.rotation = Quaternion.Euler(m_topWall.transform.rotation.eulerAngles.x, m_topWall.transform.rotation.eulerAngles.y, m_topWall.transform.rotation.eulerAngles.z + 180.0f);
-
-		// swap the active state of the game overlays
-		m_gameOverlay.SetActive(!m_gameOverlay.activeSelf);
-		m_hillsideGameOverlay.SetActive(!m_hillsideGameOverlay.activeSelf);
+		// swap the texture of the game overlay
+		m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
 
 		// invert gravity
 		Physics2D.gravity *= -1;
@@ -55,9 +56,22 @@ public class SweetsPower : GreenPegPower
 
 	public override void Initialize()
 	{
-		// create the hillside game overlay
-		m_hillsideGameOverlay = Instantiate(m_hillsideGameOverlayPrefab);
-	}
+		// get access to the peg manager through player controls and use it to access the bucket's MoveToPoints component and the victory buckets
+        m_bucket = m_playerControls.m_pegManager.m_bucket.GetComponent<MoveToPoints>();
+		m_victoryBuckets = m_playerControls.m_pegManager.m_victoryBuckets;
+
+        // get access to the ui manager through player controls and use it to access and store the launcher's LauncherRotation component
+        m_launcherRotation = m_playerControls.m_UIManager.m_launcherRotation;
+
+		// get access to the ui manager through player controls and use it to access and store the game overlay
+		m_gameOverlay = m_playerControls.m_UIManager.m_gameOverlay;
+
+		// store the game overlay's current texture as the default overlay
+		m_defaultOverlay = m_gameOverlay.texture;
+
+		// get the launcher's parent's parent to access the top wall
+		m_topWall = m_launcherRotation.transform.parent.parent.gameObject;
+    }
 
 	public override void SetUp()
 	{

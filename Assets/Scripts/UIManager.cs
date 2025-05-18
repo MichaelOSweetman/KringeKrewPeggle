@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 12/05/2025
+    Last Modified: 19/05/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -61,6 +61,10 @@ public class UIManager : MonoBehaviour
     SaveFile m_saveFile;
     int m_selectedCharacterID = 0;
 
+    // TEMP - have in struct for character art assets
+    [Header("TEMP")]
+    public RawImage m_gameOverlay;
+
     public void LockInCharacter(bool a_useLevelDefault = false)
     {
         // if the level's default character should be used
@@ -83,11 +87,11 @@ public class UIManager : MonoBehaviour
         m_playerControls.m_power.m_playerControls = m_playerControls;
         m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
-        // initialise the power
-        m_playerControls.m_power.Initialize();
-
         // TEMP
         // set corresponding art assets for character, victory music, etc
+        
+        // initialise the power
+        m_playerControls.m_power.Initialize();
 
         // set the character select screen to be inactive if it was active
         m_characterSelect.SetActive(false);

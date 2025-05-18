@@ -6,12 +6,19 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 19/05/2025
 */
 public class BenPower : GreenPegPower
 {
     public GameObject m_IsaacPrefab;
     public Vector3 m_isaacSpawnPosition;
+    GameObject m_bucket;
+
+    public override void Initialize()
+    {
+        // get access to the peg manager through player controls and use it to access and store the bucket
+        m_bucket = m_playerControls.m_pegManager.m_bucket;
+    }
 
     public override void Trigger(Vector3 a_greenPegPosition)
 	{
@@ -32,7 +39,7 @@ public class BenPower : GreenPegPower
         // reduce the power charges by 1
         ModifyPowerCharges(-1);
         // disable the bucket
-        m_playerControls.m_bucket.gameObject.SetActive(false);
+        m_bucket.gameObject.SetActive(false);
         // if there are now 0 charges
         if (m_powerCharges == 0)
         {
@@ -62,7 +69,7 @@ public class BenPower : GreenPegPower
 	public override void Reload()
 	{
         // set the bucket to be active
-        m_playerControls.m_bucket.gameObject.SetActive(true);
+        m_bucket.gameObject.SetActive(true);
 
         // reset the power charges
         ResetPowerCharges();
