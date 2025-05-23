@@ -6,7 +6,7 @@ using UnityEngine;
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 30/09/2024
+    Last Modified: 24/05/2025
 */
 public class LauncherRotation : MonoBehaviour
 {
@@ -16,6 +16,20 @@ public class LauncherRotation : MonoBehaviour
 	public float m_scrollRotationModifier = 2.5f;
     [HideInInspector] public float m_validRotationCentre = 0.0f;
 	Vector3 m_previousMousePosition = Vector3.zero;
+
+	float ReformatAngle(float a_angle)
+	{
+		if (a_angle > 180.0f)
+		{
+			return a_angle - 360.0f;
+		}
+		return a_angle;
+	}
+
+	void ClampRotation()
+	{
+		//transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.Clamp(ReformatAngle(transform.localEulerAngles.z), ReformatAngle(m_validRotationCentre - m_rotationRange * 0.5f), ReformatAngle(m_validRotationCentre + m_rotationRange * 0.5f)));
+	}
 
     void Start()
     {
@@ -36,8 +50,8 @@ public class LauncherRotation : MonoBehaviour
 			// rotate the game object to face the mouse
 			transform.up = m_mousePosition - transform.position;
 
-			// clamp the rotation to the valid range
-			transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.Clamp(transform.localEulerAngles.z, m_validRotationCentre - m_rotationRange * 0.5f, m_validRotationCentre + m_rotationRange * 0.5f));
+            // clamp the rotation to the valid range
+            ClampRotation();
         }
 		// otherwise, if the scroll wheel has moved
 		else if (Input.mouseScrollDelta.y > m_floatAccuracy || Input.mouseScrollDelta.y < -m_floatAccuracy)
@@ -46,13 +60,10 @@ public class LauncherRotation : MonoBehaviour
 			transform.Rotate(Vector3.forward, Input.mouseScrollDelta.y * m_scrollRotationModifier);
 
 			// clamp the rotation to the valid range
-			transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.Clamp(transform.localEulerAngles.z, m_validRotationCentre - m_rotationRange * 0.5f, m_validRotationCentre + m_rotationRange * 0.5f));
+			ClampRotation();
 		}
 		
 		// store this frame's mouse position for next frame
 		m_previousMousePosition = m_mousePosition;
-
-		// TEMP
-		//print("Rotation: " + transform.localEulerAngles.z + " | VRC: " + m_validRotationCentre + " | Lower Clamp: " + (m_validRotationCentre - m_rotationRange * 0.5f) + " | Upper Clamp: " + (m_validRotationCentre + m_rotationRange * 0.5f));
     }
 }

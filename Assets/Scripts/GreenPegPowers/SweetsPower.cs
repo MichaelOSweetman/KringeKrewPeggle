@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 19/05/2025
+	Last Modified: 24/05/2025
 */
 public class SweetsPower : GreenPegPower
 {
@@ -37,15 +37,13 @@ public class SweetsPower : GreenPegPower
         // flip the Top Wall around the x axis
         m_topWall.transform.position = new Vector3(m_topWall.transform.position.x, -m_topWall.transform.position.y);
         m_topWall.transform.rotation = Quaternion.Euler(m_topWall.transform.rotation.eulerAngles.x, m_topWall.transform.rotation.eulerAngles.y, m_topWall.transform.rotation.eulerAngles.z + 180.0f);
-
-		/* TEMP
+		
 		// flip the launcher around the x axis
-		m_launcherRotation.transform.position = new Vector3(m_launcherRotation.transform.position.x, -m_launcherRotation.transform.position.y);
-		m_launcherRotation.transform.rotation = Quaternion.Euler(m_launcherRotation.transform.rotation.eulerAngles.x, m_launcherRotation.transform.rotation.eulerAngles.y, m_launcherRotation.transform.rotation.eulerAngles.z + 180.0f);
+		m_launcherRotation.transform.parent.rotation = Quaternion.Euler(m_launcherRotation.transform.parent.rotation.eulerAngles.x, m_launcherRotation.transform.parent.rotation.eulerAngles.y, m_launcherRotation.transform.parent.rotation.eulerAngles.z + 180.0f);
 
-		// invert the rotation center of the launcher
-		m_launcherRotation.m_validRotationCentre *= -1.0f;
-		*/
+		// invert the rotation center of the launcher rotation component
+		// TEMP - should be 180 or 0
+		m_launcherRotation.m_validRotationCentre = 0.0f;
 
 		// swap the texture of the game overlay
 		m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
