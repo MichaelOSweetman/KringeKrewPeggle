@@ -7,7 +7,7 @@ using UnityEngine;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 17/02/2025
+    Last Modified: 16/06/2025
 */
 public class Isaac : MonoBehaviour
 {
@@ -72,20 +72,20 @@ public class Isaac : MonoBehaviour
 		m_displacement = Vector2.zero;
 		
 		// determine the displacement of Isaac this frame
-        if (Input.GetAxis("Move Isaac Vertical") > 0)
+        if (Input.GetAxis("Use Power Vertical") > 0)
 		{
 			m_displacement += Vector3.up * m_moveSpeed;
 		}
-		else if (Input.GetAxis("Move Isaac Vertical") < 0)
+		else if (Input.GetAxis("Use Power Vertical") < 0)
 		{
 			m_displacement -= Vector3.up * m_moveSpeed;
 		}
 
-		if (Input.GetAxis("Move Isaac Horizontal") < 0)
+		if (Input.GetAxis("Use Power Horizontal") < 0)
 		{
 			m_displacement -= Vector3.right * m_moveSpeed;
 		}
-		else if (Input.GetAxis("Move Isaac Horizontal") > 0)
+		else if (Input.GetAxis("Use Power Horizontal") > 0)
 		{
 			m_displacement += Vector3.right * m_moveSpeed;
 		}

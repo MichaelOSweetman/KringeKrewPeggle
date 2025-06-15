@@ -99,7 +99,8 @@ MonoBehaviour:
   m_playerControls: {fileID: 0}
   m_powerChargesText: {fileID: 0}
   m_powerCharges: 0
-  m_TEMP: 0.25
+  m_UIArrowPrefab: {fileID: 9141701863744226448, guid: 3904850b819c2774aaa3d68f8a9d631e, type: 3}
   m_beatDelay: 0.8
   m_gracePeriod: 0.05
   m_moveDistance: 1
+  m_moveSpeed: 6
