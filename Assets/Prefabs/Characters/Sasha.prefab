@@ -100,7 +100,7 @@ MonoBehaviour:
   m_powerChargesText: {fileID: 0}
   m_powerCharges: 0
   m_UIArrowPrefab: {fileID: 9141701863744226448, guid: 3904850b819c2774aaa3d68f8a9d631e, type: 3}
-  m_inactiveArrowTexture: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+  m_activeArrowTexture: {fileID: 2800000, guid: 04d2238b6635b8b43adf68c02d715021, type: 3}
   m_beatDelay: 1
   m_gracePeriod: 0.25
   m_moveDistance: 0.4
