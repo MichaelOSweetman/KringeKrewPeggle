@@ -6,7 +6,6 @@ TagManager:
   tags:
   - Ball
   - Wall
-  - PegContainer
   layers:
   - Default
   - TransparentFX

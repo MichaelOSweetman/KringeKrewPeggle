@@ -70,10 +70,10 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Use Power Vertical Primary
+    m_Name: Use Power Up Primary
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: s
+    negativeButton: 
     positiveButton: w
     altNegativeButton: 
     altPositiveButton: 
@@ -86,10 +86,42 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Use Power Horizontal Primary
+    m_Name: Use Power Down Primary
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: a
+    negativeButton: 
+    positiveButton: s
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Use Power Left Primary
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: a
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Use Power Right Primary
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
     positiveButton: d
     altNegativeButton: 
     altPositiveButton: 
@@ -118,10 +150,10 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Use Power Vertical Secondary
+    m_Name: Use Power Up Secondary
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: down
+    negativeButton: 
     positiveButton: up
     altNegativeButton: 
     altPositiveButton: 
@@ -134,10 +166,42 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Use Power Horizontal Secondary
+    m_Name: Use Power Down Secondary
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: left
+    negativeButton: 
+    positiveButton: down
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Use Power Left Secondary
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: left
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Use Power Right Secondary
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
     positiveButton: right
     altNegativeButton: 
     altPositiveButton: 

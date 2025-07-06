@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 30/06/2025
+    Last Modified: 07/07/2025
 */
 public class SashaPower : GreenPegPower
 {
@@ -17,6 +17,9 @@ public class SashaPower : GreenPegPower
     public float m_gracePeriod = 0.25f;
     public float m_moveDistance = 1.0f;
     public float m_moveSpeed = 6.0f;
+    public Color m_downBeatColor;
+    public Color m_upBeatColor;
+    Color m_defaultArrowColor;
     RawImage m_UIArrow;
     Texture m_inactiveArrowTexture;
     Transform m_pegContainer;
@@ -42,6 +45,8 @@ public class SashaPower : GreenPegPower
         m_UIArrow = Instantiate(m_UIArrowPrefab, m_powerChargesText.rectTransform.parent).GetComponent<RawImage>();
         // store the arrow's current texture as the active texture
         m_inactiveArrowTexture = m_UIArrow.texture;
+        // store the arrow's current colour as the default colour
+        m_defaultArrowColor = m_UIArrow.color;
         // hide the UI Arrow
         m_UIArrow.gameObject.SetActive(false);
 
@@ -93,8 +98,8 @@ public class SashaPower : GreenPegPower
         m_pegContainer.position = m_containerDefaultPosition;
         m_atDefaultPosition = true;
 
-        // temp
-        m_UIArrow.color = Color.white;
+        // reset the arrow colour
+        m_UIArrow.color = m_defaultArrowColor;
     }
 
     public override void Reload()
@@ -107,8 +112,8 @@ public class SashaPower : GreenPegPower
 
         // stop the music
 
-        // temp
-        m_UIArrow.color = Color.white;
+        // reset the arrow colour
+        m_UIArrow.color = m_defaultArrowColor;
     }
 
     public override void Update()
@@ -137,45 +142,62 @@ public class SashaPower : GreenPegPower
 
         }
 
+        // reset the UI arrow texture to its active texture
+        m_UIArrow.texture = m_activeArrowTexture;
+
+        // determine the direction UI arrow should face
+        if (Input.GetButton("Use Power Up Primary") || Input.GetButton("Use Power Up Secondary"))
+        {
+            m_UIArrow.transform.up = Vector3.up;
+        }
+        else if (Input.GetButton("Use Power Down Primary") || Input.GetButton("Use Power Down Secondary"))
+        {
+            m_UIArrow.transform.up = Vector3.down;
+        }
+        else if (Input.GetButton("Use Power Left Primary") || Input.GetButton("Use Power Left Secondary"))
+        {
+            m_UIArrow.transform.up = Vector3.left;
+        }
+        else if (Input.GetButton("Use Power Right Primary") || Input.GetButton("Use Power Right Secondary"))
+        {
+            m_UIArrow.transform.up = Vector3.right;
+        }
+        else
+        {
+            // set the UI arrow texture to be the inactive texture if no input is detected
+            m_UIArrow.texture = m_inactiveArrowTexture;
+        }
+
         // if the ball is in play and there are power charges
-        if (true)//m_playerControls.m_ballInPlay && m_powerCharges > 0)
+        if (m_playerControls.m_ballInPlay && m_powerCharges > 0)
         {
             // increase the timer
             m_timer += Time.unscaledDeltaTime;
 
-            // set the UI arrow texture to its active texture
-            m_UIArrow.texture = m_activeArrowTexture;
-
             // determine the direction the pegs should move
-            if (Input.GetAxis("Use Power Vertical Primary") > 0 || Input.GetAxis("Use Power Vertical Secondary") > 0)
+            if (Input.GetButtonDown("Use Power Up Primary") || Input.GetButtonDown("Use Power Up Secondary"))
             {
                 m_direction = Vector3.up;
             }
-            else if (Input.GetAxis("Use Power Vertical Primary") < 0 || Input.GetAxis("Use Power Vertical Secondary") < 0)
+            else if (Input.GetButtonDown("Use Power Down Primary") || Input.GetButtonDown("Use Power Down Secondary"))
             {
                 m_direction = Vector3.down;
             }
-            else if (Input.GetAxis("Use Power Horizontal Primary") < 0 || Input.GetAxis("Use Power Horizontal Secondary") < 0)
+            else if (Input.GetButtonDown("Use Power Left Primary") || Input.GetButtonDown("Use Power Left Secondary"))
             {
                 m_direction = Vector3.left;
             }
-            else if (Input.GetAxis("Use Power Horizontal Primary") > 0 || Input.GetAxis("Use Power Horizontal Secondary") > 0)
+            else if (Input.GetButtonDown("Use Power Right Primary") || Input.GetButtonDown("Use Power Right Secondary"))
             {
                 m_direction = Vector3.right;
             }
             else
             {
                 m_direction = Vector3.zero;
-                // set the UI arrow texture to be the inactive texture if no input is detected
-                m_UIArrow.texture = m_inactiveArrowTexture;
             }
 
-            // rotate the UI arrow based on the input direction
-            m_UIArrow.transform.up = m_direction;
-
-
-            // if the 'down beat' has just occured in the song
-            if (m_timer > m_beatDelay)
+            // if the 'down beat' has just occured in the song, accounting for the grace period
+            if (m_timer >= m_beatDelay - (m_gracePeriod * 0.5f) || m_timer <= m_gracePeriod * 0.5f)
             {
                 // if the pegs are not already moving and the UI arrow has its active texture, meaning a direction has been supplied and the pegs should move
                 if (!m_lerp && m_UIArrow.texture == m_activeArrowTexture)
@@ -190,14 +212,19 @@ public class SashaPower : GreenPegPower
                     m_atDefaultPosition = false;
                 }
 
-                // reset the timer
-                m_timer -= m_beatDelay;
+                // if the timer has surpassed the beat delay
+                if (m_timer > m_beatDelay)
+                {
+                    // reset the timer
+                    m_timer -= m_beatDelay;
+                    // set the UI arrow to its downbeat colour
+                    m_UIArrow.color = m_downBeatColor;
 
-                // temp
-                m_UIArrow.color = Color.yellow;
-                m_audioSource.pitch = 0.25f;
-                m_audioSource.Play();
-                m_up = true;
+                    // temp
+                    m_audioSource.pitch = 0.25f;
+                    m_audioSource.Play();
+                    m_up = true;
+                }
             }
             // if the 'up beat' has just occured in the song
             else if (m_timer > m_beatDelay * 0.5f)
@@ -215,8 +242,10 @@ public class SashaPower : GreenPegPower
                     m_atDefaultPosition = true;
                 }
 
+                // set the UI arrow to its up beat colour
+                m_UIArrow.color = m_upBeatColor;
+
                 // temp
-                m_UIArrow.color = Color.blue;
                 if (m_up)
                 {
                     m_audioSource.pitch = 0.5f;

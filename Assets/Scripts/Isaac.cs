@@ -7,7 +7,7 @@ using UnityEngine;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 23/06/2025
+    Last Modified: 07/07/2025
 */
 public class Isaac : MonoBehaviour
 {
@@ -72,21 +72,21 @@ public class Isaac : MonoBehaviour
 		m_displacement = Vector2.zero;
 		
 		// determine the displacement of Isaac this frame
-        if (Input.GetAxis("Use Power Vertical Primary") > 0)
+        if (Input.GetButton("Use Power Up Primary"))
 		{
 			m_displacement += Vector3.up * m_moveSpeed;
 		}
-		else if (Input.GetAxis("Use Power Vertical Primary") < 0)
-		{
+		else if (Input.GetButton("Use Power Down Primary"))
+        {
 			m_displacement -= Vector3.up * m_moveSpeed;
 		}
 
-		if (Input.GetAxis("Use Power Horizontal Primary") < 0)
-		{
+		if (Input.GetButton("Use Power Left Primary"))
+        {
 			m_displacement -= Vector3.right * m_moveSpeed;
 		}
-		else if (Input.GetAxis("Use Power Horizontal Primary") > 0)
-		{
+		else if (Input.GetButton("Use Power Right Primary"))
+        {
 			m_displacement += Vector3.right * m_moveSpeed;
 		}
 
@@ -100,26 +100,26 @@ public class Isaac : MonoBehaviour
 		if (m_fireRateTimer >= m_fireRate)
 		{
 			// if Isaac should shoot a tear up
-			if (Input.GetAxis("Shoot Isaac's Tears Vertical Secondary") > 0)
+			if (Input.GetButton("Use Power Up Secondary"))
 			{
 				// shoot a tear up
 				ShootTear(Vector2.up);
 			}
 			// otherwise, if Isaac should shoot a tear down
-			else if (Input.GetAxis("Shoot Isaac's Tears Vertical Secondary") < 0)
-			{
+			else if (Input.GetButton("Use Power Down Secondary"))
+            {
 				// shoot a tear down
 				ShootTear(Vector2.down);
 			}
 			// otherwise, if Isaac should shoot a tear left
-			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal Secondary") < 0)
-			{
+			else if (Input.GetButton("Use Power Left Secondary"))
+            {
 				// shoot a tear left
 				ShootTear(Vector2.left);
 			}
 			// otherwise, if Isaac should shoot a tear right
-			else if (Input.GetAxis("Shoot Isaac's Tears Horizontal Secondary") > 0)
-			{
+			else if (Input.GetButton("Use Power Right Secondary"))
+            {
 				// shoot a tear right
 				ShootTear(Vector2.right);
 			}

@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 12/05/2025
+	Last Modified: 07/07/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -354,18 +354,8 @@ public class PegManager : MonoBehaviour
 
     void SearchForPegs(Transform a_transform)
     {
-        // if the transform has the peg container tag
-        if (a_transform.CompareTag("PegContainer"))
-        {
-            // loop for the child's children
-            for (int i = 0; i < a_transform.childCount; ++i)
-            {
-                // check if this transform or its children are pegs
-                SearchForPegs(a_transform.GetChild(i));
-            }
-        }
-        // if the transform is not a peg container
-        else
+        // if the transform is a peg
+        if (a_transform.GetComponent<Peg>() != null)
         {
             // add the peg to the peg array
             m_pegs.Add(a_transform.GetComponent<Peg>());
@@ -373,6 +363,16 @@ public class PegManager : MonoBehaviour
             m_pegs[m_pegs.Count - 1].m_pegID = m_levelPegCount;
             // increase the peg count for the level
             ++m_levelPegCount;
+        }
+        // if the transform is not a peg
+        else
+        {
+            // loop for the child's children
+            for (int i = 0; i < a_transform.childCount; ++i)
+            {
+                // check if this transform or its children are pegs
+                SearchForPegs(a_transform.GetChild(i));
+            }
         }
     }
 
