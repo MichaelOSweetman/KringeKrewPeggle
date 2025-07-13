@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 07/07/2025
+	Last Modified: 14/07/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -23,7 +23,7 @@ public class PegManager : MonoBehaviour
     public PlayerControls m_playerControls;
     public UIManager m_uiManager;
 
-    [Header("Peg Visuals")]
+    [Header("Visuals")]
     public Color m_bluePegColor;
     public Color m_hitBluePegColor;
     public Color m_orangePegColor;
@@ -32,6 +32,7 @@ public class PegManager : MonoBehaviour
     public Color m_hitPurplePegColor;
     public Color m_greenPegColor;
     public Color m_hitGreenPegColor;
+    public string m_purplePegHitText;
 
     [Header("Starting Pegs")]
     public int m_startingOrangePegCount = 6;
@@ -305,6 +306,8 @@ public class PegManager : MonoBehaviour
                     break;
                 case PegType.Purple:
                     m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
+                    // display the pop up text associated with hitting the purple peg
+                    m_uiManager.DisplayPopUpText(m_purplePegHitText, m_pegs[a_pegID].transform.position, false);
                     break;
                 case PegType.Green:
                     m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
@@ -314,8 +317,8 @@ public class PegManager : MonoBehaviour
 
             }
 
-            // have the UI Manager show the peg score at the position of the hit peg
-            m_uiManager.ShowPegScore(m_hitPegScore, m_pegs[a_pegID].transform.position);
+            // have the UI Manager display the score as pop up text at the position of the hit peg
+            m_uiManager.DisplayPopUpText(m_hitPegScore.ToString(), m_pegs[a_pegID].transform.position, true);
 
             // move the audio source to the hit peg
             m_pegAudioSource.transform.position = m_pegs[a_pegID].transform.position;
@@ -445,8 +448,8 @@ public class PegManager : MonoBehaviour
             }
         }
 
-        // have the UI Manager clear the screen of peg score texts
-        m_uiManager.DestroyPegScoreTexts();
+        // have the UI Manager clear the screen of pop up texts
+        m_uiManager.DestroyPopUpTexts();
 
         // assign a random blue peg to be purple
         ReplacePurplePeg();

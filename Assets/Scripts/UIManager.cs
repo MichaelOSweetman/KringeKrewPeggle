@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 19/05/2025
+    Last Modified: 14/07/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -55,8 +55,8 @@ public class UIManager : MonoBehaviour
     [Header("Score")]
     public Text m_levelScoreText;
     public Text m_topScoreText;
-    public GameObject m_pegScoreTextPrefab;
-    public Transform m_pegScoreTextContainer;
+    public GameObject m_popUpTextPrefab;
+    public Transform m_popUpTextContainer;
 
     SaveFile m_saveFile;
     int m_selectedCharacterID = 0;
@@ -207,26 +207,33 @@ public class UIManager : MonoBehaviour
         m_levelScoreText.text = a_score.ToString();
     }
 
-    public void DestroyPegScoreTexts()
+    public void DestroyPopUpTexts()
     {
-        // loop for each peg score text in the container
-        for (int i = m_pegScoreTextContainer.transform.childCount - 1; i >= 0; --i)
+        // loop for each pop up text in the container
+        for (int i = m_popUpTextContainer.transform.childCount - 1; i >= 0; --i)
         {
-            // destroy the peg score text
-            Destroy(m_pegScoreTextContainer.transform.GetChild(i).gameObject);
+            // destroy the pop up text
+            Destroy(m_popUpTextContainer.transform.GetChild(i).gameObject);
         }
     }
 
-    public void ShowPegScore(int a_pegScore, Vector3 a_pegPosition)
+    public void DisplayPopUpText(string a_text, Vector3 a_position, bool a_usePegOffset)
     {
-        // instantiate the peg score text prefab
-        GameObject scoreText = Instantiate(m_pegScoreTextPrefab) as GameObject;
+        // instantiate the pop up text prefab
+        GameObject popUpText = Instantiate(m_popUpTextPrefab) as GameObject;
         // set the text's parent to be the peg score text container
-        scoreText.transform.SetParent(m_pegScoreTextContainer, false);
-        // set the text to display the score gained for hitting the peg
-        scoreText.GetComponent<Text>().text = a_pegScore.ToString();
-        // position the text using the screen position of the peg and the text's position offset as stored in the prefab
-        scoreText.transform.position = m_camera.WorldToScreenPoint(a_pegPosition) + m_pegScoreTextPrefab.transform.position;
+        popUpText.transform.SetParent(m_popUpTextContainer, false);
+        // set the text to display
+        popUpText.GetComponent<Text>().text = a_text;
+        // position the text
+        popUpText.transform.position = m_camera.WorldToScreenPoint(a_position);
+
+        // if the peg offset should be used
+        if (a_usePegOffset)
+        {
+            // apply the offset as stored in the prefab's transform's position
+            popUpText.transform.position += m_popUpTextPrefab.transform.position;
+        }
     }
 
     public void NextLevel()
