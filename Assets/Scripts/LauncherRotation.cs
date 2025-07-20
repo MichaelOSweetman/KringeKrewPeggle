@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// TEMP
-using UnityEngine.UI;
 
 /*
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 14/07/2025
+    Last Modified: 21/07/2025
 */
 public class LauncherRotation : MonoBehaviour
 {
@@ -19,35 +17,21 @@ public class LauncherRotation : MonoBehaviour
     [HideInInspector] public float m_validRotationCentre = 0.0f;
 	Vector3 m_previousMousePosition = Vector3.zero;
 
-	// TEMP
-	public Text text;
-
-	float FormatAngle(float a_angle)
-	{
-		// shift the angle so that 0° is parallel with the x axis rather than the y axis, so the angle value transitioning from 0° to 360° doesn't disrupt clamping calculations
-		a_angle += 90.0f;
-
-		// return the angle within the range of 0°-360°
-		return (a_angle > 360.0f) ? a_angle - 360.0f : a_angle;
-	}
-
 	void ClampRotation()
 	{
-		//transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.Clamp(FormatAngle(transform.localEulerAngles.z), FormatAngle(m_validRotationCentre - m_rotationRange * 0.5f), FormatAngle(m_validRotationCentre + m_rotationRange * 0.5f)));
-
-		// TEMP
-		float formattedRotation = FormatAngle(transform.localEulerAngles.z);
-		float formattedRotationCentre = FormatAngle(m_validRotationCentre);
-
-		float formattedClampedRotation = Mathf.Clamp(formattedRotation, formattedRotationCentre - (m_rotationRange * 0.5f), formattedRotationCentre + (m_rotationRange * 0.5f));
-		float clampedRotation = formattedClampedRotation - 90.0f;
-		if (clampedRotation < 0.0f)
-		{
-			clampedRotation += 360.0f;
-		}
-
-		transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, clampedRotation);
-	}
+		// shift the angle such that 0° is opposite the rotation centre rather than the y axis, so the angle value transitioning from 0° to 360° doesn't disrupt clamping calculations
+		float clampedRotation = transform.localEulerAngles.z - m_validRotationCentre - 180.0f;
+		// restrict the angle to be within 0° and 360°
+		clampedRotation = (clampedRotation < 0.0f) ? clampedRotation + 360.0f : clampedRotation;
+        // clamp the angle to the valid rotation range
+        clampedRotation = Mathf.Clamp(clampedRotation, 180.0f - (m_rotationRange * 0.5f), 180.0f + (m_rotationRange * 0.5f));
+		// shift the angle back by the amount it was initially displaced
+		clampedRotation += m_validRotationCentre + 180.0f;
+        // restrict the angle to be within 0° and 360°
+        clampedRotation = (clampedRotation > 360.0f) ? clampedRotation - 360.0f : clampedRotation;
+        // apply the clamped rotation
+        transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, transform.localEulerAngles.y, clampedRotation);
+    }
 
     void Start()
     {
@@ -85,7 +69,6 @@ public class LauncherRotation : MonoBehaviour
 		m_previousMousePosition = m_mousePosition;
 
 		// TEMP
-		text.text = FormatAngle(transform.localEulerAngles.z).ToString();
-
+		print(m_validRotationCentre);
 	}
 }

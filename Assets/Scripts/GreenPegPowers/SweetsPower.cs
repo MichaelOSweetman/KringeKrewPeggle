@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 24/05/2025
+	Last Modified: 21/07/2025
 */
 public class SweetsPower : GreenPegPower
 {
@@ -41,12 +41,11 @@ public class SweetsPower : GreenPegPower
 		// flip the launcher around the x axis
 		m_launcherRotation.transform.parent.rotation = Quaternion.Euler(m_launcherRotation.transform.parent.rotation.eulerAngles.x, m_launcherRotation.transform.parent.rotation.eulerAngles.y, m_launcherRotation.transform.parent.rotation.eulerAngles.z + 180.0f);
 
-		// invert the rotation center of the launcher rotation component
-		// TEMP - should be 180 or 0
-		m_launcherRotation.m_validRotationCentre = 0.0f;
+		// invert the rotation center of the launcher rotation component, keeping it within the range of 0° and 360°
+		m_launcherRotation.m_validRotationCentre = (m_launcherRotation.m_validRotationCentre < 180.0f) ? m_launcherRotation.m_validRotationCentre + 180.0f : m_launcherRotation.m_validRotationCentre - 180.0f;
 
-		// swap the texture of the game overlay
-		m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
+        // swap the texture of the game overlay
+        m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
 
 		// invert gravity
 		Physics2D.gravity *= -1;
