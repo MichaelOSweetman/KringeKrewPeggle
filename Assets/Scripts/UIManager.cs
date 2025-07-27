@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 14/07/2025
+    Last Modified: 28/07/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -67,6 +67,12 @@ public class UIManager : MonoBehaviour
 
     public void LockInCharacter(bool a_useLevelDefault = false)
     {
+        // enable the peg launcher
+        TogglePegLauncher(true);
+
+        // set the character select screen to be inactive if it was active
+        m_characterSelect.SetActive(false);
+
         // if the level's default character should be used
         if (a_useLevelDefault)
         {
@@ -74,27 +80,30 @@ public class UIManager : MonoBehaviour
             m_selectedCharacterID = m_levelManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID;
         }
 
-        // enable the peg launcher
-        TogglePegLauncher(true);
-        
-        // set the player icon to be the prefab for the corresponding character
-        m_playerIcon = Instantiate(m_characterPrefabs[m_selectedCharacterID], m_launcher.transform) as GameObject;
+        // if the selected character ID is different to the currently loaded character
+        if (!ReferenceEquals(m_playerIcon, m_characterPrefabs[m_selectedCharacterID]))  // TEMP //m_playerIcon.Equals(m_characterPrefabs[m_selectedCharacterID]))
+        {
+            // have the current power destroy its assets
+            m_playerControls.m_power.DestroyAssets();
+            // destroy the current player icon
+            Destroy(m_playerIcon);
 
-        // give player controls access to the character's power
-        m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
+            // set the player icon to be the prefab for the corresponding character
+            m_playerIcon = Instantiate(m_characterPrefabs[m_selectedCharacterID], m_launcher.transform) as GameObject;
 
-        // give the character's power script access to player controls and the power charges text
-        m_playerControls.m_power.m_playerControls = m_playerControls;
-        m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
+            // give player controls access to the character's power
+            m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
 
-        // TEMP
-        // set corresponding art assets for character, victory music, etc
-        
-        // initialise the power
-        m_playerControls.m_power.Initialize();
+            // give the character's power script access to player controls and the power charges text
+            m_playerControls.m_power.m_playerControls = m_playerControls;
+            m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
-        // set the character select screen to be inactive if it was active
-        m_characterSelect.SetActive(false);
+            // TEMP
+            // set corresponding art assets for character, victory music, etc
+
+            // initialise the power
+            m_playerControls.m_power.Initialize();
+        }
     }
 
     public void SelectCharacter(int a_characterID)

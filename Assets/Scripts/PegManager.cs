@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 14/07/2025
+	Last Modified: 28/07/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -65,7 +65,7 @@ public class PegManager : MonoBehaviour
     int m_pegHitPitchIndex = 0;
     public AudioClip m_pegRemoveSound;
 
-
+    [HideInInspector] public Transform m_currentPegContainer;
     [HideInInspector] public List<Peg> m_pegs;
     [HideInInspector] public Queue<GameObject> m_hitPegs;
     List<Peg> m_activeBluePegs;
@@ -405,9 +405,22 @@ public class PegManager : MonoBehaviour
         m_victoryBuckets.SetActive(false);
         m_bucket.SetActive(true);
 
-        // initisialse the peg array and search for pegs to add to it
+        // initisialse the peg array
         m_pegs = new List<Peg>();
-        SearchForPegs(a_transform);
+        // determine which child of the level transform contains pegs
+        for (int i = 0; i < a_transform.childCount; ++i)
+        {
+            // if this transform has the PegContainer tag
+            if (a_transform.GetChild(i).CompareTag("PegContainer"))
+            {
+                // store that this transform is the peg container transform
+                m_currentPegContainer = a_transform.GetChild(i);
+                // search for pegs in this transform
+                SearchForPegs(a_transform.GetChild(i));
+                // exit the loop as the peg container transform has been found
+                break;
+            }
+        }
 
         // create a list to store all active blue pegs
         m_activeBluePegs = new List<Peg>();
@@ -438,6 +451,9 @@ public class PegManager : MonoBehaviour
         // loop for each peg
         for (int i = 0; i < m_levelPegCount; ++i)
         {
+            // ensure the peg is active
+            m_pegs[i].gameObject.SetActive(true);
+
             // if this peg is not an orange or green peg
             if (!orangeAndGreenPegIDs.Contains(i))
             {
