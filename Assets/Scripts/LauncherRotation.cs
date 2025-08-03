@@ -6,7 +6,7 @@ using UnityEngine;
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 21/07/2025
+    Last Modified: 04/08/2025
 */
 public class LauncherRotation : MonoBehaviour
 {
@@ -67,8 +67,5 @@ public class LauncherRotation : MonoBehaviour
 		
 		// store this frame's mouse position for next frame
 		m_previousMousePosition = m_mousePosition;
-
-		// TEMP
-		print(m_validRotationCentre);
 	}
 }

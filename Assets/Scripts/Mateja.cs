@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 19/05/2025
+    Last Modified: 04/08/2025
 */
 public class Mateja : MonoBehaviour
 {
@@ -54,10 +54,6 @@ public class Mateja : MonoBehaviour
 
     void Awake()
     {
-        // get access to the peg manager through player controls and use it to access and store the bucket and victory bucket
-        m_bucket = m_playerControls.m_pegManager.m_bucket;
-        m_victoryBuckets = m_playerControls.m_pegManager.m_victoryBuckets;
-
         // move to the spawn position
         transform.position = m_spawnPosition;
 

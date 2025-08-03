@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: GreenPegPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 28/07/2025
+	Last Modified: 04/08/2025
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
@@ -90,11 +90,6 @@ public abstract class GreenPegPower : MonoBehaviour
 	}
 
 	public virtual void Update()
-	{
-
-	}
-
-	public virtual void DestroyAssets()
 	{
 
 	}

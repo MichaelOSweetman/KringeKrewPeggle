@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 28/07/2025
+    Last Modified: 04/08/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -83,8 +83,6 @@ public class UIManager : MonoBehaviour
         // if the selected character ID is different to the currently loaded character
         if (!ReferenceEquals(m_playerIcon, m_characterPrefabs[m_selectedCharacterID]))  // TEMP //m_playerIcon.Equals(m_characterPrefabs[m_selectedCharacterID]))
         {
-            // have the current power destroy its assets
-            m_playerControls.m_power.DestroyAssets();
             // destroy the current player icon
             Destroy(m_playerIcon);
 

@@ -60,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 0}
   m_targetCursorWithoutBall: 0
+  m_UIObject: 1
   m_targetingBall: 1
 --- !u!114 &131653029339785804
 MonoBehaviour:
