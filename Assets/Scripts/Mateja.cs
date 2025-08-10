@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 04/08/2025
+    Last Modified: 11/08/2025
 */
 public class Mateja : MonoBehaviour
 {
@@ -100,7 +100,7 @@ public class Mateja : MonoBehaviour
         else if (m_matejaState == MatejaState.Launched)
         {
             // if Mateja has started going down
-            if (m_rigidbody.velocity.y <= 0)
+            if (m_rigidbody.velocity.y <= 0.0f)
             {
                 // set the gravity scale to 0
                 m_rigidbody.gravityScale = 0.0f;
@@ -142,7 +142,18 @@ public class Mateja : MonoBehaviour
         // otherwise, if the hit collider is a wall and Mateja has been launched
         else if (a_collision.CompareTag("Wall") && m_matejaState == MatejaState.Launched)
         {
-            // TEMP
+            // if this is not the top wall
+                // TEMP
+                // perhaps check if wall is wider than it is long, or tag wall separately
+                // perhaps instead flip mateja in the direction of the closest face's normal vector, working for all walls rather than just side walls
+
+            // if Mateja is moving left and the wall is to the left or if Mateja is moving right and the wall is to the right
+            if ((a_collision.transform.position.x < transform.position.x && m_rigidbody.velocity.x < 0.0f) || (a_collision.transform.position.x > transform.position.x && m_rigidbody.velocity.x > 0.0f))
+            {
+                // flip Mateja's velocity along the x axis
+                m_rigidbody.velocity = new Vector2(m_rigidbody.velocity.x * -1.0f, m_rigidbody.velocity.y);
+            }
+
         }
     }
 }

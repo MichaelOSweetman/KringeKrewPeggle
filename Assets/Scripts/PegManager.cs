@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 28/07/2025
+	Last Modified: 11/08/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -195,8 +195,8 @@ public class PegManager : MonoBehaviour
         // add the score increase to this shot's total
         m_currentShotScore += a_scoreIncrease;
 
-        // if the free ball milestone has been reached
-        if (m_currentShotScore >= m_freeBallScores[m_freeBallsAwarded])
+        // if the maximum number of free balls from score has not been reached and the free ball milestone has been reached
+        if (m_freeBallsAwarded < m_freeBallScores.Length - 1 && m_currentShotScore >= m_freeBallScores[m_freeBallsAwarded])
         {
             // give the player a free ball and show the free ball text
             m_playerControls.FreeBall(true, true);
@@ -296,8 +296,8 @@ public class PegManager : MonoBehaviour
                                 }
                             }
                         }
-                        // if the threshold for increasing the multiplier has been reached
-                        if (m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
+                        // if the multiplier is not already at the maximum and the threshold for increasing the multiplier has been reached
+                        if (m_scoreMultiplierIndex < m_multiplierIncreaseThresholds.Length - 1 && m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
                         {
                             // increase the multiplier
                             ++m_scoreMultiplierIndex;
@@ -522,7 +522,7 @@ public class PegManager : MonoBehaviour
         }
 
         // TEMP
-        //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
+        Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
 

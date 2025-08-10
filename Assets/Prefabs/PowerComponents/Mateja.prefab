@@ -25,8 +25,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5672377063746895963}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.28, y: 0.4615384, z: 0}
-  m_LocalScale: {x: 0.080000006, y: 0.30769232, z: 0.4}
+  m_LocalPosition: {x: 0.15, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.20000002, y: 1, z: 0.4}
   m_Children: []
   m_Father: {fileID: 5672377064086492942}
   m_RootOrder: 0
@@ -134,8 +134,8 @@ MonoBehaviour:
   m_readiedPosition: {x: 0, y: -5.4, z: 0}
   m_maxValidSquaredDistanceFromReadiedPosition: 0.005
   m_moveToReadySpeed: 5
-  m_launchForce: 15
-  m_slamSpeed: 20
+  m_launchForce: 10
+  m_slamSpeed: 15
   m_rotationSpeed: 180
 --- !u!50 &5672377063983417260
 Rigidbody2D:
@@ -185,7 +185,7 @@ Transform:
   m_GameObject: {fileID: 5672377064086492929}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 1.3, z: 1}
+  m_LocalScale: {x: 1.5, y: 0.3, z: 1}
   m_Children:
   - {fileID: 5672377063746895960}
   m_Father: {fileID: 5672377063983417258}
