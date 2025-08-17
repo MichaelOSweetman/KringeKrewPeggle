@@ -6,13 +6,29 @@ using UnityEngine;
 	File name: DanielPower.cs
 	Summary: Manages the power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 17/02/2025
+	Last Modified: 18/08/2025
 */
 public class DanielPower : GreenPegPower
 {
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;
-    [HideInInspector] public List<GameObject> m_wasps;
+    [HideInInspector] public List<Wasp> m_wasps;
+
+    bool isTargetPeg(int a_pegID)
+    {
+        // loop for each wasp
+        for (int i = 0; i < m_wasps.Count; ++i)
+        {
+            // if the wasp is targeting the peg with the argument peg ID
+            if (m_wasps[i].m_targetPeg.m_pegID == a_pegID)
+            {
+                // return true, that the argument peg ID is that of a targeted peg
+                return true;
+            }
+        }
+        // return false, that the argument peg ID is not that of a targeted peg
+        return false;
+    }
 
     public override void Trigger(Vector3 a_greenPegPosition)
 	{
@@ -23,24 +39,24 @@ public class DanielPower : GreenPegPower
         for (int i = 0; i < CollidersInRange.Length; ++i)
         {
             Peg peg = CollidersInRange[i].GetComponent<Peg>();
-            // if the collider has the peg component and hasn't been hit
-            if (peg != null && !peg.m_hit)
+            // if the collider has the peg component, hasn't been hit and isn't already a targeted peg
+            if (peg != null && !peg.m_hit && !isTargetPeg(peg.m_pegID))
             {
                 // create a wasp
                 GameObject wasp = Instantiate(m_wasp) as GameObject;
                 // add the wasp to the wasp list
-                m_wasps.Add(wasp);
+                m_wasps.Add(wasp.GetComponent<Wasp>());
                 // position it on the green peg
                 wasp.transform.position = a_greenPegPosition;
                 // give the wasp the peg as its target
-                wasp.GetComponent<Wasp>().m_targetPeg = peg;
+                m_wasps[m_wasps.Count - 1].m_targetPeg = peg;
                 // give the wasp access to this script
-                wasp.GetComponent<Wasp>().m_danielPower = this;
+                m_wasps[m_wasps.Count - 1].m_danielPower = this;
             }
         }
     }
 
-	public override void Reload()
+    public override void Reload()
 	{
         // destroy all remaining wasps
         while (m_wasps.Count > 0)

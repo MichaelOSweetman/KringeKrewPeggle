@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 /*
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 07/07/2025
+    Last Modified: 18/08/2025
 */
 public class Isaac : MonoBehaviour
 {
+	[System.Serializable]
+	public struct IsaacTextures
+	{
+		public Sprite m_eyesOpen;
+		public Sprite m_eyesClosed;
+	}
+
+
 	[HideInInspector] public PlayerControls m_playerControls;
     public int m_health = 6;
 	public float m_timeBeforeHealthLoss = 1.0f;
@@ -24,26 +33,23 @@ public class Isaac : MonoBehaviour
 	Vector3 m_displacement = Vector3.zero;
 	float m_healthTimer = 0.0f;
 	float m_fireRateTimer = 0.0f;
-	
-	void ShootTear(Vector2 m_direction)
-	{
-		// create a copy of the tear prefab
-		GameObject tear = Instantiate(m_isaacTearPrefab);
-		// set the tear's position to Isaac's
-		tear.transform.position = transform.position;
-		// shoot the tear in the specified direction
-		tear.GetComponent<Rigidbody2D>().AddForce(m_direction * m_tearSpeed, ForceMode2D.Impulse);
-		// tell the tear how long it should last
-		tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
-		// reset the fire rate timer
-		m_fireRateTimer = 0.0f;
-	}
-	
+	Vector2 m_shootDirection = Vector2.zero;
 
-    // Start is called before the first frame update
-    void Start()
+	[Header("Textures")]
+	public float m_eyeClosedDuration = 0.1f;
+	public IsaacTextures m_down;
+	public IsaacTextures m_side;
+	public IsaacTextures m_up;
+	bool m_eyesOpen = true;
+	IsaacTextures m_currentLookDirection;
+	SpriteRenderer m_spriteRenderer;
+
+    void Awake()
     {
-        
+		// get the sprite renderer
+		m_spriteRenderer = GetComponent<SpriteRenderer>();
+		// initialise the current look direction to down
+		m_currentLookDirection = m_down;
     }
 
     // Update is called once per frame
@@ -95,38 +101,77 @@ public class Isaac : MonoBehaviour
 		
 		// increase the fire rate timer
 		m_fireRateTimer += Time.unscaledDeltaTime;
-		
-		// if enough time has passed for Isaac to shoot a tear
-		if (m_fireRateTimer >= m_fireRate)
+
+        // if Isaac should shoot a tear up
+        if (Input.GetButton("Use Power Up Secondary"))
+        {
+			// store the shoot direction as up
+			m_shootDirection = Vector2.up;
+			// store the look direction as up
+			m_currentLookDirection = m_up;
+        }
+        // otherwise, if Isaac should shoot a tear down
+        else if (Input.GetButton("Use Power Down Secondary"))
+        {
+            // store the shoot direction as down
+            m_shootDirection = Vector2.down;
+            // store the look direction as down
+            m_currentLookDirection = m_down;
+        }
+        // otherwise, if Isaac should shoot a tear left
+        else if (Input.GetButton("Use Power Left Secondary"))
+        {
+            // store the shoot direction as left
+            m_shootDirection = Vector2.left;
+            // store the look direction as side
+            m_currentLookDirection = m_side;
+        }
+        // otherwise, if Isaac should shoot a tear right
+        else if (Input.GetButton("Use Power Right Secondary"))
+        {
+            // store the shoot direction as right
+            m_shootDirection = Vector2.right;
+            // store the look direction as up
+            m_currentLookDirection = m_side;
+        }
+		else
 		{
-			// if Isaac should shoot a tear up
-			if (Input.GetButton("Use Power Up Secondary"))
-			{
-				// shoot a tear up
-				ShootTear(Vector2.up);
-			}
-			// otherwise, if Isaac should shoot a tear down
-			else if (Input.GetButton("Use Power Down Secondary"))
-            {
-				// shoot a tear down
-				ShootTear(Vector2.down);
-			}
-			// otherwise, if Isaac should shoot a tear left
-			else if (Input.GetButton("Use Power Left Secondary"))
-            {
-				// shoot a tear left
-				ShootTear(Vector2.left);
-			}
-			// otherwise, if Isaac should shoot a tear right
-			else if (Input.GetButton("Use Power Right Secondary"))
-            {
-				// shoot a tear right
-				ShootTear(Vector2.right);
-			}
+			// store the shoot direction as zero to indicate that a fire input has not been given
+			m_shootDirection = Vector2.zero;
+			// store the look direction as down
+			m_currentLookDirection = m_down;
 		}
-		
-		// if Isaac has at least 1 bomb and the Place Bomb button was pressed
-		if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
+
+        // if enough time has passed for Isaac to shoot a tear and there was a shoot direction input
+        if (m_fireRateTimer >= m_fireRate && m_shootDirection != Vector2.zero)
+		{
+            // create a copy of the tear prefab
+            GameObject tear = Instantiate(m_isaacTearPrefab);
+            // set the tear's position to Isaac's
+            tear.transform.position = transform.position;
+            // shoot the tear in the specified direction
+            tear.GetComponent<Rigidbody2D>().AddForce(m_shootDirection * m_tearSpeed, ForceMode2D.Impulse);
+            // tell the tear how long it should last
+            tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
+            // reset the fire rate timer
+            m_fireRateTimer = 0.0f;
+			// store that Isaac's eyes should be closed
+			m_eyesOpen = false;
+        }
+		// otherwise if Isaac's eyes should no longer be closed
+		else if (m_fireRateTimer >= m_eyeClosedDuration)
+		{
+			// store that Isaac's eyes should be open
+			m_eyesOpen = true;
+        }
+
+		// update Isaac's sprite
+		m_spriteRenderer.sprite = (m_eyesOpen) ? m_currentLookDirection.m_eyesOpen : m_currentLookDirection.m_eyesClosed;
+		// flip the sprite along the X axis if Isaac is looking left
+		m_spriteRenderer.flipX = (m_shootDirection == Vector2.left);
+
+        // if Isaac has at least 1 bomb and the Place Bomb button was pressed
+        if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
 		{
 			// create a copy of the IsaacBomb prefab
 			GameObject bomb = Instantiate(m_isaacBombPrefab);

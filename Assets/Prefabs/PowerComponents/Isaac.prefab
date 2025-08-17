@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c143d46d53f53f346870c55652147bba, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3be907cc38c7610479b53d4b6fd65672, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,3 +104,14 @@ MonoBehaviour:
   m_isaacTearPrefab: {fileID: 3885556697031281885, guid: 437e9a591602f174890f5288649d1f29, type: 3}
   m_fireRate: 0.25
   m_tearSpeed: 5
+  m_tearDuration: 1.5
+  m_down:
+    m_eyesOpen: {fileID: 21300000, guid: 3be907cc38c7610479b53d4b6fd65672, type: 3}
+    m_eyesClosed: {fileID: 21300000, guid: dc7e7231446183d47be10d0eadae32c6, type: 3}
+  m_side:
+    m_eyesOpen: {fileID: 21300000, guid: 1968e9b7acedd014e8833f9d7b7a08aa, type: 3}
+    m_eyesClosed: {fileID: 21300000, guid: 480b794233da9d34588261ee653e3c0c, type: 3}
+  m_up:
+    m_eyesOpen: {fileID: 21300000, guid: a8c2b59ca53c1f44fbd68c41db8c6150, type: 3}
+    m_eyesClosed: {fileID: 21300000, guid: e9fa8e5a11b19dd43be01280305f4a71, type: 3}
+  m_eyeClosedDuration: 0.1

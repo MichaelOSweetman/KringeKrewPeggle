@@ -6500,6 +6500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_targetCursorWithoutBall: 1
+  m_UIObject: 0
   m_targetingBall: 1
 --- !u!212 &457127607
 SpriteRenderer:
@@ -19658,6 +19659,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_targetCursorWithoutBall: 1
+  m_UIObject: 0
   m_targetingBall: 1
 --- !u!212 &1283629595
 SpriteRenderer:

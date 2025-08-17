@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallTrajectory.cs
     Summary: Uses a line renderer to show the player the predicted path of the ball if it were fired this frame
     Creation Date: 02/12/2024
-    Last Modified: 04/05/2025
+    Last Modified: 18/08/2025
 */
 public class BallTrajectory : MonoBehaviour
 {
@@ -44,8 +44,8 @@ public class BallTrajectory : MonoBehaviour
 
             // create a circlecast, with the width of the ball's diameter, between this point and the previous point
             RaycastHit2D hit = Physics2D.CircleCast(m_lineRenderer.GetPosition(i - 1), m_ballRigidbody.transform.localScale.x * 0.5f, (m_lineRenderer.GetPosition(i) - m_lineRenderer.GetPosition(i - 1)).normalized, (m_lineRenderer.GetPosition(i) - m_lineRenderer.GetPosition(i - 1)).magnitude);
-            // if the raycast hit a collider
-            if (hit)
+            // if the raycast hit a collider that is not a trigger
+            if (hit && !hit.collider.isTrigger)
             {
                 // set the position of this point to the position the ball would be when it hits the collider
                 m_lineRenderer.SetPosition(i, hit.centroid);
