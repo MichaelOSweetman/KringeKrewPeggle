@@ -8,16 +8,23 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 04/08/2025
+    Last Modified: 01/09/2025
 */
 public class UIManager : MonoBehaviour
 {
+    [System.Serializable] public struct CharacterAssets
+    {
+        public GameObject m_playerIconPrefab;
+        public AudioClip m_victoryMusic;
+    }
+
     public PlayerControls m_playerControls;
     public LauncherRotation m_launcherRotation;
     public LevelManager m_levelManager;
     public PegManager m_pegManager;
 	public Dialogue m_dialogue;
     public Camera m_camera;
+    public Music m_music;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -41,7 +48,7 @@ public class UIManager : MonoBehaviour
     [Header("Character Select")]
     public GameObject m_launcher;
     public RectTransform m_selectedBorder;
-    public GameObject[] m_characterPrefabs;
+    public CharacterAssets[] m_characters;
     public Text m_powerChargesText;
     GameObject m_playerIcon;
 
@@ -81,13 +88,13 @@ public class UIManager : MonoBehaviour
         }
 
         // if the selected character ID is different to the currently loaded character
-        if (!ReferenceEquals(m_playerIcon, m_characterPrefabs[m_selectedCharacterID]))  // TEMP //m_playerIcon.Equals(m_characterPrefabs[m_selectedCharacterID]))
+        if (!ReferenceEquals(m_playerIcon, m_characters[m_selectedCharacterID].m_playerIconPrefab))  // TEMP //m_playerIcon.Equals(m_characterPrefabs[m_selectedCharacterID]))
         {
             // destroy the current player icon
             Destroy(m_playerIcon);
 
             // set the player icon to be the prefab for the corresponding character
-            m_playerIcon = Instantiate(m_characterPrefabs[m_selectedCharacterID], m_launcher.transform) as GameObject;
+            m_playerIcon = Instantiate(m_characters[m_selectedCharacterID].m_playerIconPrefab, m_launcher.transform) as GameObject;
 
             // give player controls access to the character's power
             m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
@@ -96,8 +103,11 @@ public class UIManager : MonoBehaviour
             m_playerControls.m_power.m_playerControls = m_playerControls;
             m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
+            // set the victory music to this character's victory music
+            m_music.m_victoryMusic = m_characters[m_selectedCharacterID].m_victoryMusic;
+
             // TEMP
-            // set corresponding art assets for character, victory music, etc
+            // set corresponding art assets for character, etc
 
             // initialise the power
             m_playerControls.m_power.Initialize();
@@ -107,10 +117,10 @@ public class UIManager : MonoBehaviour
     public void SelectCharacter(int a_characterID)
     {
         // if the character ID is greater than the amount of characters, the random option has been selected
-        if (a_characterID >= m_characterPrefabs.Length)
+        if (a_characterID >= m_characters.Length)
         {
             // get a random character
-            m_selectedCharacterID = Random.Range(0, m_characterPrefabs.Length);
+            m_selectedCharacterID = Random.Range(0, m_characters.Length);
         }
         else
         {

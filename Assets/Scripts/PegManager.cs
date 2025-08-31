@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 11/08/2025
+	Last Modified: 01/09/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -22,6 +22,7 @@ public class PegManager : MonoBehaviour
     [Header("Other Scripts")]
     public PlayerControls m_playerControls;
     public UIManager m_uiManager;
+    public Music m_music;
 
     [Header("Visuals")]
     public Color m_bluePegColor;
@@ -272,6 +273,9 @@ public class PegManager : MonoBehaviour
                         m_nearVictoryDetector.transform.parent = null;
                         // set the near victory detector to be inactive
                         m_nearVictoryDetector.SetActive(false);
+
+                        // have the music audio source play the victory music
+                        m_music.PlayVictoryMusic();
                     }
                     // if this was not the last orange peg
                     else
@@ -522,7 +526,7 @@ public class PegManager : MonoBehaviour
         }
 
         // TEMP
-        Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
+        //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
 

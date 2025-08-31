@@ -1301,6 +1301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_music: {fileID: 1676064810}
 --- !u!50 &112654240
 Rigidbody2D:
   serializedVersion: 4
@@ -3438,6 +3439,7 @@ MonoBehaviour:
   m_pegManager: {fileID: 2117815010}
   m_dialogue: {fileID: 191030509}
   m_camera: {fileID: 519420031}
+  m_music: {fileID: 1676064810}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
   m_dialogueScreen: {fileID: 1819568582}
@@ -3453,17 +3455,27 @@ MonoBehaviour:
   m_soundEffectAudioSource: {fileID: 2062407553}
   m_launcher: {fileID: 1327515134}
   m_selectedBorder: {fileID: 1983578314}
-  m_characterPrefabs:
-  - {fileID: 790517065195160300, guid: 213cf211b2d0dec45b6be40583620fbd, type: 3}
-  - {fileID: 2495236964133223142, guid: a77d6b3e35c60454eb5c074f9e7ff26a, type: 3}
-  - {fileID: 6436564665698769374, guid: bd70f7087adf5fd4f878b8ba80520ce5, type: 3}
-  - {fileID: 7103137853110505618, guid: 7521683e1892a62438dc7edc3fe756ec, type: 3}
-  - {fileID: 1319127128931644837, guid: eabd28890b405e942af04e0bceeb25ad, type: 3}
-  - {fileID: 2138660463205013303, guid: cecd0a3824e8962469004890de9a791b, type: 3}
-  - {fileID: 8554423165822955954, guid: 9e0cbadd549f4d04c832ae96b7558a11, type: 3}
-  - {fileID: 5969855082896416360, guid: 52e770bae1016be4ea33a383b9d13019, type: 3}
-  - {fileID: 1640484969442033771, guid: d953f3e71b5ae4f49984bb01f22efd03, type: 3}
-  - {fileID: 2633783071375015938, guid: f09588958cd35274ea88bc29fe7f048b, type: 3}
+  m_characters:
+  - m_playerIconPrefab: {fileID: 790517065195160300, guid: 213cf211b2d0dec45b6be40583620fbd, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
+  - m_playerIconPrefab: {fileID: 2495236964133223142, guid: a77d6b3e35c60454eb5c074f9e7ff26a, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
+  - m_playerIconPrefab: {fileID: 6436564665698769374, guid: bd70f7087adf5fd4f878b8ba80520ce5, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
+  - m_playerIconPrefab: {fileID: 7103137853110505618, guid: 7521683e1892a62438dc7edc3fe756ec, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
+  - m_playerIconPrefab: {fileID: 1319127128931644837, guid: eabd28890b405e942af04e0bceeb25ad, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
+  - m_playerIconPrefab: {fileID: 2138660463205013303, guid: cecd0a3824e8962469004890de9a791b, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
+  - m_playerIconPrefab: {fileID: 8554423165822955954, guid: 9e0cbadd549f4d04c832ae96b7558a11, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
+  - m_playerIconPrefab: {fileID: 5969855082896416360, guid: 52e770bae1016be4ea33a383b9d13019, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
+  - m_playerIconPrefab: {fileID: 1640484969442033771, guid: d953f3e71b5ae4f49984bb01f22efd03, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
+  - m_playerIconPrefab: {fileID: 2633783071375015938, guid: f09588958cd35274ea88bc29fe7f048b, type: 3}
+    m_victoryMusic: {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
   m_powerChargesText: {fileID: 631596763}
   m_freeBallProgressBar: {fileID: 1352222923}
   m_freeBallProgressBarBackground: {fileID: 1915776724}
@@ -3514,6 +3526,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_pegManager: {fileID: 2117815010}
   m_uiManager: {fileID: 241605737}
+  m_music: {fileID: 1676064810}
   m_stages:
   - m_stageContainer: {fileID: 198342535}
     m_levels:
@@ -25654,7 +25667,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: dbada1b75cb0faa49a1d6847e4113b7c, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.4
   m_Pitch: 1
@@ -25753,11 +25766,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_songs:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: 4d6b9a11a04cade4f824c4b0e7ba99eb, type: 3}
+  - {fileID: 8300000, guid: 94b96b861294415499cb3f7dee3e8a56, type: 3}
+  - {fileID: 8300000, guid: 994e218b0e1f09f4ea239499aa73ed66, type: 3}
+  - {fileID: 8300000, guid: 8d0657be4b196a047a75eb931bcc8f0b, type: 3}
+  - {fileID: 8300000, guid: a658bae17ec4f2347a9699126e957bba, type: 3}
+  m_victoryMusic: {fileID: 0}
+  m_defaultVictoryMusic: {fileID: 8300000, guid: cc48ae17983ed5548954d110e0369905, type: 3}
 --- !u!1 &1681550508
 GameObject:
   m_ObjectHideFlags: 0
@@ -31488,6 +31503,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_uiManager: {fileID: 241605737}
+  m_music: {fileID: 1676064810}
   m_bluePegColor: {r: 0, g: 0.5019608, b: 1, a: 1}
   m_hitBluePegColor: {r: 0.3443396, g: 0.6734554, b: 1, a: 1}
   m_orangePegColor: {r: 0.8301887, g: 0.37304664, b: 0, a: 1}

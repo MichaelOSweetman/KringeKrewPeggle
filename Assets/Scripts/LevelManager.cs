@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: LevelManager.cs
 	Summary: Manages the loading of specific levels and stages of the game
 	Creation Date: 27/04/2025
-	Last Modified: 12/05/2025
+	Last Modified: 01/09/2025
 */
 public class LevelManager : MonoBehaviour
 {
@@ -25,6 +25,7 @@ public class LevelManager : MonoBehaviour
 
     public PegManager m_pegManager;
     public UIManager m_uiManager;
+    public Music m_music;
     public Stage[] m_stages;
 
     public void LoadNextLevel()
@@ -97,6 +98,9 @@ public class LevelManager : MonoBehaviour
             // Have the UI Manager show the character select screen
             m_uiManager.ShowCharacterSelectScreen();
         }
+
+        // reshuffle the music to play during the level
+        m_music.ShufflePlay();
 
         // have the UI Manager update the top score text
         m_uiManager.UpdateTopScoreText();

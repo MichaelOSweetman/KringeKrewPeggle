@@ -6,19 +6,31 @@ using UnityEngine;
     File name: Music.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 25/08/2025
+    Last Modified: 01/09/2025
 */
 public class Music : MonoBehaviour
 {
     public List<AudioClip> m_songs;
+    [HideInInspector] public AudioClip m_victoryMusic;
+    public AudioClip m_defaultVictoryMusic;
     AudioSource m_audioSource;
     Queue<int> m_playlist;
     List<int> m_songIDs;
 
-    void ShufflePlay()
+    public void PlayVictoryMusic()
     {
-        // stop the music
-        m_audioSource.Stop();
+        // set the audio source's audio clip to the victory music
+        m_audioSource.clip = m_victoryMusic;
+        m_audioSource.Play();
+    }
+
+    public void ShufflePlay()
+    {
+        // stop the music if its playing
+        if (m_audioSource.isPlaying)
+        {
+            m_audioSource.Stop();
+        }
 
         // clear the playlist
         m_playlist.Clear();
@@ -46,8 +58,19 @@ public class Music : MonoBehaviour
         m_audioSource.Play();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Pause()
+    {
+        // pause the audio source
+        m_audioSource.Pause();
+    }
+
+    public void Unpause()
+    { 
+        // unpause the audio source
+        m_audioSource.UnPause();
+    }
+
+    void Awake()
     {
         // get the audio source from this game object
         m_audioSource = GetComponent<AudioSource>();
@@ -58,13 +81,18 @@ public class Music : MonoBehaviour
         // initialise the song IDs list
         m_songIDs = new List<int>();
 
-        // TEMP
-        ShufflePlay();
+        // set the victory music to the default if it hasn't already been set
+        if (m_victoryMusic == null)
+        {
+            m_victoryMusic = m_defaultVictoryMusic;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // TEMP - need system to determine if song is finished
+        /*
         // if the current song has finished
         if (!m_audioSource.isPlaying)
         {
@@ -75,5 +103,6 @@ public class Music : MonoBehaviour
             m_audioSource.clip = m_songs[m_playlist.Peek()];
             m_audioSource.Play();
         }
+        */
     }
 }
