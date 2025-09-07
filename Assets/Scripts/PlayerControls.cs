@@ -7,10 +7,13 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 19/05/2025
+    Last Modified: 08/09/2025
 */
 public class PlayerControls : MonoBehaviour
 {
+    // TEMP
+    public SpriteRenderer m_background;
+
     public RectTransform m_playAreaBounds;
 
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
@@ -27,6 +30,7 @@ public class PlayerControls : MonoBehaviour
 
     [Header("UI")]
     public Canvas m_canvas;
+    public RectTransform m_playArea;
     public Text m_ballCountText;
     public float m_freeBallTextDuration = 2.0f;
     float m_freeBallTextTimer = 0.0f;
@@ -92,6 +96,19 @@ public class PlayerControls : MonoBehaviour
             // store that the power has been resolved
             m_resolvePowerNextTurn = false;
         }
+    }
+
+    public bool CursorWithinPlayArea()
+    {
+        Vector3 temp = Camera.main.ScreenToWorldPoint(Input.mousePosition); // a
+        Vector2 Cursor = new Vector2(temp.x, temp.y);
+        Vector3 temp2 = Camera.main.ScreenToWorldPoint(m_playArea.transform.position); // b -> a and b are not at all connected, find way for them to be the same coordinate system
+        Vector2 BottomLeft = new Vector2(temp2.x - m_playArea.rect.width * 0.5f, temp2.y - m_playArea.rect.height);
+        Vector2 TopRight = new Vector2(temp2.x + m_playArea.rect.width * 0.5f, temp2.y + m_playArea.rect.height);
+
+
+        print("C: " + Cursor + " BL: " + BottomLeft + " TR: " + TopRight);
+        return (Cursor.x >= BottomLeft.x && Cursor.x <= TopRight.x && Cursor.y >= BottomLeft.y && Cursor.y <= BottomLeft.y);
     }
 
     GameObject Shoot()
@@ -240,8 +257,9 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
+        
         // TEMP
-        //transform.parent.parent.GetComponentInParent<SpriteRenderer>().color = (CursorWithinPlayArea()) ? m_pegManager.m_greenPegColor : m_pegManager.m_orangePegColor;
+        m_background.color = (CursorWithinPlayArea()) ? m_pegManager.m_greenPegColor : m_pegManager.m_orangePegColor;
 
         // TEMP
         if (Input.GetButton("Speed Up Time"))
@@ -287,8 +305,8 @@ public class PlayerControls : MonoBehaviour
         // if the ball does not exist, allow the player to shoot a ball
         else
         {
-            // if the Shoot / Use Power input has been detected
-            if (Input.GetButtonDown("Shoot / Use Power"))
+            // if the Shoot / Use Power input has been detected and the cursor is within the play area
+            if (Input.GetButtonDown("Shoot / Use Power") && CursorWithinPlayArea())
             {
                 // trigger the power's on shoot function. If it should not override the default shoot function
                 if (!m_power.OnShoot())

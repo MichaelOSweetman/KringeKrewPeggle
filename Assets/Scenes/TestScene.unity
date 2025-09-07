@@ -4115,6 +4115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06e0389fc2b46e44d9a3a937b4634a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_background: {fileID: 1016829065}
   m_playAreaBounds: {fileID: 363654200}
   m_setUpPowerNextTurn: 0
   m_resolvePowerNextTurn: 0
@@ -4125,6 +4126,7 @@ MonoBehaviour:
   m_cameraZoom: {fileID: 519420030}
   m_ballTrajectory: {fileID: 1982936866}
   m_canvas: {fileID: 1539352617}
+  m_playArea: {fileID: 363654200}
   m_ballCountText: {fileID: 1240219596}
   m_freeBallTextDuration: 2
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
@@ -25672,7 +25674,7 @@ AudioSource:
   m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
@@ -25766,13 +25768,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_songs:
-  - {fileID: 8300000, guid: 4d6b9a11a04cade4f824c4b0e7ba99eb, type: 3}
-  - {fileID: 8300000, guid: 94b96b861294415499cb3f7dee3e8a56, type: 3}
-  - {fileID: 8300000, guid: 994e218b0e1f09f4ea239499aa73ed66, type: 3}
-  - {fileID: 8300000, guid: 8d0657be4b196a047a75eb931bcc8f0b, type: 3}
-  - {fileID: 8300000, guid: a658bae17ec4f2347a9699126e957bba, type: 3}
+  - {fileID: 8300000, guid: 6301f8450136cc44c9810db5c2108c05, type: 3}
+  - {fileID: 8300000, guid: 9f9b9cfaea52a824a97df015d6b52aa1, type: 3}
+  - {fileID: 8300000, guid: daf1c6e4f60894e40b9efe7953028d36, type: 3}
+  - {fileID: 8300000, guid: b9e1cac829adf8040b5484483b66465e, type: 3}
+  - {fileID: 8300000, guid: 237b3734d69baa642b3473cbd698e2ef, type: 3}
   m_victoryMusic: {fileID: 0}
-  m_defaultVictoryMusic: {fileID: 8300000, guid: cc48ae17983ed5548954d110e0369905, type: 3}
+  m_defaultVictoryMusic: {fileID: 8300000, guid: f76d481f9a81dee4dae484eaf999d596, type: 3}
 --- !u!1 &1681550508
 GameObject:
   m_ObjectHideFlags: 0

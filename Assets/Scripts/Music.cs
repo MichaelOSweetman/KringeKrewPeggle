@@ -16,6 +16,7 @@ public class Music : MonoBehaviour
     AudioSource m_audioSource;
     Queue<int> m_playlist;
     List<int> m_songIDs;
+    bool m_paused = false;
 
     public void PlayVictoryMusic()
     {
@@ -56,18 +57,24 @@ public class Music : MonoBehaviour
         // set the audio source's audio clip to the first song in the queue and play it
         m_audioSource.clip = m_songs[m_playlist.Peek()];
         m_audioSource.Play();
+        // store that the music is not paused
+        m_paused = false;
     }
 
     public void Pause()
     {
         // pause the audio source
         m_audioSource.Pause();
+        // store that the music is paused
+        m_paused = true;
     }
 
     public void Unpause()
     { 
         // unpause the audio source
         m_audioSource.UnPause();
+        // store that the music is not paused
+        m_paused = false;
     }
 
     void Awake()
@@ -90,11 +97,9 @@ public class Music : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        // TEMP - need system to determine if song is finished
-        /*
-        // if the current song has finished
-        if (!m_audioSource.isPlaying)
+    {   
+        // if the audio source is not playing anything, the playlist is not empty and the music is not paused, the current song has finished
+        if (!m_audioSource.isPlaying && m_playlist.Count > 0 && !m_paused)
         {
             // add the finished song to the end of the queue and remove it from the top
             m_playlist.Enqueue(m_playlist.Dequeue());
@@ -103,6 +108,5 @@ public class Music : MonoBehaviour
             m_audioSource.clip = m_songs[m_playlist.Peek()];
             m_audioSource.Play();
         }
-        */
     }
 }
