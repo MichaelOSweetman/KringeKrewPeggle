@@ -7,20 +7,14 @@ using UnityEngine.UI;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 08/09/2025
+    Last Modified: 15/09/2025
 */
 public class PlayerControls : MonoBehaviour
 {
-    // TEMP
-    public SpriteRenderer m_background;
-
-    public RectTransform m_playAreaBounds;
-
     [HideInInspector] public bool m_setUpPowerNextTurn = false;
     [HideInInspector] public bool m_resolvePowerNextTurn = false;
     [HideInInspector] public bool m_ballInPlay = false;
-    // TEMP
-    public GreenPegPower m_power;
+    [HideInInspector] public GreenPegPower m_power;
 
     [Header("Other Scripts")]
     public UIManager m_UIManager;
@@ -30,10 +24,12 @@ public class PlayerControls : MonoBehaviour
 
     [Header("UI")]
     public Canvas m_canvas;
-    public RectTransform m_playArea;
     public Text m_ballCountText;
     public float m_freeBallTextDuration = 2.0f;
+    public Transform m_playAreaBounds;
     float m_freeBallTextTimer = 0.0f;
+    Vector2 m_boundsBottomLeft;
+    Vector2 m_boundsTopRight;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
@@ -100,15 +96,21 @@ public class PlayerControls : MonoBehaviour
 
     public bool CursorWithinPlayArea()
     {
-        Vector3 temp = Camera.main.ScreenToWorldPoint(Input.mousePosition); // a
-        Vector2 Cursor = new Vector2(temp.x, temp.y);
-        Vector3 temp2 = Camera.main.ScreenToWorldPoint(m_playArea.transform.position); // b -> a and b are not at all connected, find way for them to be the same coordinate system
-        Vector2 BottomLeft = new Vector2(temp2.x - m_playArea.rect.width * 0.5f, temp2.y - m_playArea.rect.height);
-        Vector2 TopRight = new Vector2(temp2.x + m_playArea.rect.width * 0.5f, temp2.y + m_playArea.rect.height);
+        // get the coordinates of the current mouse position in world space
+        Vector3 worldSpaceMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-
-        print("C: " + Cursor + " BL: " + BottomLeft + " TR: " + TopRight);
-        return (Cursor.x >= BottomLeft.x && Cursor.x <= TopRight.x && Cursor.y >= BottomLeft.y && Cursor.y <= BottomLeft.y);
+        // return true if the following is true
+        return
+        (
+        // the cursor is further right than the bottom left point of the bounds
+        worldSpaceMousePosition.x >= m_boundsBottomLeft.x &&
+        // the cursor is further up than the bottom left point of the bounds
+        worldSpaceMousePosition.x <= m_boundsTopRight.x &&
+        // the cursor is not further right than the top right point of the bounds
+        worldSpaceMousePosition.y >= m_boundsBottomLeft.y &&
+        // the cursor is not further up than the top right point of the bounds
+        worldSpaceMousePosition.y <= m_boundsTopRight.y
+        );
     }
 
     GameObject Shoot()
@@ -232,6 +234,10 @@ public class PlayerControls : MonoBehaviour
         // initialise the ball count
         m_ballCount = m_startingBallCount;
 
+        // store the bottom left and top right coordinates of the play area bounds
+        m_boundsBottomLeft = new Vector2(m_playAreaBounds.position.x - m_playAreaBounds.lossyScale.x * 0.5f, m_playAreaBounds.position.y - m_playAreaBounds.lossyScale.y * 0.5f);
+        m_boundsTopRight   = new Vector2(m_playAreaBounds.position.x + m_playAreaBounds.lossyScale.x * 0.5f, m_playAreaBounds.position.y + m_playAreaBounds.lossyScale.y * 0.5f);
+
         // TEMP
         // if the green peg power has not been set
         //if (m_greenPegPower == null)
@@ -242,7 +248,7 @@ public class PlayerControls : MonoBehaviour
 
         // TEMP
         //m_power.Initialize();
-        
+
     }
 
     private void FixedUpdate()
@@ -257,10 +263,6 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
-        
-        // TEMP
-        m_background.color = (CursorWithinPlayArea()) ? m_pegManager.m_greenPegColor : m_pegManager.m_orangePegColor;
-
         // TEMP
         if (Input.GetButton("Speed Up Time"))
         {

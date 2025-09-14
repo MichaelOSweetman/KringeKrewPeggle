@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 19/05/2025
+	Last Modified: 15/09/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -23,7 +23,6 @@ public class EthenPower : GreenPegPower
     float m_ink = 0.0f;
     bool m_drawing = false;
     GameObject m_lines;
-    RectTransform m_drawingBounds;
     GameObject m_endDrawButton;
     GameObject m_clearButton;
     GameObject m_inkResourceBarBackground;
@@ -74,34 +73,6 @@ public class EthenPower : GreenPegPower
 
     }
 
-    public bool CursorWithinPlayArea()
-    {
-        // get the cursor position in screen space
-        Vector3 cursorPosition = Input.mousePosition;
-        //cursorPosition.x -= m_canvas.GetComponent<RectTransform>().rect.width * 0.5f;
-        //cursorPosition.y += m_canvas.GetComponent<RectTransform>().rect.height * 0.5f;
-        Vector3 minCorner = new Vector3(m_drawingBounds.rect.x, m_drawingBounds.rect.y, 1.0f);
-        Vector3 maxCorner = new Vector3(m_drawingBounds.rect.xMax, m_drawingBounds.rect.yMax, 1.0f);
-
-        //print(cursorPosition + "| " + (m_playAreaBounds.transform.position + minCorner) + "| " + (m_playAreaBounds.transform.localPosition + maxCorner));
-
-        // return whether the cursor is within the play area bounds (converted to screen space)
-        return
-        (
-            cursorPosition.x > m_drawingBounds.transform.position.x - (0.5f * m_drawingBounds.rect.width) &&
-            cursorPosition.x < m_drawingBounds.transform.position.x + (0.5f * m_drawingBounds.rect.width) &&
-            cursorPosition.y > m_drawingBounds.transform.position.y - (0.5f * m_drawingBounds.rect.height) &&
-            cursorPosition.y < m_drawingBounds.transform.position.y + (0.5f * m_drawingBounds.rect.height)
-
-        //cursorPosition.x > (m_playAreaBounds.transform.position + minCorner).x &&
-        //cursorPosition.y > (m_playAreaBounds.transform.position + minCorner).y &&
-        //cursorPosition.x < (m_playAreaBounds.transform.position + maxCorner).x &&
-        //cursorPosition.y < (m_playAreaBounds.transform.position + maxCorner).y
-        //cursorPosition.x < Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.x) &&
-        //cursorPosition.y > Camera.main.WorldToScreenPoint(m_playAreaBounds.transform.localPosition - m_playAreaBounds.rect.y)
-        );
-    }
-
     public void UpdateLine(Vector3 a_newLinePoint)
     {
         // ensure the z component of the new point is 0
@@ -137,12 +108,10 @@ public class EthenPower : GreenPegPower
         m_lines = new GameObject();
         m_lines.transform.position = Vector3.zero;
 
-        // create the end draw button, clear button, ink resource bar and drawing bounds and set their parent to be the parent of the power charges text so they are on the canvas
+        // create the end draw button, clear button and ink resource bar and set their parent to be the parent of the power charges text so they are on the canvas
         m_endDrawButton = Instantiate(m_endDrawButtonPrefab, m_powerChargesText.rectTransform.parent);
         m_clearButton = Instantiate(m_clearButtonPrefab, m_powerChargesText.rectTransform.parent);
         m_inkResourceBarBackground = Instantiate(m_inkResourceBarPrefab, m_powerChargesText.rectTransform.parent);
-        GameObject drawingBounds = Instantiate(m_drawingBoundsPrefab, m_powerChargesText.rectTransform.parent);
-        m_drawingBounds = drawingBounds.GetComponent<RectTransform>();
 
         // get the child of the ink resource bar background as the ink resource bar
         m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();
@@ -206,9 +175,6 @@ public class EthenPower : GreenPegPower
         Destroy(m_clearButton);
         Destroy(m_inkResourceBarBackground);
 
-        // destroy the drawing bounds
-        Destroy(m_drawingBounds.gameObject);
-
         // take the player out of drawing mode
         m_drawing = false;
 
@@ -234,10 +200,10 @@ public class EthenPower : GreenPegPower
         if (m_drawing)
         {
             // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
-            if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && CursorWithinPlayArea())
+            if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && m_playerControls.CursorWithinPlayArea())
             {
-                // if this was the first frame that the Shoot / Use Power input was pressed
-                if (Input.GetButtonDown("Shoot / Use Power"))
+                // if the line is not currently flagged as beginning but there is not yet a line renderer, this is a new line
+                if (!m_lineBegun && m_currentLineRenderer == null)
                 {
                     // store that the player has started drawing a line
                     m_lineBegun = true;
@@ -260,9 +226,6 @@ public class EthenPower : GreenPegPower
                         // Update the line with the previous point
                         UpdateLine(Camera.main.ScreenToWorldPoint(m_previousMousePosition));
 
-                        // Update the line with the new point
-                        UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
                         // store that the line has no longer begun being drawn
                         m_lineBegun = false;
                     }
@@ -277,8 +240,8 @@ public class EthenPower : GreenPegPower
                     UpdateLine(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                 }
             }
-            // otherwise, if a line has been drawn, the line doesn't currently have a collider and the Shoot / Use Power input was released
-            else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && Input.GetButtonUp("Shoot / Use Power"))
+            // otherwise, if a line has been drawn, the line doesn't currently have a collider and either the Shoot / Use Power input was released or the cursor left the play area
+            else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && (Input.GetButtonUp("Shoot / Use Power") || !m_playerControls.CursorWithinPlayArea()))
             {
                 // add an edge collider to the line
                 EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
@@ -292,6 +255,9 @@ public class EthenPower : GreenPegPower
 
                 // give the vector2 line points to the collider
                 collider.points = points;
+
+                // stop storing this line's renderer as this line has finished being created
+                m_currentLineRenderer = null;
             }
 
             // store the mouse position for next frame
