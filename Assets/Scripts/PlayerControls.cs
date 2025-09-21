@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 /*
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 15/09/2025
+    Last Modified: 22/09/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -22,12 +21,8 @@ public class PlayerControls : MonoBehaviour
     public CameraZoom m_cameraZoom;
     public BallTrajectory m_ballTrajectory;
 
-    [Header("UI")]
-    public Canvas m_canvas;
-    public Text m_ballCountText;
-    public float m_freeBallTextDuration = 2.0f;
+    [Header("Play Area Bounds")]
     public Transform m_playAreaBounds;
-    float m_freeBallTextTimer = 0.0f;
     Vector2 m_boundsBottomLeft;
     Vector2 m_boundsTopRight;
 
@@ -131,8 +126,8 @@ public class PlayerControls : MonoBehaviour
 
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;
-        // update the ball count text
-        m_ballCountText.text = m_ballCount.ToString();
+        // have the UI Manager update the ball count text
+        m_UIManager.UpdateBallCountText();
         // return the ball gameobject
         return Ball;
     }
@@ -179,16 +174,14 @@ public class PlayerControls : MonoBehaviour
         // if the free ball text should shown
         if (a_showFreeBallText)
         {
-            // update the ball count text with a message denoting that a free ball has been given
-            m_ballCountText.text = "Free Ball!";
-            // start a timer to determine how long the ballCountText should display the "Free Ball!" text
-            m_freeBallTextTimer = m_freeBallTextDuration;
+            // have the UI manager show the free ball text
+            m_UIManager.DisplayFreeBallText();
         }
-        // otherwise, if the Free Ball Text is not currently being shown
-        else if (m_freeBallTextTimer <= 0.0f)
+        // if the free ball text should not be shown
+        else
         {
-            // update the ball count text with the amount of balls available
-            m_ballCountText.text = m_ballCount.ToString();
+            // have the UI manager update the text with the new ball count value
+            m_UIManager.UpdateBallCountText();
         }
     }
 
@@ -204,7 +197,6 @@ public class PlayerControls : MonoBehaviour
     {
         // reset the ball count
         m_ballCount = m_startingBallCount;
-        m_ballCountText.text = m_ballCount.ToString();
 
         // reload the power if it exists
         if (m_power != null)
@@ -276,22 +268,6 @@ public class PlayerControls : MonoBehaviour
             ModifyTimeScale();
         }
         // TEMP
-
-        // if the Free Ball Text Timer is active
-        if (m_freeBallTextTimer > 0.0f)
-        {
-            // reduce the timer
-            m_freeBallTextTimer -= Time.unscaledDeltaTime;
-
-            // if the timer has ran out
-            if (m_freeBallTextTimer <= 0.0f)
-            {
-                // set it to 0
-                m_freeBallTextTimer = 0.0f;
-                // replace the ball Count Text with the ball count
-                m_ballCountText.text = m_ballCount.ToString();
-            }
-        }
 
         // if the ball is in play
         if (m_ballInPlay)

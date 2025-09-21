@@ -3450,6 +3450,8 @@ MonoBehaviour:
   m_musicVolumeSlider: {fileID: 400570609}
   m_feverVolumeSlider: {fileID: 1133523408}
   m_soundEffectVolumeSlider: {fileID: 713166536}
+  m_ballCountText: {fileID: 1240219596}
+  m_freeBallTextDuration: 2
   m_musicAudioSource: {fileID: 1676064809}
   m_feverAudioSource: {fileID: 1337218376}
   m_soundEffectAudioSource: {fileID: 2062407553}
@@ -4123,9 +4125,6 @@ MonoBehaviour:
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
   m_ballTrajectory: {fileID: 1982936866}
-  m_canvas: {fileID: 1539352617}
-  m_ballCountText: {fileID: 1240219596}
-  m_freeBallTextDuration: 2
   m_playAreaBounds: {fileID: 518144201}
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
   m_ballLaunchSpeed: 10
@@ -7740,7 +7739,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 518144201}
-  - component: {fileID: 518144200}
   m_Layer: 0
   m_Name: PlayAreaBounds
   m_TagString: Untagged
@@ -7748,57 +7746,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!212 &518144200
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 518144199}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!4 &518144201
 Transform:
   m_ObjectHideFlags: 0
@@ -25848,13 +25795,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_songs:
-  - {fileID: 8300000, guid: 75663259394c29246b1495d9347773b4, type: 3}
-  - {fileID: 8300000, guid: 6495da89c259b584da4e9aba44b01154, type: 3}
-  - {fileID: 8300000, guid: c18a1a10545f28246acf13c6dc14e491, type: 3}
-  - {fileID: 8300000, guid: b80b22f08b3baf44a945cc03e3f333ca, type: 3}
-  - {fileID: 8300000, guid: 4934cc51d58649e48ad9bbaa9ad53a80, type: 3}
+  - {fileID: 8300000, guid: c2fc905bb0b036d4f84bc0bdcfb7aaea, type: 3}
+  - {fileID: 8300000, guid: f08bba3aa7c08214dae6bc8e6473ff8c, type: 3}
+  - {fileID: 8300000, guid: 9b38d092dfcec674f8d713da900f21e0, type: 3}
+  - {fileID: 8300000, guid: ca3efcf6ccd241d468e442230a6a469b, type: 3}
+  - {fileID: 8300000, guid: 05d58c1b09e3fe34a900d603d2cdaa8e, type: 3}
   m_victoryMusic: {fileID: 0}
-  m_defaultVictoryMusic: {fileID: 8300000, guid: 20f1f1bc9ccb02743a886164e1a205cd, type: 3}
+  m_defaultVictoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
 --- !u!1 &1681550508
 GameObject:
   m_ObjectHideFlags: 0

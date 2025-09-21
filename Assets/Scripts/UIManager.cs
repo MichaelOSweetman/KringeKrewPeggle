@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 01/09/2025
+    Last Modified: 22/09/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -39,6 +39,9 @@ public class UIManager : MonoBehaviour
     public Slider m_musicVolumeSlider;
     public Slider m_feverVolumeSlider;
     public Slider m_soundEffectVolumeSlider;
+    public Text m_ballCountText;
+    public float m_freeBallTextDuration = 2.0f;
+    float m_freeBallTextTimer = 0.0f;
 
     [Header("Audio")]
     public AudioSource m_musicAudioSource;
@@ -76,6 +79,10 @@ public class UIManager : MonoBehaviour
     {
         // enable the peg launcher
         TogglePegLauncher(true);
+
+        // reset the ball count text and timer
+        m_freeBallTextTimer = 0.0f;
+        UpdateBallCountText();
 
         // set the character select screen to be inactive if it was active
         m_characterSelect.SetActive(false);
@@ -191,6 +198,24 @@ public class UIManager : MonoBehaviour
 		// give the dialogue script the dialogue set to run through
 		m_dialogue.m_dialogueIndex = a_dialogueIndex;
 	}
+    
+    public void DisplayFreeBallText()
+    {
+        // update the ball count text with a message denoting that a free ball has been given
+        m_ballCountText.text = "Free Ball!";
+        // start a timer to determine how long the ballCountText should display the "Free Ball!" text
+        m_freeBallTextTimer = m_freeBallTextDuration;
+    }
+
+public void UpdateBallCountText()
+    {
+        // if the ball count text is not currently instead displaying the 'Free Ball!' text
+        if (m_freeBallTextTimer <= 0.0f)
+        {
+            // set the ball count text to display the current ball count as per the player controls component
+            m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+        }
+    }
 
     public void UpdateFreeBallProgressBar(int a_currentShotScore, int a_freeBallsAwarded)
     {
@@ -354,6 +379,22 @@ public class UIManager : MonoBehaviour
         if (Input.GetButtonDown("Toggle Menu"))
         {
             TogglePauseMenu();
+        }
+
+        // if the Free Ball Text Timer is active
+        if (m_freeBallTextTimer > 0.0f)
+        {
+            // reduce the timer
+            m_freeBallTextTimer -= Time.unscaledDeltaTime;
+
+            // if the timer has ran out
+            if (m_freeBallTextTimer <= 0.0f)
+            {
+                // set it to 0
+                m_freeBallTextTimer = 0.0f;
+                // replace the ball Count Text with the ball count
+                UpdateBallCountText();
+            }
         }
     }
 }

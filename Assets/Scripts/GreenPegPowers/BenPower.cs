@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 19/05/2025
+	Last Modified: 22/09/2025
 */
 public class BenPower : GreenPegPower
 {
@@ -59,8 +59,8 @@ public class BenPower : GreenPegPower
 
         // reduce the ball count by one as a the Isaac counts as a ball for the purposes of the ball count
         --m_playerControls.m_ballCount;
-        // update the ball count text
-        m_playerControls.m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+        // have the ui manager update the ball count text
+        m_playerControls.m_UIManager.UpdateBallCountText();
 
         // return that this function should override the default shoot function
         return true;
