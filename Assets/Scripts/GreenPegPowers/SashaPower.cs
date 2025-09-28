@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 28/07/2025
+    Last Modified: 29/09/2025
 */
 public class SashaPower : GreenPegPower
 {
@@ -36,10 +36,39 @@ public class SashaPower : GreenPegPower
     AudioSource m_audioSource;
     bool m_up = true;
 
+    Music m_music;
+    float m_overridenSongPausePoint = 0.0f;
+    public AudioClip m_sashaPowerMusic;
+    AudioClip m_overridenSong;
+
+    public void PlayMusic()
+    {
+        // store the song currently being played by the music audio source
+        m_overridenSong = m_music.GetCurrentSong();
+
+        // get the current time into the song the music audio source is currently playing
+        m_overridenSongPausePoint = m_music.GetTime();
+
+        // have the audio source loop
+        m_music.SetLoop(true);
+
+        // play the music
+        m_music.PlayNow(m_sashaPowerMusic);
+    }
+
+    public void StopMusic()
+    {
+        // have the audio source no longer loop
+        m_music.SetLoop(false);
+
+        // have the audio source play the song it was playing before the power music overrode it, at the point in the song at which it was overriden
+        m_music.PlayNow(m_overridenSong, m_overridenSongPausePoint);
+    }
+
     public override void Initialize()
     {
         // TEMP
-        m_audioSource = m_playerControls.m_UIManager.m_musicAudioSource;
+        //m_audioSource = m_playerControls.m_UIManager.m_musicAudioSource;
 
         // create the ui arrow and set its parent to be the parent of the power charges text so they are on the canvas
         m_UIArrow = Instantiate(m_UIArrowPrefab, m_powerChargesText.rectTransform.parent).GetComponent<RawImage>();
@@ -54,6 +83,9 @@ public class SashaPower : GreenPegPower
         m_pegContainer = m_playerControls.m_pegManager.m_currentPegContainer;
         // store its current position as the default position
         m_pegContainer.transform.position = m_containerDefaultPosition;
+
+        // get the Music through the peg manager
+        m_music = m_playerControls.m_UIManager.m_music;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -64,12 +96,14 @@ public class SashaPower : GreenPegPower
         // show the UI Arrow
         m_UIArrow.gameObject.SetActive(true);
 
-        // play music
+        // play the power music
+        PlayMusic();
     }
 
     public override bool OnShoot()
     {
-        // play music
+        // play the power music
+        PlayMusic();
 
         // return that this function should not override the default shoot function
         return false;

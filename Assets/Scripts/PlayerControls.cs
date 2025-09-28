@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 22/09/2025
+    Last Modified: 29/09/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -41,7 +41,6 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] float m_defaultDeltaTime = 0.02f;
 
     [Header("Audio")]
-    public AudioSource m_freeBallAudioSource;
     public AudioClip[] m_freeBallSounds;
 
 	public void RemoveBall()
@@ -167,8 +166,8 @@ public class PlayerControls : MonoBehaviour
         // if the free ball sound effect should be played
         if (a_playSound)
         {
-            // play the free ball sound that corresponds to the amount of free balls earned this round 
-            m_freeBallAudioSource.PlayOneShot(m_freeBallSounds[m_pegManager.m_freeBallsAwarded]);
+            // play the free ball sound that corresponds to the amount of free balls earned this round, using the sound effect volume
+            AudioSource.PlayClipAtPoint(m_freeBallSounds[m_pegManager.m_freeBallsAwarded], Vector3.zero, GlobalSettings.m_soundEffectVolume);
         }
 
         // if the free ball text should shown

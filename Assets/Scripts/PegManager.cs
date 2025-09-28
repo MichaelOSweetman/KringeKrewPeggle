@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 01/09/2025
+	Last Modified: 29/09/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -61,10 +61,9 @@ public class PegManager : MonoBehaviour
     public GameObject m_nearVictoryDetector;
 
     [Header("Sound")]
-    public AudioSource m_pegAudioSource;
     public AudioClip[] m_pegHitSounds;
-    int m_pegHitPitchIndex = 0;
     public AudioClip m_pegRemoveSound;
+    int m_pegHitPitchIndex = 0;
 
     [HideInInspector] public Transform m_currentPegContainer;
     [HideInInspector] public List<Peg> m_pegs;
@@ -324,12 +323,9 @@ public class PegManager : MonoBehaviour
             // have the UI Manager display the score as pop up text at the position of the hit peg
             m_uiManager.DisplayPopUpText(m_hitPegScore.ToString(), m_pegs[a_pegID].transform.position, true);
 
-            // move the audio source to the hit peg
-            m_pegAudioSource.transform.position = m_pegs[a_pegID].transform.position;
-            // set the sound of the audio source to the current peg hit sound
-            m_pegAudioSource.clip = m_pegHitSounds[m_pegHitPitchIndex];
-            // play the audio
-            m_pegAudioSource.Play();
+            // create a temporary audio source to play the current peg hit sound at the position of the hit peg, using the sound effect volume
+            AudioSource.PlayClipAtPoint(m_pegHitSounds[m_pegHitPitchIndex], m_pegs[a_pegID].transform.position, GlobalSettings.m_soundEffectVolume);
+
             // if this peg hit sound is not the last
             if (m_pegHitPitchIndex < m_pegHitSounds.Length - 1)
             {
@@ -506,10 +502,8 @@ public class PegManager : MonoBehaviour
                     m_hitPegs.Dequeue();
                 }
 
-                // position the peg audio source at the next peg
-                m_pegAudioSource.transform.position = m_hitPegs.Peek().transform.position;
-                // play the peg remove sound
-                m_pegAudioSource.PlayOneShot(m_pegRemoveSound);
+                // create a temporary audio source to play the peg remove sound at the position of the peg, using the sound effect volume
+                AudioSource.PlayClipAtPoint(m_pegRemoveSound, m_hitPegs.Peek().transform.position, GlobalSettings.m_soundEffectVolume);
 
                 // set the next peg in the queue to be inactive
                 m_hitPegs.Dequeue().gameObject.SetActive(false);

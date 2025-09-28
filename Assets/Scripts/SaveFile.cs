@@ -12,7 +12,7 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 12/05/2025
+	Last Modified: 29/09/2025
 */
 public class SaveFile : MonoBehaviour
 {
@@ -27,9 +27,6 @@ public class SaveFile : MonoBehaviour
 
     [Header("Save File Data")]
     public string m_saveName = "";
-    public AudioSource m_musicAudioSource;
-    public AudioSource m_feverAudioSource;
-    public AudioSource m_soundEffectAudioSource;
     public Toggle m_fullscreenToggle;
     public Toggle m_colorblindToggle;
     public int m_volumeSavePrecision = 2;
@@ -71,11 +68,11 @@ public class SaveFile : MonoBehaviour
         m_streamWriter.WriteLine(m_saveName);
 
         // get the music volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-        string line = m_musicAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
+        string line = GlobalSettings.m_musicVolume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the fever volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-        line += m_feverAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
+        line += GlobalSettings.m_feverVolume.ToString("N" + m_volumeSavePrecision) + ",";
         // get the sound effect volume (with decimal places as per m_volumeSavePrecision) and add it to the first line of the save file
-        line += m_soundEffectAudioSource.volume.ToString("N" + m_volumeSavePrecision) + ",";
+        line += GlobalSettings.m_soundEffectVolume.ToString("N" + m_volumeSavePrecision) + ",";
         // add the fullscreen mode to the first line of the save file as a boolean
         line += (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) ? "1" : "0" + ",";
         // add the colorblind setting to the first line of the save file as a boolean
@@ -143,13 +140,13 @@ public class SaveFile : MonoBehaviour
                         switch (settingIndex)
                         {
                             case 0:
-                                m_musicAudioSource.volume = float.Parse(settingValue);
+                                GlobalSettings.m_musicVolume = float.Parse(settingValue);
                                 break;
                             case 1:
-                                m_feverAudioSource.volume = float.Parse(settingValue);
+                                GlobalSettings.m_feverVolume = float.Parse(settingValue);
                                 break;
                             case 2:
-                                m_soundEffectAudioSource.volume = float.Parse(settingValue);
+                                GlobalSettings.m_soundEffectVolume = float.Parse(settingValue);
                                 break;
                             case 3:
                                 m_fullscreenToggle.isOn = (settingValue == "1");

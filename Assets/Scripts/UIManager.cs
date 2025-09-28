@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 22/09/2025
+    Last Modified: 29/09/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -42,11 +42,6 @@ public class UIManager : MonoBehaviour
     public Text m_ballCountText;
     public float m_freeBallTextDuration = 2.0f;
     float m_freeBallTextTimer = 0.0f;
-
-    [Header("Audio")]
-    public AudioSource m_musicAudioSource;
-    public AudioSource m_feverAudioSource;
-    public AudioSource m_soundEffectAudioSource;
 
     [Header("Character Select")]
     public GameObject m_launcher;
@@ -300,20 +295,22 @@ public void UpdateBallCountText()
 
     public void UpdateMusicVolume()
     {
-        //store the new music volume in the global variable and apply it to the music audio source
-        m_musicAudioSource.volume = GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
+        // store the new music volume in the global variable
+        GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
+        // have the music script update its audiosource's volume
+        m_music.SetVolume(GlobalSettings.m_musicVolume);
     }
 
     public void UpdateFeverVolume()
     {
-        //store the new fever volume in the global variable and apply it to the fever audio source
-        m_feverAudioSource.volume = GlobalSettings.m_feverVolume = m_feverVolumeSlider.value;
+        // store the new fever volume in the global variable
+        GlobalSettings.m_feverVolume = m_feverVolumeSlider.value;
     }
 
     public void UpdateSoundEffectVolume()
     {
-        //store the new sound effect volume in the global variable and apply it to the sound effect audio source
-        m_soundEffectAudioSource.volume = GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
+        // store the new sound effect volume in the global variable
+        GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
     }
 
     public void FullscreenToggle()

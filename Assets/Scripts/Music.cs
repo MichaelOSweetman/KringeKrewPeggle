@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Music.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 01/09/2025
+    Last Modified: 29/09/2025
 */
 public class Music : MonoBehaviour
 {
@@ -22,6 +22,16 @@ public class Music : MonoBehaviour
     {
         // set the audio source's audio clip to the victory music
         m_audioSource.clip = m_victoryMusic;
+        m_audioSource.Play();
+    }
+
+    public void PlayNow(AudioClip a_clip, float a_time = 0.0f)
+    {
+        // set the audio source's clip to the new clip
+        m_audioSource.clip = a_clip;
+        // set the starting time of the clip
+        m_audioSource.time = a_time;
+        // play the clip
         m_audioSource.Play();
     }
 
@@ -59,6 +69,30 @@ public class Music : MonoBehaviour
         m_audioSource.Play();
         // store that the music is not paused
         m_paused = false;
+    }
+
+    public void SetLoop(bool a_loop)
+    {
+        // set the audio source to loop or not as per the argument boolean
+        m_audioSource.loop = a_loop;
+    }
+
+    public float GetTime()
+    {
+        // return the time in seconds into the current clip
+        return m_audioSource.time;
+    }
+
+    public AudioClip GetCurrentSong()
+    {
+        // return the current song as an audio clip
+        return m_audioSource.clip;
+    }
+
+    public void SetVolume(float a_volume)
+    {
+        // update the audio source volume with the new volume
+        m_audioSource.volume = a_volume;
     }
 
     public void Pause()
