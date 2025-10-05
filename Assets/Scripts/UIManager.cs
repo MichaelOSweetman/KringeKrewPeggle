@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 29/09/2025
+    Last Modified: 06/10/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     public PegManager m_pegManager;
 	public Dialogue m_dialogue;
     public Camera m_camera;
-    public Music m_music;
+    public MusicManager m_musicManager;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -106,7 +106,7 @@ public class UIManager : MonoBehaviour
             m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
             // set the victory music to this character's victory music
-            m_music.m_victoryMusic = m_characters[m_selectedCharacterID].m_victoryMusic;
+            m_musicManager.m_victoryMusic = m_characters[m_selectedCharacterID].m_victoryMusic;
 
             // TEMP
             // set corresponding art assets for character, etc
@@ -297,8 +297,8 @@ public void UpdateBallCountText()
     {
         // store the new music volume in the global variable
         GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
-        // have the music script update its audiosource's volume
-        m_music.SetVolume(GlobalSettings.m_musicVolume);
+        // have the music manager update its audiosource's volume
+        m_musicManager.SetVolume(GlobalSettings.m_musicVolume);
     }
 
     public void UpdateFeverVolume()
@@ -344,11 +344,6 @@ public void UpdateBallCountText()
         // get the save file component
         m_saveFile = GetComponent<SaveFile>();
 
-        // initialise volume
-        UpdateMusicVolume();
-        UpdateFeverVolume();
-        UpdateSoundEffectVolume();
-
         // initialise the color blind setting
         m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
 
@@ -368,6 +363,11 @@ public void UpdateBallCountText()
             // show the character select screen
             ShowCharacterSelectScreen();
         }
+
+        // initialise volume
+        UpdateMusicVolume();
+        UpdateFeverVolume();
+        UpdateSoundEffectVolume();
     }
 
     // Update is called once per frame
