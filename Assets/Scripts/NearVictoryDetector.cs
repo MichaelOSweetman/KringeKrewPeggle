@@ -6,12 +6,13 @@ using UnityEngine;
     File name: NearVictoryDetector.cs
     Summary: Prompts the camera to zoom in towards the ball when it is in the detector's space
     Creation Date: 04/12/2023
-    Last Modified: 06/10/2025
+    Last Modified: 13/10/2025
 */
 public class NearVictoryDetector : MonoBehaviour
 {
     public PlayerControls m_playerControls;
     public MusicManager m_musicManager;
+    public float m_musicFadeDuration = 1.0f;
     CameraZoom m_cameraZoom;
     List<GameObject> m_ballsInRange;
 
@@ -42,7 +43,7 @@ public class NearVictoryDetector : MonoBehaviour
             m_ballsInRange.Add(a_collision.gameObject);
 
             // pause the music
-            m_musicManager.PauseAll();
+            m_musicManager.Pause();
         }
     }
 
@@ -65,8 +66,8 @@ public class NearVictoryDetector : MonoBehaviour
                 // reset the time scale
                 m_playerControls.ModifyTimeScale();
 
-                // unpause the music
-                m_musicManager.UnpauseActiveAudioSource();
+                // fade the playlist music back
+                m_musicManager.FadeToPlaylist(m_musicFadeDuration);
             }
         }
     }

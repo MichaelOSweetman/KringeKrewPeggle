@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 06/10/2025
+    Last Modified: 13/10/2025
 */
 public class SashaPower : GreenPegPower
 {
@@ -33,33 +33,8 @@ public class SashaPower : GreenPegPower
     float m_lerpTimer = 0.0f;
 
     MusicManager m_musicManager;
-    float m_overridenSongPausePoint = 0.0f;
     public AudioClip m_sashaPowerMusic;
-    AudioClip m_overridenSong;
-
-    public void PlayMusic()
-    {
-        // store the song currently being played by the music manager
-        m_overridenSong = m_musicManager.GetCurrentSong();
-
-        // get the current time into the song the music manager is currently playing
-        m_overridenSongPausePoint = m_musicManager.GetTime();
-
-        // have the audio source loop
-        m_musicManager.SetLoop(true);
-
-        // play the music
-        m_musicManager.PlayNow(m_sashaPowerMusic);
-    }
-
-    public void StopMusic()
-    {
-        // have the audio source no longer loop
-        m_musicManager.SetLoop(false);
-
-        // have the audio source play the song it was playing before the power music overrode it, at the point in the song at which it was overriden
-        m_musicManager.PlayNow(m_overridenSong, m_overridenSongPausePoint);
-    }
+    public float m_fadeDuration = 0.75f;
 
     public override void Initialize()
     {
@@ -83,20 +58,30 @@ public class SashaPower : GreenPegPower
 
     public override void Trigger(Vector3 a_greenPegPosition)
     {
+        // if there are 0 power charges and the power was not about to be resolved (and therefore already active)
+        if (m_powerCharges == 0 && !m_playerControls.m_resolvePowerNextTurn)
+        {
+            // show the UI Arrow
+            m_UIArrow.gameObject.SetActive(true);
+
+            // have the music manager play the power music
+            m_musicManager.PlayNow(true, m_sashaPowerMusic);
+
+            // initialise the timer
+            m_timer = 0.0f;
+        }
+
         // add the charges
         ModifyPowerCharges(m_gainedPowerCharges);
-
-        // show the UI Arrow
-        m_UIArrow.gameObject.SetActive(true);
-
-        // play the power music
-        PlayMusic();
     }
 
     public override bool OnShoot()
     {
-        // play the power music
-        PlayMusic();
+        // have the music manager play the power music
+        m_musicManager.PlayNow(true, m_sashaPowerMusic);
+
+        // initialise the timer
+        m_timer = 0.0f;
 
         // return that this function should not override the default shoot function
         return false;
@@ -119,7 +104,8 @@ public class SashaPower : GreenPegPower
 
         }
 
-        // stop the music
+        // have the music manager fade back to the playlist
+        m_musicManager.FadeToPlaylist(m_fadeDuration);
 
         // ensure the pegs are at their default position
         m_pegContainer.position = m_containerDefaultPosition;
@@ -137,7 +123,8 @@ public class SashaPower : GreenPegPower
         m_pegContainer.transform.position = m_containerDefaultPosition;
         m_atDefaultPosition = true;
 
-        // stop the music
+        // have the music manager stop the power music
+        m_musicManager.SwitchToPlaylist();
 
         // reset the arrow colour
         m_UIArrow.color = m_defaultArrowColor;

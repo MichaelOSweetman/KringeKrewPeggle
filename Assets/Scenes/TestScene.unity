@@ -1302,6 +1302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
   m_musicManager: {fileID: 1676064810}
+  m_musicFadeDuration: 1
 --- !u!50 &112654240
 Rigidbody2D:
   serializedVersion: 4
@@ -25496,8 +25497,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1676064808}
-  - component: {fileID: 1676064809}
   - component: {fileID: 1676064811}
+  - component: {fileID: 1676064809}
   - component: {fileID: 1676064810}
   m_Layer: 0
   m_Name: Music
@@ -25532,7 +25533,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.4
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -25629,13 +25630,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_songs:
-  - {fileID: 8300000, guid: c2fc905bb0b036d4f84bc0bdcfb7aaea, type: 3}
-  - {fileID: 8300000, guid: f08bba3aa7c08214dae6bc8e6473ff8c, type: 3}
-  - {fileID: 8300000, guid: 9b38d092dfcec674f8d713da900f21e0, type: 3}
-  - {fileID: 8300000, guid: ca3efcf6ccd241d468e442230a6a469b, type: 3}
-  - {fileID: 8300000, guid: 05d58c1b09e3fe34a900d603d2cdaa8e, type: 3}
+  - {fileID: 8300000, guid: 75663259394c29246b1495d9347773b4, type: 3}
+  - {fileID: 8300000, guid: 6495da89c259b584da4e9aba44b01154, type: 3}
+  - {fileID: 8300000, guid: c18a1a10545f28246acf13c6dc14e491, type: 3}
+  - {fileID: 8300000, guid: b80b22f08b3baf44a945cc03e3f333ca, type: 3}
+  - {fileID: 8300000, guid: 4934cc51d58649e48ad9bbaa9ad53a80, type: 3}
+  m_defaultVictoryMusic: {fileID: 8300000, guid: 20f1f1bc9ccb02743a886164e1a205cd, type: 3}
   m_victoryMusic: {fileID: 0}
-  m_defaultVictoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
 --- !u!82 &1676064811
 AudioSource:
   m_ObjectHideFlags: 0
@@ -25648,7 +25649,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.4
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0

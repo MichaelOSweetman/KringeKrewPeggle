@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 06/10/2025
+    Last Modified: 13/10/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -298,7 +298,7 @@ public void UpdateBallCountText()
         // store the new music volume in the global variable
         GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
         // have the music manager update its audiosource's volume
-        m_musicManager.SetVolume(GlobalSettings.m_musicVolume);
+        m_musicManager.SetVolume();
     }
 
     public void UpdateFeverVolume()
