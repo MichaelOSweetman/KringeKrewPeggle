@@ -6,19 +6,19 @@ using UnityEngine;
     File name: MusicManager.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 13/10/2025
+    Last Modified: 20/10/2025
 */
 public class MusicManager : MonoBehaviour
 {
     public List<AudioClip> m_songs;
-    public AudioClip m_defaultVictoryMusic;
+    public float m_playlistDelay = 2.0f;
     [HideInInspector] public AudioClip m_victoryMusic;
     AudioSource m_playlistSource;
     AudioSource m_secondarySource;
     AudioSource m_activeSource;
+    AudioSource m_fadeTarget;
     Queue<int> m_playlist;
     List<int> m_songIDs;
-    bool m_playlistPaused = false;
     bool m_fading = false;
     float m_fadeTimer = 0.0f;
     float m_fadeDuration = 0.0f;
@@ -38,7 +38,7 @@ public class MusicManager : MonoBehaviour
         m_playlistSource.volume = m_secondarySource.volume = GlobalSettings.m_musicVolume;
     }
 
-    public void FadeToPlaylist(float a_fadeDuration)
+    void InitialiseFade(float a_fadeDuration)
     {
         // store that the song fading is occuring
         m_fading = true;
@@ -46,18 +46,29 @@ public class MusicManager : MonoBehaviour
         m_fadeDuration = a_fadeDuration;
         // reset the fade timer
         m_fadeTimer = 0.0f;
-        // unpause the playlist
-        m_playlistSource.UnPause();
-        m_playlistPaused = false;
-        // set the playlist volume to 0
-        m_playlistSource.volume = 0.0f;
+
+        // unpause the fade target audio source
+        m_fadeTarget.UnPause();
+        // set the fade target audio source volume to 0
+        m_fadeTarget.volume = 0.0f;
+    }
+
+    public void FadeToPlaylist(float a_fadeDuration)
+    {
+        m_fadeTarget = m_playlistSource;
+        InitialiseFade(a_fadeDuration);
+    }
+
+    public void FadeToActive(float a_fadeDuration)
+    {
+        m_fadeTarget = m_activeSource;
+        InitialiseFade(a_fadeDuration);
     }
 
     public void PlayNow(bool a_loop, AudioClip a_clip = null, float a_time = 0.0f)
     {
         // pause the playlist audio source
         m_playlistSource.Pause();
-        m_playlistPaused = true;
 
         // set the secondary audio source's clip to be the argument clip, using the victory music if no argument is provided
         m_secondarySource.clip = (a_clip == null) ? m_victoryMusic : a_clip;
@@ -104,8 +115,6 @@ public class MusicManager : MonoBehaviour
 
         // store that the playlist source is the active source
         m_activeSource = m_playlistSource;
-        // store that the playlist is not paused
-        m_playlistPaused = false;
     }
 
     public void SetVolume()
@@ -128,26 +137,12 @@ public class MusicManager : MonoBehaviour
     {
         // pause the active audio source
         m_activeSource.Pause();
-
-        // if the active source is the playlist source
-        if (m_activeSource == m_playlistSource)
-        {
-            // store that the playlist is paused
-            m_playlistPaused = true;
-        }
     }
 
     public void Unpause()
     {
         // unpause the active audio source
         m_activeSource.UnPause();
-
-        // if the active source is the playlist source
-        if (m_activeSource == m_playlistSource)
-        {
-            // store that the playlist is no longer paused
-            m_playlistPaused = false;
-        }
     }
 
     void Awake()
@@ -164,12 +159,6 @@ public class MusicManager : MonoBehaviour
 
         // initialise the song IDs list
         m_songIDs = new List<int>();
-
-        // set the victory music to the default if it hasn't already been set
-        if (m_victoryMusic == null)
-        {
-            m_victoryMusic = m_defaultVictoryMusic;
-        }
     }
 
     // Update is called once per frame
@@ -184,28 +173,40 @@ public class MusicManager : MonoBehaviour
             // if the duration of the fade has elapsed
             if (m_fadeTimer >= m_fadeDuration)
             {
-                // conclude the fade by switching to the playlist audio source
-                SwitchToPlaylist();
+                // if the fade target is the playlist source
+                if (m_fadeTarget == m_playlistSource)
+                {
+                    // conclude the fade by switching to the playlist audio source
+                    SwitchToPlaylist();
+                }
+                // if the fade target is the secondary source
+                else
+                {
+                    // store that the audio sources are not fading from one to the other
+                    m_fading = false;
+                    // ensure both audio sources are set to the correct volume
+                    m_playlistSource.volume = m_secondarySource.volume = GlobalSettings.m_musicVolume;
+                }
             }
             // if the duration has not elapsed
             else
             {
-                // set the playlist source's volume to be the fraction of how far along the timer is to the full fade duration being complete, such that it is silent at 0 seconds and full volume when the duration has elapsed
-                m_playlistSource.volume = (m_fadeTimer / m_fadeDuration);
-                // set the secondary source's volume to be 1 - the fraction of how far along the timer is to the full fade duration being complete, such that it is full volume at 0 seconds and silent when the duration has elapsed
-                m_secondarySource.volume = 1.0f - m_playlistSource.volume;
+                // set the fade target source's volume to be the fraction of how far along the timer is to the full fade duration being complete, such that it is silent at 0 seconds and full volume when the duration has elapsed
+                m_fadeTarget.volume = (m_fadeTimer / m_fadeDuration) * GlobalSettings.m_musicVolume;
+                // set the other source's volume to be full volume minus the fraction of how far along the timer is to the full fade duration being complete, such that it is full volume at 0 seconds and silent when the duration has elapsed
+                (m_fadeTarget == m_playlistSource ? m_secondarySource : m_playlistSource).volume = GlobalSettings.m_musicVolume - m_fadeTarget.volume;
             }
         }
 
-        // if the playlist audio source is not playing anything, the playlist is not empty and the music is not paused, the current song has finished
-        if (!m_playlistSource.isPlaying && m_playlist.Count > 0 && !m_playlistPaused)
+        // if the playlist audio source has played the clip for its full duration and the playlist is not empty
+        if (m_playlistSource.time >= m_playlistSource.clip.length && m_playlist.Count > 0)
         {
             // add the finished song to the end of the queue and remove it from the top
             m_playlist.Enqueue(m_playlist.Dequeue());
 
-            // set the audio source's audio clip to the first song in the queue and play it
+            // set the audio source's audio clip to the first song in the queue and play it after a delay
             m_playlistSource.clip = m_songs[m_playlist.Peek()];
-            m_playlistSource.Play();
+            m_playlistSource.PlayDelayed(m_playlistDelay);
         }
     }
 }

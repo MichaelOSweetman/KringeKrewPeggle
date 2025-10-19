@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 13/10/2025
+    Last Modified: 20/10/2025
 */
 public class SashaPower : GreenPegPower
 {
@@ -77,11 +77,15 @@ public class SashaPower : GreenPegPower
 
     public override bool OnShoot()
     {
-        // have the music manager play the power music
-        m_musicManager.PlayNow(true, m_sashaPowerMusic);
+        // if there are power charges
+        if (m_powerCharges > 0)
+        {
+            // have the music manager play the power music
+            m_musicManager.PlayNow(true, m_sashaPowerMusic);
 
-        // initialise the timer
-        m_timer = 0.0f;
+            // initialise the timer
+            m_timer = 0.0f;
+        }
 
         // return that this function should not override the default shoot function
         return false;
@@ -102,10 +106,10 @@ public class SashaPower : GreenPegPower
                 m_UIArrow.gameObject.SetActive(false);
             }
 
-        }
 
-        // have the music manager fade back to the playlist
-        m_musicManager.FadeToPlaylist(m_fadeDuration);
+            // have the music manager fade back to the playlist
+            m_musicManager.FadeToPlaylist(m_fadeDuration);
+        }
 
         // ensure the pegs are at their default position
         m_pegContainer.position = m_containerDefaultPosition;
