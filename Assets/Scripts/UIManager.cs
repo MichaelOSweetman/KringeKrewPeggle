@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 13/10/2025
+    Last Modified: 27/10/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -56,6 +56,12 @@ public class UIManager : MonoBehaviour
     public Color[] m_freeBallProgressBarColors;
     RawImage m_freeBallProgressBarImage;
     float m_freeBallProgressBarHeight = 0.0f;
+
+    [Header("Fever Meter")]
+    public GameObject m_multiplierThresholdPrefab;
+    public GameObject m_barLinePrefab;
+    public RectTransform m_feverMeter;
+    float m_feverMeterHeight = 0.0f;
 
     [Header("Score")]
     public Text m_levelScoreText;
@@ -202,13 +208,54 @@ public class UIManager : MonoBehaviour
         m_freeBallTextTimer = m_freeBallTextDuration;
     }
 
-public void UpdateBallCountText()
+    public void UpdateBallCountText()
     {
         // if the ball count text is not currently instead displaying the 'Free Ball!' text
         if (m_freeBallTextTimer <= 0.0f)
         {
             // set the ball count text to display the current ball count as per the player controls component
             m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+        }
+    }
+
+    public void UpdateFeverMeter(float a_percentOfOrangePegsHit)
+    {
+        // modify the fever meter to be representative of the amount of orange pegs that have been hit, relative to the original orange peg total
+        m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, a_percentOfOrangePegsHit * m_feverMeterHeight);
+    }
+
+    public void InitialiseFeverMeter(int a_orangePegCount, int[] a_scoreMultipliers, int[] a_multiplierIncreaseThresholds)
+    {
+        // create an index to iterate through the a_multiplierIncreaseThresholds array
+        int increaseThresholdIndex = 0;
+        float pegBlockHeight = 1.0f/(float)a_orangePegCount * m_feverMeterHeight;
+
+        // loop for each orange peg except the last
+        for (int i = 0; i < a_orangePegCount - 1; ++i)
+        {
+            GameObject barLine = null;
+
+            // if the current amount of orange pegs is the next multiplier increase threshold
+            if (i == a_multiplierIncreaseThresholds[increaseThresholdIndex])
+            {
+                // instantiate the bar line with the multiplier threshold prefab
+                barLine = Instantiate(m_multiplierThresholdPrefab) as GameObject;
+                // set the text to of the threshold to the score multiplier set by the threshold
+                barLine.GetComponentInChildren<Text>().text = "x" + a_scoreMultipliers[increaseThresholdIndex + 1];
+                // have the increaseThresholdIndex point to the next increase threshold
+                ++increaseThresholdIndex;
+            }
+            // if the current amount of orange pegs does not respond to the next multiplier increase threshold
+            else
+            {
+                // instantiate the bar line with the normal bar line prefab
+                barLine = Instantiate(m_barLinePrefab) as GameObject;
+            }
+
+            // set the bar line's parent to be the fever meter background
+            barLine.transform.SetParent(m_feverMeter.parent, false);
+            // position the bar line along the fever meter to split up the fever meter into blocks for each orange peg
+            barLine.transform.localPosition = Vector3.up * (i + 1) * pegBlockHeight;
         }
     }
 
@@ -353,6 +400,11 @@ public void UpdateBallCountText()
         m_freeBallProgressBarImage = m_freeBallProgressBar.GetComponent<RawImage>();
         // initialise the progress bar height
         m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0.0f);
+
+        // get the current height of the fever meter
+        m_feverMeterHeight = m_feverMeter.sizeDelta.y;
+        // initialise the fever meter height
+        m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0.0f);
     }
 
     private void Start()
