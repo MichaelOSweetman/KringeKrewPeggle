@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 27/10/2025
+	Last Modified: 03/11/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -302,12 +302,16 @@ public class PegManager : MonoBehaviour
                         // if the multiplier is not already at the maximum and the threshold for increasing the multiplier has been reached
                         if (m_scoreMultiplierIndex < m_multiplierIncreaseThresholds.Length - 1 && m_hitOrangePegs == m_multiplierIncreaseThresholds[m_scoreMultiplierIndex])
                         {
+                            // update the fever meter's multiplier display
+                            m_uiManager.UpdateFeverMeterMultiplier(m_scoreMultiplierIndex);
                             // increase the multiplier
                             ++m_scoreMultiplierIndex;
                         }
                     }
                     // update the fever meter
-                    m_uiManager.UpdateFeverMeter((float)m_hitOrangePegs / (float)m_startingOrangePegCount);
+                    m_uiManager.UpdateFeverMeter(m_hitOrangePegs);
+                    // TEMP
+                    Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" + m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
                     break;
                 case PegType.Purple:
                     m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
@@ -526,9 +530,6 @@ public class PegManager : MonoBehaviour
                 }
             }
         }
-
-        // TEMP
-        //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" +m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
     }
 }
 

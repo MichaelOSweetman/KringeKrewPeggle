@@ -25816,11 +25816,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_songs:
-  - {fileID: 8300000, guid: 75663259394c29246b1495d9347773b4, type: 3}
-  - {fileID: 8300000, guid: 6495da89c259b584da4e9aba44b01154, type: 3}
-  - {fileID: 8300000, guid: c18a1a10545f28246acf13c6dc14e491, type: 3}
-  - {fileID: 8300000, guid: b80b22f08b3baf44a945cc03e3f333ca, type: 3}
-  - {fileID: 8300000, guid: 4934cc51d58649e48ad9bbaa9ad53a80, type: 3}
+  - {fileID: 8300000, guid: c2fc905bb0b036d4f84bc0bdcfb7aaea, type: 3}
+  - {fileID: 8300000, guid: f08bba3aa7c08214dae6bc8e6473ff8c, type: 3}
+  - {fileID: 8300000, guid: 9b38d092dfcec674f8d713da900f21e0, type: 3}
+  - {fileID: 8300000, guid: ca3efcf6ccd241d468e442230a6a469b, type: 3}
+  - {fileID: 8300000, guid: 05d58c1b09e3fe34a900d603d2cdaa8e, type: 3}
   m_playlistDelay: 2
   m_victoryMusic: {fileID: 0}
 --- !u!82 &1676064811

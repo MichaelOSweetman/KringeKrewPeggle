@@ -107,5 +107,5 @@ MonoBehaviour:
   m_moveSpeed: 10
   m_downBeatColor: {r: 1, g: 1, b: 0, a: 1}
   m_upBeatColor: {r: 0, g: 0, b: 1, a: 1}
-  m_sashaPowerMusic: {fileID: 8300000, guid: 95dc326d8c82fce4c90e1bcac745cb90, type: 3}
+  m_sashaPowerMusic: {fileID: 8300000, guid: 95c6fe37272b54447b5bcbaf73d34a53, type: 3}
   m_fadeDuration: 0.75

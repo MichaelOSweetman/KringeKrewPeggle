@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 27/10/2025
+    Last Modified: 03/10/2025
 */
 public class UIManager : MonoBehaviour
 {
@@ -61,7 +61,13 @@ public class UIManager : MonoBehaviour
     public GameObject m_multiplierThresholdPrefab;
     public GameObject m_barLinePrefab;
     public RectTransform m_feverMeter;
+    public int m_multiplierFlickerCount = 5;
+    public float m_multiplierFlickerInterval = 0.3f;
     float m_feverMeterHeight = 0.0f;
+    float m_feverMeterBlockHeight = 0.0f;
+    Text[] m_feverMeterMultiplierTexts;
+    float m_feverMeterFlickerTimer = 0.0f;
+    int m_flickeringMultiplierID = -1;
 
     [Header("Score")]
     public Text m_levelScoreText;
@@ -218,20 +224,33 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateFeverMeter(float a_percentOfOrangePegsHit)
+    public void UpdateFeverMeterMultiplier(int a_multiplierID)
+    {
+        // store that the specified multiplier display should flicker
+        m_flickeringMultiplierID = a_multiplierID;
+        // reset the timer
+        m_feverMeterFlickerTimer = 0.0f;
+    }
+
+    public void UpdateFeverMeter(float a_hitOrangePegs)
     {
         // modify the fever meter to be representative of the amount of orange pegs that have been hit, relative to the original orange peg total
-        m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, a_percentOfOrangePegsHit * m_feverMeterHeight);
+        m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, a_hitOrangePegs * m_feverMeterBlockHeight);
     }
 
     public void InitialiseFeverMeter(int a_orangePegCount, int[] a_scoreMultipliers, int[] a_multiplierIncreaseThresholds)
     {
         // create an index to iterate through the a_multiplierIncreaseThresholds array
         int increaseThresholdIndex = 0;
-        float pegBlockHeight = 1.0f/(float)a_orangePegCount * m_feverMeterHeight;
+        
+        // determine the height of the blocks that represent the orange pegs on the fever meter
+        m_feverMeterBlockHeight = 1.0f/(float)a_orangePegCount * m_feverMeterHeight;
 
-        // loop for each orange peg except the last
-        for (int i = 0; i < a_orangePegCount - 1; ++i)
+        // initialse the fever meter multiplier text array with the amount of score multipliers there are
+        m_feverMeterMultiplierTexts = new Text[a_scoreMultipliers.Length];
+
+        // loop for each orange peg
+        for (int i = 1; i < a_orangePegCount; ++i)
         {
             GameObject barLine = null;
 
@@ -240,8 +259,10 @@ public class UIManager : MonoBehaviour
             {
                 // instantiate the bar line with the multiplier threshold prefab
                 barLine = Instantiate(m_multiplierThresholdPrefab) as GameObject;
-                // set the text to of the threshold to the score multiplier set by the threshold
-                barLine.GetComponentInChildren<Text>().text = "x" + a_scoreMultipliers[increaseThresholdIndex + 1];
+                // get the text component of the multiplier threshold and store it in the multiplier text array
+                m_feverMeterMultiplierTexts[increaseThresholdIndex] = barLine.GetComponentInChildren<Text>();
+                // set the text of the threshold to the score multiplier set by the threshold
+                m_feverMeterMultiplierTexts[increaseThresholdIndex].text = "x" + a_scoreMultipliers[increaseThresholdIndex + 1];
                 // have the increaseThresholdIndex point to the next increase threshold
                 ++increaseThresholdIndex;
             }
@@ -255,7 +276,7 @@ public class UIManager : MonoBehaviour
             // set the bar line's parent to be the fever meter background
             barLine.transform.SetParent(m_feverMeter.parent, false);
             // position the bar line along the fever meter to split up the fever meter into blocks for each orange peg
-            barLine.transform.localPosition = Vector3.up * (i + 1) * pegBlockHeight;
+            barLine.transform.localPosition = Vector3.up * i * m_feverMeterBlockHeight;
         }
     }
 
@@ -443,6 +464,30 @@ public class UIManager : MonoBehaviour
                 m_freeBallTextTimer = 0.0f;
                 // replace the ball Count Text with the ball count
                 UpdateBallCountText();
+            }
+        }
+
+        // if there is a fever meter multiplier display that should be flickering
+        if (m_flickeringMultiplierID >= 0)
+        {
+            // increase the timer
+            m_feverMeterFlickerTimer += Time.unscaledDeltaTime;
+
+            Debug.Log((int)(m_feverMeterFlickerTimer % m_multiplierFlickerInterval));
+
+
+            // if the timer has elapsed enough to flicker as many times as required
+            if (m_feverMeterFlickerTimer > m_multiplierFlickerInterval * m_multiplierFlickerCount)
+            {
+                // ensure that the multiplier display is on
+                m_feverMeterMultiplierTexts[m_flickeringMultiplierID].color = Color.red;
+                // store that there is no longer a multiplier to flicker
+                m_flickeringMultiplierID = -1;
+            }
+            else
+            {
+                // if the flicker interval has elapsed an even number of times the display should be off, else it should be on
+                m_feverMeterMultiplierTexts[m_flickeringMultiplierID].color = ((int)(m_feverMeterFlickerTimer % m_multiplierFlickerInterval) % 2 == 0) ? Color.blue : Color.red;
             }
         }
     }
