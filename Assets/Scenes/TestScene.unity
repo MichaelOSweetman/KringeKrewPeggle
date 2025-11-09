@@ -3493,6 +3493,8 @@ MonoBehaviour:
   m_popUpTextPrefab: {fileID: 7456070119279739998, guid: 6bf64a015dd01324aa63a8bf0c7f104a, type: 3}
   m_popUpTextContainer: {fileID: 1275951802}
   m_gameOverlay: {fileID: 1636977273}
+  m_flickerCount: 5
+  m_flickerInterval: 0.3
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0
