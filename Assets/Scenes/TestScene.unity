@@ -3488,13 +3488,15 @@ MonoBehaviour:
   m_multiplierThresholdPrefab: {fileID: 5475735384811222075, guid: 58c45fc7519177a42934d8624fe0c14e, type: 3}
   m_barLinePrefab: {fileID: 5857457928427273624, guid: ff27e508dfed6a04786c1775e1a20a95, type: 3}
   m_feverMeter: {fileID: 1205523828}
+  m_activeMultiplierText: {r: 0.58431375, g: 0.26666668, b: 0.10980392, a: 1}
+  m_inactiveMultiplierText: {r: 0, g: 0, b: 0, a: 0}
   m_levelScoreText: {fileID: 423325514}
   m_topScoreText: {fileID: 175524689}
   m_popUpTextPrefab: {fileID: 7456070119279739998, guid: 6bf64a015dd01324aa63a8bf0c7f104a, type: 3}
   m_popUpTextContainer: {fileID: 1275951802}
-  m_gameOverlay: {fileID: 1636977273}
   m_flickerCount: 5
   m_flickerInterval: 0.3
+  m_gameOverlay: {fileID: 1636977273}
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0

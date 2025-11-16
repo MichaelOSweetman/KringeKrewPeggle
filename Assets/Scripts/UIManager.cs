@@ -3,14 +3,114 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UIManager;
 
 /*
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 10/11/2025
+    Last Modified: 17/11/2025
 */
+
+public class Flicker
+{
+    enum UIElementType
+    {
+        Text,
+        BarHeight,
+        Render
+    }
+
+    UIElementType m_UIElementType = UIElementType.Text;
+    UIManager m_UIManager;
+    float m_timer = 0.0f;
+    float m_flickerCounter = 0;
+
+    RawImage m_UIRenderer = null;
+    Text m_text = null;
+    RectTransform m_rect = null;
+
+    float m_newHeight = 0.0f;
+    float m_oldHeight = 0.0f;
+
+    public Flicker(Text a_text, UIManager a_UIManager)
+    {
+        // store the UI manager
+        m_UIManager = a_UIManager;
+        // store that the flickering UI element is text
+        m_text = a_text;
+        m_UIElementType = UIElementType.Text;
+    }
+
+    public Flicker(RectTransform a_rect, UIManager a_UIManager, float a_newHeight, float a_oldHeight)
+    {
+        // store the UI manager
+        m_UIManager = a_UIManager;
+        // store that the flickering UI element is a rect transfrom's height
+        m_rect = a_rect;
+        m_UIElementType = UIElementType.BarHeight;
+
+        // store the heights that the bar should toggle between
+        m_newHeight = a_newHeight;
+        m_oldHeight = a_oldHeight;
+    }
+
+    public Flicker(RawImage a_UIRenderer, UIManager a_UIManager)
+    {
+        // store the UI manager
+        m_UIManager = a_UIManager;
+        // store that the flickering UI element is a renderer
+        m_UIRenderer = a_UIRenderer;
+        m_UIElementType = UIElementType.Render;
+    }
+
+    void ResolveFlicker()
+    {
+        switch (m_UIElementType)
+        {
+            case UIElementType.Text:
+                // set the colour of the text to be the inactive colour if it has flickered an even number of times, or the active colour otherwise
+                m_text.color = (m_flickerCounter % 2 == 0) ? m_UIManager.m_inactiveMultiplierText : m_UIManager.m_activeMultiplierText;
+                break;
+            case UIElementType.BarHeight:
+                // set the height of the bar to be the old height if it has flickered an even number of times, or the new height otherwise
+                m_rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (m_flickerCounter % 2 == 0) ? m_oldHeight : m_newHeight);
+                break;
+            case UIElementType.Render:
+                // toggle the active state of the renderer;
+                m_UIRenderer.enabled = !m_UIRenderer.enabled;
+                break;
+        }
+    }
+
+    public bool Update()
+    {
+        // increase the timer
+        m_timer += Time.unscaledDeltaTime;
+
+        // if enough time has elapsed for the flicker to occur
+        if (m_timer >= m_UIManager.m_flickerInterval)
+        {
+            // increase the counter for how many flickers have
+            ++m_flickerCounter;
+            // reset the timer to wait for the next flicker interval
+            m_timer -= m_UIManager.m_flickerInterval;
+
+            // have the effect of the flicker occur, depending on the type of UI element this corresponds to
+            ResolveFlicker();
+
+            // if the UI element has flickered enough times
+            if (m_flickerCounter == m_UIManager.m_flickerCount)
+            {
+                // return that the flickering has elapsed and the object can be removed from the flickering list
+                return true;
+            }
+        }
+        // return that the flickering has not yet elapsed
+        return false;
+    }
+
+}
+
 public class UIManager : MonoBehaviour
 {
     [System.Serializable] public struct CharacterAssets
@@ -18,47 +118,6 @@ public class UIManager : MonoBehaviour
         public GameObject m_playerIconPrefab;
         public AudioClip m_victoryMusic;
     }
-
-    public class Flicker
-    {
-        // TEMP
-        public enum UIElementType
-        {
-            Text,
-            BarHeight,
-            Active
-        }
-
-        public float m_flickerInterval = 0.0f;
-        public float m_flickerCount;
-        float m_timer = 0.0f;
-        float m_flickerCounter = 0;
-        
-        public bool SwitchFlickerState()
-        {
-            // increase the timer
-            m_timer += Time.unscaledDeltaTime;
-
-            // if enough time has elapsed for the flicker to occur
-            if (m_timer >= m_flickerInterval)
-            {
-                // increase the counter for how many flickers have
-                ++m_flickerCounter;
-                // reset the timer to wait for the next flicker interval
-                m_timer -= m_flickerInterval;
-
-                if (m_flickerCounter == m_flickerCount)
-                {
-                    // TEMP
-                }
-
-                return true;
-            }
-            return false;
-        }
-        
-    }
-
 
     public PlayerControls m_playerControls;
     public LauncherRotation m_launcherRotation;
@@ -103,6 +162,8 @@ public class UIManager : MonoBehaviour
     public GameObject m_multiplierThresholdPrefab;
     public GameObject m_barLinePrefab;
     public RectTransform m_feverMeter;
+    public Color m_activeMultiplierText;
+    [HideInInspector] public Color m_inactiveMultiplierText;
     float m_feverMeterHeight = 0.0f;
     float m_feverMeterBlockHeight = 0.0f;
     Text[] m_feverMeterMultiplierTexts;
@@ -112,17 +173,18 @@ public class UIManager : MonoBehaviour
     public Text m_topScoreText;
     public GameObject m_popUpTextPrefab;
     public Transform m_popUpTextContainer;
-
     SaveFile m_saveFile;
     int m_selectedCharacterID = 0;
+
+    [Header("Flickering")]
+    public int m_flickerCount = 5;
+    public float m_flickerInterval = 0.3f;
+    List<Flicker> m_flickeringUIElements;
 
     // TEMP - have in struct for character art assets
     [Header("TEMP")]
     public RawImage m_gameOverlay;
-    public int m_flickerCount = 5;
-    public float m_flickerInterval = 0.3f;
-    float m_feverMeterFlickerTimer = 0.0f;
-    int m_flickeringMultiplierID = -1;
+
 
     public void LockInCharacter(bool a_useLevelDefault = false)
     {
@@ -268,10 +330,8 @@ public class UIManager : MonoBehaviour
 
     public void UpdateFeverMeterMultiplier(int a_multiplierID)
     {
-        // store that the specified multiplier display should flicker
-        m_flickeringMultiplierID = a_multiplierID;
-        // reset the timer
-        m_feverMeterFlickerTimer = 0.0f;
+        // have this multiplier text flicker
+        m_flickeringUIElements.Add(new Flicker(m_feverMeterMultiplierTexts[a_multiplierID], this));
     }
 
     public void UpdateFeverMeter(float a_hitOrangePegs)
@@ -468,6 +528,11 @@ public class UIManager : MonoBehaviour
         m_feverMeterHeight = m_feverMeter.sizeDelta.y;
         // initialise the fever meter height
         m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0.0f);
+        // get the colour from the multiplier threshold prefab as the inactive multiplier threshold text colour
+        m_inactiveMultiplierText = m_multiplierThresholdPrefab.GetComponentInChildren<Text>().color;
+
+        // initialise the flickering UI elements list
+        m_flickeringUIElements = new List<Flicker>();
     }
 
     private void Start()
@@ -509,51 +574,18 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // if there is a fever meter multiplier display that should be flickering
-        if (m_flickeringMultiplierID >= 0)
+        // TEMP
+        if (Input.GetKeyDown(KeyCode.RightBracket))
         {
-            // increase the timer
-            m_feverMeterFlickerTimer += Time.unscaledDeltaTime;
+            m_flickeringUIElements.Add(new Flicker(m_feverMeter, this, 5 * m_feverMeterBlockHeight, 0.0f));
+        }
 
-            Debug.Log((int)(m_feverMeterFlickerTimer % m_flickerInterval));
-
-
-            // if the timer has elapsed enough to flicker as many times as required
-            if (m_feverMeterFlickerTimer > m_flickerInterval * m_flickerCount)
+        for (int i = 0; i < m_flickeringUIElements.Count; ++i)
+        {
+            if (m_flickeringUIElements[i].Update())
             {
-                // ensure that the multiplier display is on
-                m_feverMeterMultiplierTexts[m_flickeringMultiplierID].color = Color.red;
-                // store that there is no longer a multiplier to flicker
-                m_flickeringMultiplierID = -1;
-            }
-            else
-            {
-                // if the flicker interval has elapsed an even number of times the display should be off, else it should be on
-                m_feverMeterMultiplierTexts[m_flickeringMultiplierID].color = ((int)(m_feverMeterFlickerTimer % m_flickerInterval) % 2 == 0) ? Color.blue : Color.red;
+                // TEMP - delete and remove from array, without messing with array length and i iteration
             }
         }
     }
 }
-
-// TEMP - Flicker System
-
-/*
-Determine that a UI element should flicker
-Add element to a list of flickering elements
-
-in update, go through each element in list
-check if element should change its flicker state as per function
-
-if true, act depending on the type of object
-if its a multiplier text of the fever meter, the text should switch from its off colour to its on, or vice versa
-if its the fever meter bar itself, the height of the bar needs to alternate from the score it had been at the start of the turn, to the score it is now
-if it is some other element, the renderer component would switch from active and inactive
-
-----
-each flickering element needs its own independent timer and flickerCounter
-need to be able to figure out which Flicker class corresponds to which object type
-need to support multiple object flickering at once in the event that multiple multiplier thresholds are hit in one round
-after the element has flickered enough times, it needs to remove itself from the flickering elements list, but only after its last flicker is resolved
-
-maybe have the list of multiplier texts by a struct which includes a bool for whether it should be flickering and update goes through that list and runs each's SwitchFlickerState() ?
-*/
