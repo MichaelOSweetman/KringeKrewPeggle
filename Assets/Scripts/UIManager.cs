@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 17/11/2025
+    Last Modified: 24/11/2025
 */
 
 public class Flicker
@@ -29,8 +29,8 @@ public class Flicker
     Text m_text = null;
     RectTransform m_rect = null;
 
-    float m_newHeight = 0.0f;
     float m_oldHeight = 0.0f;
+    float m_newHeight = 0.0f;
 
     public Flicker(Text a_text, UIManager a_UIManager)
     {
@@ -41,7 +41,7 @@ public class Flicker
         m_UIElementType = UIElementType.Text;
     }
 
-    public Flicker(RectTransform a_rect, UIManager a_UIManager, float a_newHeight, float a_oldHeight)
+    public Flicker(RectTransform a_rect, UIManager a_UIManager, float a_oldHeight, float a_newHeight)
     {
         // store the UI manager
         m_UIManager = a_UIManager;
@@ -50,8 +50,8 @@ public class Flicker
         m_UIElementType = UIElementType.BarHeight;
 
         // store the heights that the bar should toggle between
-        m_newHeight = a_newHeight;
         m_oldHeight = a_oldHeight;
+        m_newHeight = a_newHeight;
     }
 
     public Flicker(RawImage a_UIRenderer, UIManager a_UIManager)
@@ -334,7 +334,13 @@ public class UIManager : MonoBehaviour
         m_flickeringUIElements.Add(new Flicker(m_feverMeterMultiplierTexts[a_multiplierID], this));
     }
 
-    public void UpdateFeverMeter(float a_hitOrangePegs)
+    public void FlickerFeverMeter(int a_oldHitOrangePegCount, int a_newHitOrangePegCount)
+    {
+        // set the fever meter to flicker between its old and new height
+        m_flickeringUIElements.Add(new Flicker(m_feverMeter, this, a_oldHitOrangePegCount * m_feverMeterBlockHeight, a_newHitOrangePegCount * m_feverMeterBlockHeight));
+    }
+
+    public void UpdateFeverMeter(int a_hitOrangePegs)
     {
         // modify the fever meter to be representative of the amount of orange pegs that have been hit, relative to the original orange peg total
         m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, a_hitOrangePegs * m_feverMeterBlockHeight);
@@ -574,17 +580,16 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // TEMP
-        if (Input.GetKeyDown(KeyCode.RightBracket))
-        {
-            m_flickeringUIElements.Add(new Flicker(m_feverMeter, this, 5 * m_feverMeterBlockHeight, 0.0f));
-        }
-
+        // loop for each flickering UI element
         for (int i = 0; i < m_flickeringUIElements.Count; ++i)
         {
+            // update this flickering UI element. If has finished updating
             if (m_flickeringUIElements[i].Update())
             {
-                // TEMP - delete and remove from array, without messing with array length and i iteration
+                // remove the element from the list
+                m_flickeringUIElements.RemoveAt(i);
+                // set the iterator back a step since this element was removed from the array
+                --i;
             }
         }
     }

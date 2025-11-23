@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 03/11/2025
+	Last Modified: 24/11/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -49,6 +49,7 @@ public class PegManager : MonoBehaviour
     int[] m_multiplierIncreaseThresholds;
     int m_hitPegScore;
     int m_hitOrangePegs = 0;
+    int m_roundStartHitOrangePegs = 0;
     int m_scoreMultiplierIndex = 0;
     int m_currentShotScore = 0;
     [HideInInspector] public int m_score = 0;
@@ -186,6 +187,10 @@ public class PegManager : MonoBehaviour
         AddShotScoreToTotal(m_currentShotScore);
         // reset the score trackers for the turn
         ResetTurnScore();
+        // have the UI manager make the Fever Meter flicker with between the old hit orange peg count and the current count
+        m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
+        // store the current amount of hit orange pegs as the amount hit at the start of the next round
+        m_roundStartHitOrangePegs = m_hitOrangePegs;
         // assign a random blue peg to be purple
         ReplacePurplePeg();
     }
@@ -392,6 +397,7 @@ public class PegManager : MonoBehaviour
 
         // store that no orange pegs have been hit
         m_hitOrangePegs = 0;
+        m_roundStartHitOrangePegs = 0;
 
         // reset the count for the amount of pegs in the level
         m_levelPegCount = 0;
