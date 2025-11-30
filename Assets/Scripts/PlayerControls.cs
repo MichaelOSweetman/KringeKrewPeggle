@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 29/09/2025
+    Last Modified: 30/11/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -28,6 +28,7 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
+    public Transform m_playerProjectilesContainer;
     public float m_ballLaunchSpeed;
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
@@ -43,23 +44,31 @@ public class PlayerControls : MonoBehaviour
     [Header("Audio")]
     public AudioClip[] m_freeBallSounds;
 
-	public void RemoveBall()
-	{
-        // if the ball count is over 0
-        if (m_ballCount > 0)
+    public void RemoveProjectile(GameObject a_projectile)
+    {
+        // set the projectile to have no parent
+        a_projectile.transform.parent = null;
+        // destroy the projectile
+        Destroy(a_projectile);
+        // if the projectile count is now equal to 0
+        if (m_playerProjectilesContainer.childCount == 0)
         {
-            // resolve the turn
-            ResolveTurn();
+            // if the ball count is over 0
+            if (m_ballCount > 0)
+            {
+                // resolve the turn
+                ResolveTurn();
+            }
+            // if the player has run out of balls
+            else
+            {
+                // destroy the ball
+                Destroy(m_ball);
+                // tell the UI Manager that the level is over and the player failed
+                m_UIManager.LevelOver(false);
+            }
         }
-        // if the player has run out of balls
-        else
-        {
-            // destroy the ball
-            Destroy(m_ball);
-            // tell the UI Manager that the level is over and the player failed
-            m_UIManager.LevelOver(false);
-        }
-	}
+    }
 
     public void SetUpTurn()
     {
@@ -112,8 +121,8 @@ public class PlayerControls : MonoBehaviour
         // switch the time scale back to default
         ModifyTimeScale();
 
-        // create a copy of the ball prefab
-        GameObject Ball = Instantiate(m_ballPrefab) as GameObject;
+        // create a copy of the ball prefab and put it in the player projectiles container
+        GameObject Ball = Instantiate(m_ballPrefab, m_playerProjectilesContainer) as GameObject;
 		// set its position to be the same as this game object
 		Ball.transform.position = transform.position;
 		// apply the launch speed force to the ball, in the direction this gameobject is facing
@@ -133,13 +142,6 @@ public class PlayerControls : MonoBehaviour
 
     public void ResolveTurn()
     {
-        // if the ball is in play
-        if (m_ball != null)
-        {
-            // destroy it
-            Destroy(m_ball);
-        }
-
         // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
         if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
         {
@@ -275,7 +277,7 @@ public class PlayerControls : MonoBehaviour
             if (m_ball != null && !m_power.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
             {
                 // remove the ball from play
-                RemoveBall();
+                RemoveProjectile(m_ball);
             }
             
         }

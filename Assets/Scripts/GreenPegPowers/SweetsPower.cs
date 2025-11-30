@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 21/07/2025
+	Last Modified: 30/11/2025
 */
 public class SweetsPower : GreenPegPower
 {
@@ -100,7 +100,7 @@ public class SweetsPower : GreenPegPower
 		if (a_ball.transform.position.y <= m_playerControls.m_ballKillFloor || a_ball.transform.position.y >= -m_playerControls.m_ballKillFloor)
 		{
             // have player controls remove the ball from play
-            m_playerControls.RemoveBall();
+            m_playerControls.RemoveProjectile(a_ball);
         }
 
 		// return that this function should override the default ball removal check

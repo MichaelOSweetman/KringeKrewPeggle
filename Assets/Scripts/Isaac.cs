@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 18/08/2025
+    Last Modified: 30/11/2025
 */
 public class Isaac : MonoBehaviour
 {
@@ -70,7 +70,7 @@ public class Isaac : MonoBehaviour
 			if (m_health == 0)
 			{
 				// have player controls destroy Isaac
-				m_playerControls.RemoveBall();
+				m_playerControls.RemoveProjectile(gameObject);
 			}
 		}
 		
@@ -145,14 +145,16 @@ public class Isaac : MonoBehaviour
         // if enough time has passed for Isaac to shoot a tear and there was a shoot direction input
         if (m_fireRateTimer >= m_fireRate && m_shootDirection != Vector2.zero)
 		{
-            // create a copy of the tear prefab
-            GameObject tear = Instantiate(m_isaacTearPrefab);
+            // create a copy of the tear prefab and add it to the player projectiles container
+            GameObject tear = Instantiate(m_isaacTearPrefab, m_playerControls.m_playerProjectilesContainer);
             // set the tear's position to Isaac's
             tear.transform.position = transform.position;
             // shoot the tear in the specified direction
             tear.GetComponent<Rigidbody2D>().AddForce(m_shootDirection * m_tearSpeed, ForceMode2D.Impulse);
             // tell the tear how long it should last
             tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
+			// give the tear access to player controls
+			tear.GetComponent<IsaacTear>().m_playerControls = m_playerControls;
             // reset the fire rate timer
             m_fireRateTimer = 0.0f;
 			// store that Isaac's eyes should be closed
@@ -173,10 +175,12 @@ public class Isaac : MonoBehaviour
         // if Isaac has at least 1 bomb and the Place Bomb button was pressed
         if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
 		{
-			// create a copy of the IsaacBomb prefab
-			GameObject bomb = Instantiate(m_isaacBombPrefab);
+			// create a copy of the IsaacBomb prefab and add it to the player projectiles container
+			GameObject bomb = Instantiate(m_isaacBombPrefab, m_playerControls.m_playerProjectilesContainer);
 			// position the bomb on Isaac
 			bomb.transform.position = transform.position;
+			// give the bomb access to player controls
+			bomb.GetComponent<IsaacBomb>().m_playerControls = m_playerControls;
 			// reduce the bomb count by 1
 			--m_bombCount;
 		}

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallInBucket.cs
     Summary: Grants the player a free ball upon colliding with it
     Creation Date: 09/10/2023
-    Last Modified: 18/12/2023
+    Last Modified: 30/11/2025
 */
 public class BallInBucket : MonoBehaviour
 {
@@ -19,8 +19,8 @@ public class BallInBucket : MonoBehaviour
         {
             // grant the player a free ball
             m_playerControls.FreeBall();
-            // resolve the turn
-            m_playerControls.ResolveTurn();
+            // have the player controls remove the ball
+            m_playerControls.RemoveProjectile(a_collision.gameObject);
         }
     }
 }

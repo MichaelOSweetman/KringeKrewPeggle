@@ -7,11 +7,10 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 15/09/2025
+	Last Modified: 30/11/2025
 */
 public class EthenPower : GreenPegPower
 {
-    public GameObject m_drawingBoundsPrefab;
     public GameObject m_endDrawButtonPrefab;
     public GameObject m_clearButtonPrefab;
     public GameObject m_inkResourceBarPrefab;
@@ -22,7 +21,7 @@ public class EthenPower : GreenPegPower
     LauncherRotation m_launcherRotation;
     float m_ink = 0.0f;
     bool m_drawing = false;
-    GameObject m_lines;
+    Transform m_lines;
     GameObject m_endDrawButton;
     GameObject m_clearButton;
     GameObject m_inkResourceBarBackground;
@@ -92,10 +91,10 @@ public class EthenPower : GreenPegPower
     public void DestroyLines()
     {
         // loop for each line
-        for (int i = m_lines.transform.childCount - 1; i >= 0; --i)
+        for (int i = m_lines.childCount - 1; i >= 0; --i)
         {
             // destroy the current line
-            Destroy(m_lines.transform.GetChild(i).gameObject);
+            Destroy(m_lines.GetChild(i).gameObject);
         }
     }
 
@@ -105,8 +104,8 @@ public class EthenPower : GreenPegPower
         m_launcherRotation = m_playerControls.m_UIManager.m_launcherRotation;
 
         // create an empty gameobject to store created lines and set its position to 0
-        m_lines = new GameObject();
-        m_lines.transform.position = Vector3.zero;
+        m_lines = new GameObject().transform;
+        m_lines.position = Vector3.zero;
 
         // create the end draw button, clear button and ink resource bar and set their parent to be the parent of the power charges text so they are on the canvas
         m_endDrawButton = Instantiate(m_endDrawButtonPrefab, m_powerChargesText.rectTransform.parent);
@@ -168,7 +167,7 @@ public class EthenPower : GreenPegPower
         DestroyLines();
 
         // destroy the line container
-        Destroy(m_lines);
+        Destroy(m_lines.gameObject);
 
         // destroy the drawing UI elements
         Destroy(m_endDrawButton);
@@ -215,7 +214,7 @@ public class EthenPower : GreenPegPower
                     if (m_lineBegun == true)
                     {
                         // create a new line object and make it a child of the lines game object
-                        GameObject line = Instantiate(m_linePrefab, m_lines.transform) as GameObject;
+                        GameObject line = Instantiate(m_linePrefab, m_lines) as GameObject;
 
                         // give the line the peg manager
                         line.GetComponent<Line>().m_pegManager = m_playerControls.m_pegManager;

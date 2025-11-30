@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: DanielPower.cs
 	Summary: Manages the power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 18/08/2025
+	Last Modified: 30/11/2025
 */
 public class DanielPower : GreenPegPower
 {
@@ -42,8 +42,8 @@ public class DanielPower : GreenPegPower
             // if the collider has the peg component, hasn't been hit and isn't already a targeted peg
             if (peg != null && !peg.m_hit && !isTargetPeg(peg.m_pegID))
             {
-                // create a wasp
-                GameObject wasp = Instantiate(m_wasp) as GameObject;
+                // create a wasp and add it to the player projectiles container
+                GameObject wasp = Instantiate(m_wasp, m_playerControls.m_playerProjectilesContainer) as GameObject;
                 // add the wasp to the wasp list
                 m_wasps.Add(wasp.GetComponent<Wasp>());
                 // position it on the green peg
