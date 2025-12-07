@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 30/11/2025
+    Last Modified: 08/12/2025
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -122,7 +122,7 @@ public class PlayerControls : MonoBehaviour
         ModifyTimeScale();
 
         // create a copy of the ball prefab and put it in the player projectiles container
-        GameObject Ball = Instantiate(m_ballPrefab, m_playerProjectilesContainer) as GameObject;
+        GameObject Ball = Instantiate(m_ballPrefab, m_playerProjectilesContainer);
 		// set its position to be the same as this game object
 		Ball.transform.position = transform.position;
 		// apply the launch speed force to the ball, in the direction this gameobject is facing

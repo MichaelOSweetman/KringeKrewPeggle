@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 24/11/2025
+	Last Modified: 08/12/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -25,6 +27,10 @@ public class PegManager : MonoBehaviour
     public MusicManager m_musicManager;
 
     [Header("Visuals")]
+    public GameObject m_colorblindGreenPegPrefab;
+    public SpriteRenderer m_colorblindPurplePeg;
+    public Color m_colorblindGreenPegHit;
+    public Color m_colorblindPurplePegHit;
     public Color m_bluePegColor;
     public Color m_hitBluePegColor;
     public Color m_orangePegColor;
@@ -34,6 +40,10 @@ public class PegManager : MonoBehaviour
     public Color m_greenPegColor;
     public Color m_hitGreenPegColor;
     public string m_purplePegHitText;
+    SpriteRenderer[] m_colorblindGreenPegIcons;
+    SpriteRenderer m_colorblindGreenPeg;
+    Color m_colorblindGreenPegDefault;
+    Color m_colorblindPurplePegDefault;
 
     [Header("Starting Pegs")]
     public int m_startingOrangePegCount = 6;
@@ -119,6 +129,22 @@ public class PegManager : MonoBehaviour
                 case PegType.Green:
                     a_peg.GetComponent<SpriteRenderer>().color = m_greenPegColor;
                     break;
+            }
+        }
+    }
+
+    public void UpdateColorblindIcons()
+    {
+        // ensure the colourblind green peg icons array has been initialised
+        if (m_colorblindGreenPegIcons != null)
+        {
+            // set the purple peg colourblind icon to be active or not as per the colourblind mode
+            m_colorblindPurplePeg.gameObject.SetActive(GlobalSettings.m_colorblindMode);
+            // loop for each green peg colourblind icon
+            for (int i = 0; i < m_startingGreenPegCount; ++i)
+            {
+                // set the colourblind icon to be active or not as per the colourblind mode
+                m_colorblindGreenPegIcons[i].gameObject.SetActive(GlobalSettings.m_colorblindMode);
             }
         }
     }
@@ -240,6 +266,13 @@ public class PegManager : MonoBehaviour
 
             // set the peg assigned to be purple to be purple
             SetPegType(m_purplePeg, PegType.Purple, false);
+
+            // move the colourblind icon for the purple peg to the new purple peg
+            m_colorblindPurplePeg.transform.position = m_purplePeg.transform.position;
+            // make the purple peg the purple peg icon's parent
+            m_colorblindPurplePeg.transform.parent = m_purplePeg.transform;
+            // set the icon's color to be its default
+            m_colorblindPurplePeg.color = m_colorblindPurplePegDefault;
         }
     }
 
@@ -322,11 +355,25 @@ public class PegManager : MonoBehaviour
                     m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // display the pop up text associated with hitting the purple peg
                     m_uiManager.DisplayPopUpText(m_purplePegHitText, m_pegs[a_pegID].transform.position, false);
+                    // have the purple peg colourblind icon change to its hit colour
+                    m_colorblindPurplePeg.color = m_colorblindPurplePegHit;
                     break;
                 case PegType.Green:
                     m_hitPegScore = m_baseGreenPegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
                     // trigger the player's current power
                     m_playerControls.m_power.Trigger(m_pegs[a_pegID].transform.position);
+                    // loop for each colourblind green peg icon
+                    for (int i = 0; i < m_startingGreenPegCount; ++i)
+                    {
+                        // if this colourblind icon has the argument peg as its parent
+                        if (m_colorblindGreenPegIcons[i].transform.parent == m_pegs[a_pegID].transform)
+                        {
+                            // have the green peg colourblind icon change to its hit colour
+                            m_colorblindGreenPegIcons[i].color = m_colorblindGreenPegHit;
+                            // break out of the loop of colourblind icons
+                            break;
+                        }
+                    }
                     break;
 
             }
@@ -456,8 +503,25 @@ public class PegManager : MonoBehaviour
 
             // add the ID to to the hash set
             orangeAndGreenPegIDs.Add(randomPegID);
-            // set the peg's type to orange, or green if all orange pegs have been assigned
-            SetPegType(m_pegs[randomPegID], (i < m_startingOrangePegCount) ? PegType.Orange : PegType.Green, false);
+
+            // if there are still green pegs to assign
+            if (i < m_startingGreenPegCount)
+            {
+                // set the peg's type to green
+                SetPegType(m_pegs[randomPegID], PegType.Green, false);
+                // move a colourblind icon for the green pegs to this peg
+                m_colorblindGreenPegIcons[i].transform.position = m_pegs[randomPegID].transform.position;
+                // set the parent of the colourblind icon to be this peg
+                m_colorblindGreenPegIcons[i].transform.parent = m_pegs[randomPegID].transform;
+                // set the icon's color to be its default
+                m_colorblindGreenPegIcons[i].color = m_colorblindGreenPegDefault;
+            }
+            // if all green pegs have been assigned
+            else
+            {
+                // set the peg's type to orange
+                SetPegType(m_pegs[randomPegID], PegType.Orange, false);
+            }
         }
 
         // loop for each peg
@@ -482,6 +546,9 @@ public class PegManager : MonoBehaviour
         // assign a random blue peg to be purple
         ReplacePurplePeg();
 
+        // turn the colourblind icons on or off as per the colourblind setting
+        UpdateColorblindIcons();
+
         // have the player controls reset for the new level
         m_playerControls.Reload();
     }
@@ -493,6 +560,17 @@ public class PegManager : MonoBehaviour
         // create an array to store the orange peg thresholds at which the score multiplier will increase, with the last value as unreachable
         // TEMP { 10, 15, 19, 22 }
         m_multiplierIncreaseThresholds = new int[5] { 7, 9, 11, 13, m_startingOrangePegCount + 1 };
+
+        // create as many colourblind icons for green pegs as there are starting green pegs in a level
+        m_colorblindGreenPegIcons = new SpriteRenderer[m_startingGreenPegCount];
+        for (int i = 0; i < m_startingGreenPegCount; ++i)
+        {
+            m_colorblindGreenPegIcons[i] = Instantiate(m_colorblindGreenPegPrefab).GetComponent<SpriteRenderer>();
+        }
+
+        // get the starting colors of the colourblind icon sprites as their default colours
+        m_colorblindPurplePegDefault = m_colorblindPurplePeg.GetComponent<SpriteRenderer>().color;
+        m_colorblindGreenPegDefault = m_colorblindGreenPegIcons[0].color;
     }
 
     private void Start()

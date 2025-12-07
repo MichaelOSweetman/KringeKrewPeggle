@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 30/11/2025
+	Last Modified: 08/12/2025
 */
 public class EthenPower : GreenPegPower
 {
@@ -214,7 +214,7 @@ public class EthenPower : GreenPegPower
                     if (m_lineBegun == true)
                     {
                         // create a new line object and make it a child of the lines game object
-                        GameObject line = Instantiate(m_linePrefab, m_lines) as GameObject;
+                        GameObject line = Instantiate(m_linePrefab, m_lines);
 
                         // give the line the peg manager
                         line.GetComponent<Line>().m_pegManager = m_playerControls.m_pegManager;

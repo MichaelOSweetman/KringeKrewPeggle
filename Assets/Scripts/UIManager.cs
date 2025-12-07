@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 24/11/2025
+    Last Modified: 08/12/2025
 */
 
 public class Flicker
@@ -185,7 +185,6 @@ public class UIManager : MonoBehaviour
     [Header("TEMP")]
     public RawImage m_gameOverlay;
 
-
     public void LockInCharacter(bool a_useLevelDefault = false)
     {
         // enable the peg launcher
@@ -212,7 +211,7 @@ public class UIManager : MonoBehaviour
             Destroy(m_playerIcon);
 
             // set the player icon to be the prefab for the corresponding character
-            m_playerIcon = Instantiate(m_characters[m_selectedCharacterID].m_playerIconPrefab, m_launcher.transform) as GameObject;
+            m_playerIcon = Instantiate(m_characters[m_selectedCharacterID].m_playerIconPrefab, m_launcher.transform);
 
             // give player controls access to the character's power
             m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
@@ -366,7 +365,7 @@ public class UIManager : MonoBehaviour
             if (i == a_multiplierIncreaseThresholds[increaseThresholdIndex])
             {
                 // instantiate the bar line with the multiplier threshold prefab
-                barLine = Instantiate(m_multiplierThresholdPrefab) as GameObject;
+                barLine = Instantiate(m_multiplierThresholdPrefab);
                 // get the text component of the multiplier threshold and store it in the multiplier text array
                 m_feverMeterMultiplierTexts[increaseThresholdIndex] = barLine.GetComponentInChildren<Text>();
                 // set the text of the threshold to the score multiplier set by the threshold
@@ -378,7 +377,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 // instantiate the bar line with the normal bar line prefab
-                barLine = Instantiate(m_barLinePrefab) as GameObject;
+                barLine = Instantiate(m_barLinePrefab);
             }
 
             // set the bar line's parent to be the fever meter background
@@ -433,7 +432,7 @@ public class UIManager : MonoBehaviour
     public void DisplayPopUpText(string a_text, Vector3 a_position, bool a_usePegOffset)
     {
         // instantiate the pop up text prefab
-        GameObject popUpText = Instantiate(m_popUpTextPrefab) as GameObject;
+        GameObject popUpText = Instantiate(m_popUpTextPrefab);
         // set the text's parent to be the peg score text container
         popUpText.transform.SetParent(m_popUpTextContainer, false);
         // set the text to display
@@ -497,8 +496,10 @@ public class UIManager : MonoBehaviour
 
     public void ColorblindToggle()
     {
-        // store the new colorblind mode in the global variable
+        // store the new colourblind mode in the global variable
         GlobalSettings.m_colorblindMode = m_colorblindToggle.isOn;
+        // update the peg colourblind icons
+        m_pegManager.UpdateColorblindIcons();
     }
 
     public void TogglePauseMenu()
@@ -519,9 +520,6 @@ public class UIManager : MonoBehaviour
     {
         // get the save file component
         m_saveFile = GetComponent<SaveFile>();
-
-        // initialise the color blind setting
-        m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
 
         // get the current height of the free ball progress bar
         m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
@@ -549,6 +547,9 @@ public class UIManager : MonoBehaviour
             // show the character select screen
             ShowCharacterSelectScreen();
         }
+
+        // initialise the color blind setting
+        m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
 
         // initialise volume
         UpdateMusicVolume();
