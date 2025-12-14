@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 20/10/2025
+    Last Modified: 15/12/2025
 */
 public class SashaPower : GreenPegPower
 {
@@ -17,6 +17,7 @@ public class SashaPower : GreenPegPower
     public float m_gracePeriod = 0.25f;
     public float m_moveDistance = 1.0f;
     public float m_moveSpeed = 6.0f;
+    public Vector2 m_modifiedGravity = Vector2.zero;
     public Color m_downBeatColor;
     public Color m_upBeatColor;
     Color m_defaultArrowColor;
@@ -31,6 +32,7 @@ public class SashaPower : GreenPegPower
     Vector3 m_lerpTarget = Vector3.zero;
     float m_timer = 0.0f;
     float m_lerpTimer = 0.0f;
+    Vector2 m_defaultGravity = Vector2.zero;
 
     MusicManager m_musicManager;
     public AudioClip m_sashaPowerMusic;
@@ -54,6 +56,9 @@ public class SashaPower : GreenPegPower
 
         // get the music manager through the peg manager
         m_musicManager = m_playerControls.m_UIManager.m_musicManager;
+
+        // store the current gravity as the default gravity
+        m_defaultGravity = Physics2D.gravity;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -69,6 +74,9 @@ public class SashaPower : GreenPegPower
 
             // initialise the timer
             m_timer = 0.0f;
+
+            // modify the gravity
+            Physics2D.gravity = m_modifiedGravity;
         }
 
         // add the charges
@@ -104,6 +112,9 @@ public class SashaPower : GreenPegPower
             {
                 // hide the UI arrow
                 m_UIArrow.gameObject.SetActive(false);
+
+                // return the gravity to its default state
+                Physics2D.gravity = m_defaultGravity;
             }
 
 
@@ -132,6 +143,9 @@ public class SashaPower : GreenPegPower
 
         // reset the arrow colour
         m_UIArrow.color = m_defaultArrowColor;
+
+        // set the gravity to its default state
+        Physics2D.gravity = m_defaultGravity;
     }
 
     public override void Update()

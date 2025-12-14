@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 08/12/2025
+    Last Modified: 15/12/2025
 */
 
 public class Flicker
@@ -133,6 +133,7 @@ public class UIManager : MonoBehaviour
 	public GameObject m_dialogueScreen;
     public GameObject m_pauseMenu;
     public GameObject m_characterSelect;
+    public RawImage m_helpScreen;
 
     [Header("UI Elements")]
     public Toggle m_fullscreenToggle;
@@ -150,6 +151,12 @@ public class UIManager : MonoBehaviour
     public CharacterAssets[] m_characters;
     public Text m_powerChargesText;
     GameObject m_playerIcon;
+
+    [Header("Help Screen")]
+    public Texture[] m_helpPages;
+    public float m_helpScreenMoveSpeed = 10.0f;
+    int m_helpPageNumber = 0;
+    bool m_moveScreen;
 
     [Header("Free Ball Progress Bar")]
     public RectTransform m_freeBallProgressBar;
@@ -486,6 +493,53 @@ public class UIManager : MonoBehaviour
     {
         // store the new sound effect volume in the global variable
         GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
+    }
+
+    public void HelpOK()
+    {
+        // store that the help screen needs to move to its new position
+        m_moveScreen = true;
+    }
+
+    public void HelpPrevious()
+    {
+        // decreatse the help page number
+        --m_helpPageNumber;
+        // if the page number is now less than 0
+        if (m_helpPageNumber < 0)
+        {
+            // set the page number to the last
+            m_helpPageNumber = m_helpPages.Length - 1;
+        }
+        // set the help screen texture to the new page
+        m_helpScreen.texture = m_helpPages[m_helpPageNumber];
+    }
+
+    public void HelpNext()
+    {
+        // increase the help page number
+        ++m_helpPageNumber;
+        // if the page number has now surpassed the page count
+        if (m_helpPageNumber > m_helpPages.Length - 1)
+        {
+            // set the page number to the first
+            m_helpPageNumber = 0;
+        }
+        // set the help screen texture to the new page
+        m_helpScreen.texture = m_helpPages[m_helpPageNumber];
+    }
+
+    public void ShowHelpScreen()
+    {
+        // set the help screen texture to the first
+        m_helpPageNumber = 0;
+        m_helpScreen.texture = m_helpPages[m_helpPageNumber];
+
+        // show the help screen
+        m_helpScreen.gameObject.SetActive(true);
+
+        // store that the help screen needs to move to its new position
+        m_moveScreen = true;
     }
 
     public void FullscreenToggle()

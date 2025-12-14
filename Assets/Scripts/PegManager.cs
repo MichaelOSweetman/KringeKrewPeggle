@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 08/12/2025
+	Last Modified: 15/12/2025
 */
 
 public class PegManager : MonoBehaviour
@@ -269,8 +269,8 @@ public class PegManager : MonoBehaviour
 
             // move the colourblind icon for the purple peg to the new purple peg
             m_colorblindPurplePeg.transform.position = m_purplePeg.transform.position;
-            // make the purple peg the purple peg icon's parent
-            m_colorblindPurplePeg.transform.parent = m_purplePeg.transform;
+            // make the purple peg the colorblind icon's parent's parent, since an empty gameobject is used to preserve scale
+            m_colorblindPurplePeg.transform.parent.parent = m_purplePeg.transform;
             // set the icon's color to be its default
             m_colorblindPurplePeg.color = m_colorblindPurplePegDefault;
         }
@@ -365,8 +365,8 @@ public class PegManager : MonoBehaviour
                     // loop for each colourblind green peg icon
                     for (int i = 0; i < m_startingGreenPegCount; ++i)
                     {
-                        // if this colourblind icon has the argument peg as its parent
-                        if (m_colorblindGreenPegIcons[i].transform.parent == m_pegs[a_pegID].transform)
+                        // if this colourblind icon has the argument peg as its grandparent
+                        if (m_colorblindGreenPegIcons[i].transform.parent.parent == m_pegs[a_pegID].transform)
                         {
                             // have the green peg colourblind icon change to its hit colour
                             m_colorblindGreenPegIcons[i].color = m_colorblindGreenPegHit;
@@ -511,8 +511,8 @@ public class PegManager : MonoBehaviour
                 SetPegType(m_pegs[randomPegID], PegType.Green, false);
                 // move a colourblind icon for the green pegs to this peg
                 m_colorblindGreenPegIcons[i].transform.position = m_pegs[randomPegID].transform.position;
-                // set the parent of the colourblind icon to be this peg
-                m_colorblindGreenPegIcons[i].transform.parent = m_pegs[randomPegID].transform;
+                // make the peg the colorblind icon's parent's parent, since an empty gameobject is used to preserve scale
+                m_colorblindGreenPegIcons[i].transform.parent.parent = m_pegs[randomPegID].transform;
                 // set the icon's color to be its default
                 m_colorblindGreenPegIcons[i].color = m_colorblindGreenPegDefault;
             }
@@ -565,7 +565,8 @@ public class PegManager : MonoBehaviour
         m_colorblindGreenPegIcons = new SpriteRenderer[m_startingGreenPegCount];
         for (int i = 0; i < m_startingGreenPegCount; ++i)
         {
-            m_colorblindGreenPegIcons[i] = Instantiate(m_colorblindGreenPegPrefab).GetComponent<SpriteRenderer>();
+            // create the green peg colourblind icon and store its sprite renderer
+            m_colorblindGreenPegIcons[i] = Instantiate(m_colorblindGreenPegPrefab).GetComponentInChildren<SpriteRenderer>();
         }
 
         // get the starting colors of the colourblind icon sprites as their default colours

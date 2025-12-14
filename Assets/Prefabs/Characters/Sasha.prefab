@@ -105,6 +105,7 @@ MonoBehaviour:
   m_gracePeriod: 0.25
   m_moveDistance: 0.4
   m_moveSpeed: 10
+  m_modifiedGravity: {x: 0, y: -2.5}
   m_downBeatColor: {r: 1, g: 1, b: 0, a: 1}
   m_upBeatColor: {r: 0, g: 0, b: 1, a: 1}
   m_sashaPowerMusic: {fileID: 8300000, guid: 95c6fe37272b54447b5bcbaf73d34a53, type: 3}
