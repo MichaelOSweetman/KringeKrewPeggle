@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 15/12/2025
+    Last Modified: 22/12/2025
 */
 
 public class Flicker
@@ -144,6 +144,7 @@ public class UIManager : MonoBehaviour
     public Text m_ballCountText;
     public float m_freeBallTextDuration = 2.0f;
     float m_freeBallTextTimer = 0.0f;
+    int m_activeNonPauseSubMenus = 0;
 
     [Header("Character Select")]
     public GameObject m_launcher;
@@ -154,9 +155,11 @@ public class UIManager : MonoBehaviour
 
     [Header("Help Screen")]
     public Texture[] m_helpPages;
-    public float m_helpScreenMoveSpeed = 10.0f;
+    public float m_helpScreenMoveSpeed = 7500.0f;
     int m_helpPageNumber = 0;
-    bool m_moveScreen;
+    bool m_moveHelpScreen;
+    Vector3 m_helpOnScreenPosition = Vector3.zero;
+    Vector3 m_helpTargetPosition = Vector3.zero;
 
     [Header("Free Ball Progress Bar")]
     public RectTransform m_freeBallProgressBar;
@@ -203,6 +206,8 @@ public class UIManager : MonoBehaviour
 
         // set the character select screen to be inactive if it was active
         m_characterSelect.SetActive(false);
+        // store that this sub menu is no longer active
+        --m_activeNonPauseSubMenus;
 
         // if the level's default character should be used
         if (a_useLevelDefault)
@@ -264,6 +269,8 @@ public class UIManager : MonoBehaviour
     {
         // show the character select menu
         m_characterSelect.SetActive(true);
+        // add this screen to the sub menu count
+        ++m_activeNonPauseSubMenus;
         // disable the peg launcher
         TogglePegLauncher(false);
     }
@@ -296,6 +303,9 @@ public class UIManager : MonoBehaviour
             // show the try again screen
             m_tryAgain.SetActive(true);
         }
+
+        // increase the active submenu count
+        ++m_activeNonPauseSubMenus;
     }
 
     public void CloseDialogueScreen()
@@ -463,6 +473,8 @@ public class UIManager : MonoBehaviour
         m_levelManager.LoadNextLevel();
         // hide the level complete screen
         m_levelComplete.SetActive(false);
+        // store that this sub menu is no longer active
+        --m_activeNonPauseSubMenus;
     }
 
     public void RetryLevel()
@@ -471,8 +483,20 @@ public class UIManager : MonoBehaviour
         TogglePegLauncher(true);
         // reload the current level
         m_levelManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
-        // hide the try again screen
-        m_tryAgain.SetActive(false);
+        // if this function was called by the try again submenu
+        if (m_tryAgain.activeSelf)
+        {
+            // hide the try again screen
+            m_tryAgain.SetActive(false);
+            // store that the ty again sub menu is no longer active
+            --m_activeNonPauseSubMenus;
+        }
+        // if this function was instead called by the pause menu
+        else
+        {
+            // make the pause menu inactive
+            m_pauseMenu.SetActive(false);
+        }
     }
 
     public void UpdateMusicVolume()
@@ -497,8 +521,12 @@ public class UIManager : MonoBehaviour
 
     public void HelpOK()
     {
+        // set the target for the help screen's position to be the left of the screen
+        m_helpTargetPosition = m_helpOnScreenPosition + (Vector3.left * Screen.width);
         // store that the help screen needs to move to its new position
-        m_moveScreen = true;
+        m_moveHelpScreen = true;
+        // store that this sub menu is no longer active for the purposes of toggling the pause menu
+        --m_activeNonPauseSubMenus;
     }
 
     public void HelpPrevious()
@@ -535,11 +563,18 @@ public class UIManager : MonoBehaviour
         m_helpPageNumber = 0;
         m_helpScreen.texture = m_helpPages[m_helpPageNumber];
 
+        // set the help screen position to the right of the screen
+        m_helpScreen.transform.position = m_helpOnScreenPosition + (Vector3.right * Screen.width);
+
         // show the help screen
         m_helpScreen.gameObject.SetActive(true);
+        // add to the count of active sub menus
+        ++m_activeNonPauseSubMenus;
 
         // store that the help screen needs to move to its new position
-        m_moveScreen = true;
+        m_moveHelpScreen = true;
+        // set the target for the help screen's position to be the on screen position
+        m_helpTargetPosition = m_helpOnScreenPosition;
     }
 
     public void FullscreenToggle()
@@ -558,10 +593,14 @@ public class UIManager : MonoBehaviour
 
     public void TogglePauseMenu()
     {
-        // swap the active state of the peg launcher
-        TogglePegLauncher(!m_playerControls.enabled);
-        // swap the active state of the pause menu
-        m_pauseMenu.SetActive(!m_pauseMenu.activeSelf);
+        // if there are no other sub menus active
+        if (m_activeNonPauseSubMenus == 0)
+        {
+            // swap the active state of the peg launcher
+            TogglePegLauncher(!m_playerControls.enabled);
+            // swap the active state of the pause menu
+            m_pauseMenu.SetActive(!m_pauseMenu.activeSelf);
+        }
     }
 
     void TogglePegLauncher(bool a_enabled)
@@ -574,6 +613,9 @@ public class UIManager : MonoBehaviour
     {
         // get the save file component
         m_saveFile = GetComponent<SaveFile>();
+
+        // store the help screen's current position as the on screen position
+        m_helpOnScreenPosition = m_helpScreen.transform.position;
 
         // get the current height of the free ball progress bar
         m_freeBallProgressBarHeight = m_freeBallProgressBar.sizeDelta.y;
@@ -595,13 +637,6 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // if the game scene has been launched in quickplay mode
-        if (!GlobalSettings.m_adventureMode)
-        {
-            // show the character select screen
-            ShowCharacterSelectScreen();
-        }
-
         // initialise the color blind setting
         m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
 
@@ -617,6 +652,29 @@ public class UIManager : MonoBehaviour
         if (Input.GetButtonDown("Toggle Menu"))
         {
             TogglePauseMenu();
+        }
+
+        // if the help screen should be moved
+        if (m_moveHelpScreen)
+        {
+            // move the help screen left at a speed determined by the help screen move speed
+            m_helpScreen.transform.position += Vector3.left * Time.unscaledDeltaTime * m_helpScreenMoveSpeed;
+            // if the help screen has reached its target position
+            if (m_helpScreen.transform.position.x <= m_helpTargetPosition.x)
+            {
+                // set the help screen to be exactly at the target position
+                m_helpScreen.transform.position = m_helpTargetPosition;
+
+                // store that the help screen no longer needs to move
+                m_moveHelpScreen = false;
+
+                // if the help screen is now off screen
+                if (m_helpScreen.transform.position.x > m_helpOnScreenPosition.x + (Screen.width * 0.5f) || m_helpScreen.transform.position.x < m_helpOnScreenPosition.x - (Screen.width * 0.5f))
+                {
+                    // set the help screen to be inactive
+                    m_helpScreen.gameObject.SetActive(false);
+                }
+            }
         }
 
         // if the Free Ball Text Timer is active

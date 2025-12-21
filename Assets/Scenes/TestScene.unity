@@ -3488,7 +3488,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 69eacc3b1cc48f745bc635f5bbcf3dab, type: 3}
   - {fileID: 2800000, guid: 6718d6feb17f716428ba28bf9937ad2c, type: 3}
   - {fileID: 2800000, guid: 04215d8f915ad664f89a11637c188ca1, type: 3}
-  m_helpScreenMoveSpeed: 10
+  m_helpScreenMoveSpeed: 7500
   m_freeBallProgressBar: {fileID: 1352222923}
   m_freeBallProgressBarBackground: {fileID: 1915776724}
   m_freeBallProgressBarColors:
