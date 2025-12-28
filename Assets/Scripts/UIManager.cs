@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 22/12/2025
+    Last Modified: 29/12/2025
 */
 
 public class Flicker
@@ -336,7 +336,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateBallCountText()
     {
-        // if the ball count text is not currently instead displaying the 'Free Ball!' text
+        // if the ball count text is not currently  displaying the 'Free Ball!' text
         if (m_freeBallTextTimer <= 0.0f)
         {
             // set the ball count text to display the current ball count as per the player controls component
@@ -463,6 +463,18 @@ public class UIManager : MonoBehaviour
             // apply the offset as stored in the prefab's transform's position
             popUpText.transform.position += m_popUpTextPrefab.transform.position;
         }
+    }
+
+    public void ReloadGameUI()
+    {
+        // reset the ball count text display
+        m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+        // reset the power charge display to 0
+        m_powerChargesText.text = 0.ToString();
+        // reset the level score display to 0
+        UpdateLevelScoreText(0);
+        // reset the fever meter to 0
+        UpdateFeverMeter(0);
     }
 
     public void NextLevel()
@@ -646,7 +658,6 @@ public class UIManager : MonoBehaviour
         UpdateSoundEffectVolume();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetButtonDown("Toggle Menu"))
@@ -686,8 +697,8 @@ public class UIManager : MonoBehaviour
             // if the timer has ran out
             if (m_freeBallTextTimer <= 0.0f)
             {
-                // set it to 0
-                m_freeBallTextTimer = 0.0f;
+                // set it to -1 to ensure it is not treated as still running 
+                m_freeBallTextTimer = -1.0f;
                 // replace the ball Count Text with the ball count
                 UpdateBallCountText();
             }
