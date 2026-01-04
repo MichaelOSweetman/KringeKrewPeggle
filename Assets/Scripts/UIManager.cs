@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 29/12/2025
+    Last Modified: 05/01/2026
 */
 
 public class Flicker
@@ -427,13 +427,13 @@ public class UIManager : MonoBehaviour
     public void UpdateTopScoreText()
     {
         // set the text to be the top score stored for the current level
-        m_topScoreText.text = m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString();
+        m_topScoreText.text = m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString("#,#");
     }
 
     public void UpdateLevelScoreText(int a_score)
     {
         // set the level score text to the new value
-        m_levelScoreText.text = a_score.ToString();
+        m_levelScoreText.text = a_score.ToString("#,#");
     }
 
     public void DestroyPopUpTexts()

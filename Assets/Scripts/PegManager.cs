@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 29/12/2025
+	Last Modified: 05/01/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -219,7 +219,7 @@ public class PegManager : MonoBehaviour
         m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
         // TEMP
         // have the round score display activate
-        m_roundScore.Activate(60, 5);
+        m_roundScore.Activate(6000, 5);
         // TEMP
         // store the current amount of hit orange pegs as the amount hit at the start of the next round
         m_roundStartHitOrangePegs = m_hitOrangePegs;
@@ -385,7 +385,7 @@ public class PegManager : MonoBehaviour
             }
 
             // have the UI Manager display the score as pop up text at the position of the hit peg
-            m_uiManager.DisplayPopUpText(m_hitPegScore.ToString(), m_pegs[a_pegID].transform.position, true);
+            m_uiManager.DisplayPopUpText(m_hitPegScore.ToString("#,#"), m_pegs[a_pegID].transform.position, true);
 
             // create a temporary audio source to play the current peg hit sound at the position of the hit peg, using the sound effect volume
             AudioSource.PlayClipAtPoint(m_pegHitSounds[m_pegHitPitchIndex], m_pegs[a_pegID].transform.position, GlobalSettings.m_soundEffectVolume);

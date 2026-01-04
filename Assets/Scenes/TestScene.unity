@@ -10879,7 +10879,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -75}
-  m_SizeDelta: {x: 500, y: 300}
+  m_SizeDelta: {x: 1000, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &646874833
 MonoBehaviour:
@@ -10908,15 +10908,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 96
-    m_Alignment: 4
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '100 x 100
-
-    10000'
+  m_Text: 
 --- !u!222 &646874834
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10938,7 +10936,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_levelScoreText: {fileID: 423325513}
-  m_increaseDuration: 2
+  m_openingDelay: 1
+  m_increaseDuration: 0.4
+  m_displayDuration: 1
+  m_moveSpeed: 15
+  m_sizeLossRate: 0.05
+  m_maxValidSquaredDistanceFromTarget: 0.05
 --- !u!1 &668932151
 GameObject:
   m_ObjectHideFlags: 0
