@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 07/03/2025
+	Last Modified: 12/01/2026
 */
 public class LokiPower : GreenPegPower
 {
@@ -109,7 +109,7 @@ public class LokiPower : GreenPegPower
 
                 if (m_connectedToPeg)
                 {
-                    // TEMP
+                    // pull the ball towards the peg it is connected to
                     m_playerControls.m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_playerControls.m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
                 }
 

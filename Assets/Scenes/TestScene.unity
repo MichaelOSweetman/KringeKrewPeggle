@@ -3442,6 +3442,7 @@ MonoBehaviour:
   m_dialogue: {fileID: 191030509}
   m_camera: {fileID: 519420031}
   m_musicManager: {fileID: 1676064810}
+  m_roundScore: {fileID: 646874835}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
   m_dialogueScreen: {fileID: 1819568582}
@@ -32172,7 +32173,6 @@ MonoBehaviour:
   m_playerControls: {fileID: 289750359}
   m_uiManager: {fileID: 241605737}
   m_musicManager: {fileID: 1676064810}
-  m_roundScore: {fileID: 646874835}
   m_colorblindGreenPegPrefab: {fileID: 1533571861803350, guid: 403d0fee75b1110438b55e87a47540b5, type: 3}
   m_colorblindPurplePeg: {fileID: 6300121125686469265}
   m_colorblindGreenPegHit: {r: 0.2783019, g: 1, b: 0.33499238, a: 1}

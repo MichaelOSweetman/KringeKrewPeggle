@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 05/01/2026
+	Last Modified: 12/01/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -25,8 +25,6 @@ public class PegManager : MonoBehaviour
     public PlayerControls m_playerControls;
     public UIManager m_uiManager;
     public MusicManager m_musicManager;
-    // TEMP
-    public RoundScore m_roundScore;
 
     [Header("Visuals")]
     public GameObject m_colorblindGreenPegPrefab;
@@ -43,7 +41,6 @@ public class PegManager : MonoBehaviour
     public Color m_hitGreenPegColor;
     public string m_purplePegHitText;
     SpriteRenderer[] m_colorblindGreenPegIcons;
-    SpriteRenderer m_colorblindGreenPeg;
     Color m_colorblindGreenPegDefault;
     Color m_colorblindPurplePegDefault;
 
@@ -64,6 +61,7 @@ public class PegManager : MonoBehaviour
     int m_roundStartHitOrangePegs = 0;
     int m_scoreMultiplierIndex = 0;
     int m_currentShotScore = 0;
+    int m_roundHitPegs = 0;
     [HideInInspector] public int m_score = 0;
     public int[] m_freeBallScores;
     [HideInInspector] public int m_freeBallsAwarded = 0;
@@ -203,6 +201,8 @@ public class PegManager : MonoBehaviour
         m_currentShotScore = 0;
         // reset the free balls awarded
         m_freeBallsAwarded = 0;
+        // reset the count for the amount of pegs hit in the round
+        m_roundHitPegs = 0;
         // have the UI Manager reset the free ball progress bar
         m_uiManager.UpdateFreeBallProgressBar(m_currentShotScore, m_freeBallsAwarded);
         // reset the peg hit sound
@@ -211,18 +211,23 @@ public class PegManager : MonoBehaviour
 
     public void ResolveTurn()
     {
+        // clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
+        if (!ClearHitPegs() && Random.Range(0,2) == 1)
+        {
+            // give the player a free ball without playing the free ball sound
+            m_playerControls.FreeBall(false, false);
+        }
+
         // add the score gained in this shoot phase to the total score
-        AddShotScoreToTotal(m_currentShotScore);
-        // reset the score trackers for the turn
-        ResetTurnScore();
+        AddShotScoreToTotal(m_currentShotScore * m_roundHitPegs);
+        // have the ui manager display the round score
+        m_uiManager.DisplayRoundScore(m_currentShotScore, m_roundHitPegs);
         // have the UI manager make the Fever Meter flicker with between the old hit orange peg count and the current count
         m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
-        // TEMP
-        // have the round score display activate
-        m_roundScore.Activate(6000, 5);
-        // TEMP
         // store the current amount of hit orange pegs as the amount hit at the start of the next round
         m_roundStartHitOrangePegs = m_hitOrangePegs;
+        // reset the score trackers for the turn
+        ResetTurnScore();
         // assign a random blue peg to be purple
         ReplacePurplePeg();
     }
@@ -287,6 +292,9 @@ public class PegManager : MonoBehaviour
         // if the peg is in the peg list, it has not been hit yet
         if (m_pegs[a_pegID])
         {
+            // add to the counter of the amount of pegs hit this round
+            ++m_roundHitPegs;
+
             // add the peg to the hit pegs queue
             m_hitPegs.Enqueue(m_pegs[a_pegID].gameObject);
 
@@ -557,9 +565,6 @@ public class PegManager : MonoBehaviour
 
         // have the player controls reset for the new level
         m_playerControls.Reload();
-
-        // have the UI manager reset game UI components for the new level
-        m_uiManager.ReloadGameUI();
     }
 
     void Awake()

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 08/12/2025
+    Last Modified: 12/01/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -142,13 +142,6 @@ public class PlayerControls : MonoBehaviour
 
     public void ResolveTurn()
     {
-        // tell the peg manager to clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
-        if (!m_pegManager.ClearHitPegs() && Random.Range(0,2) == 1)
-        {
-            // give the player a free ball without playing the free ball sound
-            FreeBall(false, false);
-        }
-
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn

@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 05/01/2026
+    Last Modified: 12/01/2026
 */
 
 public class Flicker
@@ -126,6 +126,7 @@ public class UIManager : MonoBehaviour
 	public Dialogue m_dialogue;
     public Camera m_camera;
     public MusicManager m_musicManager;
+    public RoundScore m_roundScore;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -336,7 +337,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateBallCountText()
     {
-        // if the ball count text is not currently  displaying the 'Free Ball!' text
+        // if the ball count text is not currently displaying the 'Free Ball!' text
         if (m_freeBallTextTimer <= 0.0f)
         {
             // set the ball count text to display the current ball count as per the player controls component
@@ -424,6 +425,11 @@ public class UIManager : MonoBehaviour
         m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(a_currentShotScore - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1])) / (float)(m_pegManager.m_freeBallScores[a_freeBallsAwarded] - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1]))) * m_freeBallProgressBarHeight);
     }
 
+    public void DisplayRoundScore(int a_scoreUnit, int a_increaseFrequency)
+    {
+        m_roundScore.Activate(a_scoreUnit, a_increaseFrequency);
+    }
+
     public void UpdateTopScoreText()
     {
         // set the text to be the top score stored for the current level
@@ -500,7 +506,7 @@ public class UIManager : MonoBehaviour
         {
             // hide the try again screen
             m_tryAgain.SetActive(false);
-            // store that the ty again sub menu is no longer active
+            // store that the try again sub menu is no longer active
             --m_activeNonPauseSubMenus;
         }
         // if this function was instead called by the pause menu
