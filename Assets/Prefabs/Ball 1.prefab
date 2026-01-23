@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3067063268403385157}
   - component: {fileID: 3067063268403385156}
   - component: {fileID: 3067063268403385140}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Ball 1
   m_TagString: Ball
   m_Icon: {fileID: 0}
@@ -99,12 +99,12 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 6200000, guid: 496caabc13159664980fae0eb802dde2, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 5
 --- !u!61 &3067063268403385140
 BoxCollider2D:
   m_ObjectHideFlags: 0
