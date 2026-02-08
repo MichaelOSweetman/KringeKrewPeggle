@@ -2991,7 +2991,7 @@ GameObject:
   m_Component:
   - component: {fileID: 223888668}
   - component: {fileID: 223888667}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BallOTronCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3026,10 +3026,10 @@ Camera:
   field of view: 60
   orthographic: 1
   orthographic size: 5
-  m_Depth: 0
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 64
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -3049,7 +3049,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223888665}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: -10}
+  m_LocalPosition: {x: 6, y: 1.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2066964073}
@@ -8171,7 +8171,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -13311,7 +13311,7 @@ GameObject:
   m_Component:
   - component: {fileID: 835681443}
   - component: {fileID: 835681444}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13371,7 +13371,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.7803922, g: 0.7607844, b: 0.7686275, a: 1}
   m_FlipX: 0
@@ -18915,7 +18915,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 17.499996, y: -1.5}
+  m_AnchoredPosition: {x: 17.5, y: -1.5}
   m_SizeDelta: {x: -45.000004, y: -5.0000005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1147200021
@@ -24937,8 +24937,8 @@ Canvas:
   m_GameObject: {fileID: 1539352614}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -24947,7 +24947,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &1539352618
 RectTransform:
@@ -25746,7 +25746,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1592145099}
   - component: {fileID: 1592145100}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25806,7 +25806,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.2924528, g: 0.23865253, b: 0.2730644, a: 1}
   m_FlipX: 0
@@ -27895,7 +27895,7 @@ GameObject:
   - component: {fileID: 1734665869}
   - component: {fileID: 1734665868}
   - component: {fileID: 1734665870}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27981,7 +27981,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.29411766, g: 0.2392157, b: 0.27450982, a: 1}
   m_FlipX: 0
@@ -30198,7 +30198,7 @@ GameObject:
   - component: {fileID: 1915451537}
   - component: {fileID: 1915451536}
   - component: {fileID: 1915451538}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BallDeleter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30274,7 +30274,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -31387,7 +31387,7 @@ GameObject:
   - component: {fileID: 1977207814}
   - component: {fileID: 1977207813}
   - component: {fileID: 1977207816}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31489,7 +31489,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 7482667652216324306, guid: db750325989564987a34393247d883b4, type: 3}
   m_Color: {r: 0.6784314, g: 0.17254902, b: 0.2901961, a: 1}
   m_FlipX: 0
@@ -32938,8 +32938,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2066964073}
-  m_Layer: 5
-  m_Name: Ball-O-Tron (Spring)
+  m_Layer: 6
+  m_Name: Ball-O-Tron
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32953,7 +32953,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2066964072}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -22.5, y: 0, z: 0}
+  m_LocalPosition: {x: -25, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 223888668}

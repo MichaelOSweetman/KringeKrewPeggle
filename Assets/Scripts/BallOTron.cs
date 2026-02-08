@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 02/02/2026
+    Last Modified: 09/02/2026
 */
 public class BallOTron : MonoBehaviour
 {
@@ -17,8 +17,8 @@ public class BallOTron : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D a_collision)
     {
-        // if the object that entered this trigger is a sibling of this object
-        if (a_collision.transform.parent == transform.parent)
+        // if the object that entered this trigger is a child of this
+        if (a_collision.transform.parent == transform)
         {
             // destroy the collision object
             Destroy(a_collision.gameObject);
@@ -28,7 +28,7 @@ public class BallOTron : MonoBehaviour
     public void AddBall()
     {
         // create a ball and make it a child of the Ball-O-Tron
-        GameObject ball = Instantiate(m_ballPrefab, transform.parent) as GameObject;
+        GameObject ball = Instantiate(m_ballPrefab, transform) as GameObject;
         // position the ball at the spawn point
         ball.transform.position = transform.position + Vector3.up * m_spawnHeight; 
     }
@@ -37,6 +37,31 @@ public class BallOTron : MonoBehaviour
     {
         // apply the launch force to the ball holder
         m_ballHolder.AddForce(Vector2.up * m_launchForce);
+    }
+    public void InitialiseBallCount(int a_ballCount)
+    {
+        // if there are more balls than there should be
+        if (transform.childCount > a_ballCount)
+        {
+            // loop for each line
+            for (int i = transform.childCount - 1; i >= a_ballCount; --i)
+            {
+                // destroy the current line
+                Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+        // otherwise, if there is less than or equal to the desired ball count
+        else
+        {
+            // loop for each ball to be created, skipping balls that already exist
+            for (int i = transform.childCount; i < a_ballCount; ++i)
+            {
+                // create a ball and make it a child of the Ball-O-Tron
+                GameObject ball = Instantiate(m_ballPrefab, transform) as GameObject;
+                // position the ball above the ball holder and any previously created balls
+                ball.transform.position = m_ballHolder.transform.position + Vector3.up * (m_ballHolder.transform.localScale.y * 0.5f + (i + 0.5f) * m_ballPrefab.transform.localScale.y);
+            }
+        }
     }
 
     // Start is called before the first frame update
@@ -56,6 +81,10 @@ public class BallOTron : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L))
         {
             LaunchBall();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            InitialiseBallCount(10);
         }
     }
 }
