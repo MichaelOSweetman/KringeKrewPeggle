@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 12/01/2026
+    Last Modified: 16/02/2026
 */
 
 public class Flicker
@@ -127,6 +127,7 @@ public class UIManager : MonoBehaviour
     public Camera m_camera;
     public MusicManager m_musicManager;
     public RoundScore m_roundScore;
+    public BallOTron m_ballOTron;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -481,6 +482,8 @@ public class UIManager : MonoBehaviour
         UpdateLevelScoreText(0);
         // reset the fever meter to 0
         UpdateFeverMeter(0);
+        // set the Ball-O-Tron ball count to the current ball count in Player Controls
+        m_ballOTron.InitialiseBallCount(m_playerControls.m_ballCount);
     }
 
     public void NextLevel()

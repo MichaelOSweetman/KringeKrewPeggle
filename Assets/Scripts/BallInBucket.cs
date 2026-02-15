@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallInBucket.cs
     Summary: Grants the player a free ball upon colliding with it
     Creation Date: 09/10/2023
-    Last Modified: 30/11/2025
+    Last Modified: 16/02/2026
 */
 public class BallInBucket : MonoBehaviour
 {
@@ -17,8 +17,8 @@ public class BallInBucket : MonoBehaviour
         // if the object that entered this trigger is the ball
         if (a_collision.CompareTag("Ball"))
         {
-            // grant the player a free ball
-            m_playerControls.FreeBall();
+            // grant the player a free ball, removing the chance to gain another from hitting 0 pegs
+            m_playerControls.FreeBall(true, false, false);
             // have the player controls remove the ball
             m_playerControls.RemoveProjectile(a_collision.gameObject);
         }

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 12/01/2026
+    Last Modified: 16/02/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -20,6 +20,7 @@ public class PlayerControls : MonoBehaviour
     public PegManager m_pegManager;
     public CameraZoom m_cameraZoom;
     public BallTrajectory m_ballTrajectory;
+    public BallOTron m_ballOTron;
 
     [Header("Play Area Bounds")]
     public Transform m_playAreaBounds;
@@ -34,6 +35,7 @@ public class PlayerControls : MonoBehaviour
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
     [HideInInspector] public int m_ballCount = 0;
+    bool m_allow0PegFreeBall = false;
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
@@ -50,6 +52,7 @@ public class PlayerControls : MonoBehaviour
         a_projectile.transform.parent = null;
         // destroy the projectile
         Destroy(a_projectile);
+
         // if the projectile count is now equal to 0
         if (m_playerProjectilesContainer.childCount == 0)
         {
@@ -63,7 +66,7 @@ public class PlayerControls : MonoBehaviour
             else
             {
                 // destroy the ball
-                Destroy(m_ball);
+                Destroy(m_ball); // TEMP - investigate necessity
                 // tell the UI Manager that the level is over and the player failed
                 m_UIManager.LevelOver(false);
             }
@@ -77,6 +80,9 @@ public class PlayerControls : MonoBehaviour
 
         // store that the ball is not in play
         m_ballInPlay = false;
+
+        // reset the 0 peg free ball validity flag
+        m_allow0PegFreeBall = true;
 
         // if the power should be set up
         if (m_setUpPowerNextTurn)
@@ -95,6 +101,9 @@ public class PlayerControls : MonoBehaviour
             // store that the power has been resolved
             m_resolvePowerNextTurn = false;
         }
+
+        // have the Ball-O-Tron launch a ball
+        m_ballOTron.LaunchBall();
     }
 
     public bool CursorWithinPlayArea()
@@ -144,8 +153,8 @@ public class PlayerControls : MonoBehaviour
     {
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
-        // tell the peg manager to resolve the turn
-        m_pegManager.ResolveTurn();
+        // tell the peg manager to resolve the turn, with the flag specifing whether a free ball can be gained if 0 pegs were hit
+        m_pegManager.ResolveTurn(m_allow0PegFreeBall);
         // tell the power to resolve the turn
         m_power.ResolveTurn();
 
@@ -153,7 +162,7 @@ public class PlayerControls : MonoBehaviour
         SetUpTurn();
     }
 
-    public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false)
+    public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false, bool a_allow0PegFreeBall = true)
     {
         // increase the ball count by 1 as a ball has been gained
         ++m_ballCount;
@@ -177,6 +186,16 @@ public class PlayerControls : MonoBehaviour
             // have the UI manager update the text with the new ball count value
             m_UIManager.UpdateBallCountText();
         }
+
+        // if the chance to receive a free ball after hitting 0 pegs should be removed
+        if (!a_allow0PegFreeBall)
+        {
+            // store that the chance has been removed for this round
+            m_allow0PegFreeBall = false;
+        }
+
+        // add a ball to the Ball-O-Tron 
+        m_ballOTron.AddBall();
     }
 
     public void ModifyTimeScale(float a_newTimeScale = -1.0f)

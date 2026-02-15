@@ -3517,6 +3517,7 @@ MonoBehaviour:
   m_camera: {fileID: 519420031}
   m_musicManager: {fileID: 1676064810}
   m_roundScore: {fileID: 646874835}
+  m_ballOTron: {fileID: 1915451536}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
   m_dialogueScreen: {fileID: 1819568582}
@@ -4346,6 +4347,7 @@ MonoBehaviour:
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
   m_ballTrajectory: {fileID: 1982936866}
+  m_ballOTron: {fileID: 1915451536}
   m_playAreaBounds: {fileID: 518144201}
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
   m_playerProjectilesContainer: {fileID: 1759281994}
@@ -15954,7 +15956,8 @@ MonoBehaviour:
   m_ballPrefab: {fileID: 2074176519689537821, guid: 232ae9f5d814ecc4fa86629c97ab0713, type: 3}
   m_ballHolder: {fileID: 1977207814}
   m_spawnHeight: -100
-  m_launchForce: 1000
+  m_minimumLaunchForce: 300
+  m_launchForcePerBall: 100
 --- !u!114 &978081405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30234,7 +30237,8 @@ MonoBehaviour:
   m_ballPrefab: {fileID: 3067063268403385163, guid: 84d771178e5b89a44b54d32bccae6d39, type: 3}
   m_ballHolder: {fileID: 1977207814}
   m_spawnHeight: -1
-  m_launchForce: 1000
+  m_minimumLaunchForce: 440
+  m_launchForcePerBall: 40
 --- !u!212 &1915451537
 SpriteRenderer:
   m_ObjectHideFlags: 0

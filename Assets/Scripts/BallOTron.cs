@@ -6,14 +6,15 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 09/02/2026
+    Last Modified: 16/02/2026
 */
 public class BallOTron : MonoBehaviour
 {
     public GameObject m_ballPrefab;
     public Rigidbody2D m_ballHolder;
-    public float m_spawnHeight = 4.5f;
-    public float m_launchForce = 1000.0f;
+    public float m_spawnHeight = -1.0f;
+    public float m_minimumLaunchForce = 440.0f;
+    public float m_launchForcePerBall = 40.0f;
 
     private void OnTriggerEnter2D(Collider2D a_collision)
     {
@@ -35,18 +36,18 @@ public class BallOTron : MonoBehaviour
 
     public void LaunchBall()
     {
-        // apply the launch force to the ball holder
-        m_ballHolder.AddForce(Vector2.up * m_launchForce);
+        // apply the launch force to the ball holder, based on the current ball count
+        m_ballHolder.AddForce(Vector2.up * (m_minimumLaunchForce + m_launchForcePerBall * transform.childCount));
     }
     public void InitialiseBallCount(int a_ballCount)
     {
         // if there are more balls than there should be
         if (transform.childCount > a_ballCount)
         {
-            // loop for each line
+            // loop for each ball
             for (int i = transform.childCount - 1; i >= a_ballCount; --i)
             {
-                // destroy the current line
+                // destroy the current ball
                 Destroy(transform.GetChild(i).gameObject);
             }
         }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 12/01/2026
+	Last Modified: 16/02/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -209,10 +209,10 @@ public class PegManager : MonoBehaviour
         m_pegHitPitchIndex = 0;
     }
 
-    public void ResolveTurn()
+    public void ResolveTurn(bool a_allow0PegFreeBall = true)
     {
-        // clear all the hit pegs. If there were no pegs to clear give the player a 50% chance to get back a free ball
-        if (!ClearHitPegs() && Random.Range(0,2) == 1)
+        // clear all the hit pegs. If there were no pegs to clear and the chance is allowed, give the player a 50% chance to get back a free ball
+        if (!ClearHitPegs() && a_allow0PegFreeBall && Random.Range(0,2) == 1)
         {
             // give the player a free ball without playing the free ball sound
             m_playerControls.FreeBall(false, false);
