@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 22/09/2025
+	Last Modified: 23/02/2026
 */
 public class BenPower : GreenPegPower
 {
@@ -48,7 +48,7 @@ public class BenPower : GreenPegPower
         }
 
         // create a copy of the Isaac prefab
-        GameObject Isaac = Instantiate(m_IsaacPrefab);
+        GameObject Isaac = Instantiate(m_IsaacPrefab, m_playerControls.m_playerProjectilesContainer);
         // set its position to be the Isaac Spawn Position
         Isaac.transform.position = m_isaacSpawnPosition;
         // give Isaac the player controls component

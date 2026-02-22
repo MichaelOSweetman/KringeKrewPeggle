@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 16/02/2026
+    Last Modified: 23/02/2026
 */
 
 public class Flicker
@@ -322,10 +322,8 @@ public class UIManager : MonoBehaviour
 	{
         // disable the peg launcher
         TogglePegLauncher(false);
-        // show the dialogue screen
-        m_dialogueScreen.SetActive(true);
-		// give the dialogue script the dialogue set to run through
-		m_dialogue.m_dialogueIndex = a_dialogueIndex;
+        // activate the dialogue
+        m_dialogue.Activate(a_dialogueIndex);
 	}
     
     public void DisplayFreeBallText()
@@ -462,7 +460,7 @@ public class UIManager : MonoBehaviour
         // set the text to display
         popUpText.GetComponent<Text>().text = a_text;
         // position the text
-        popUpText.transform.position = m_camera.WorldToScreenPoint(a_position);
+        popUpText.transform.position = a_position;
 
         // if the peg offset should be used
         if (a_usePegOffset)

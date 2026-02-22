@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 04/05/2025
+    Last Modified: 23/02/2026
 */
 public class Dialogue : MonoBehaviour
 {
@@ -44,6 +44,36 @@ public class Dialogue : MonoBehaviour
 	int m_messageIndex = 0;
 	int m_characterIndex = 0;
 	
+	public void Activate(int a_dialogueIndex)
+	{
+		// show the dialogue screen
+		transform.parent.gameObject.SetActive(true);
+		// store the dialogue to be played
+		m_dialogueIndex = a_dialogueIndex;
+		// reset the message index so the first message is shown first
+		m_messageIndex = 0;
+		// reset the timer
+		m_timer = 0.0f;
+		// reset the dialogue screen
+		ResetForNewMessage();
+    }
+
+	public void ResetForNewMessage()
+	{
+        // clear the text box
+        m_dialogueTextBox.text = "";
+        // reset the character index
+        m_characterIndex = 0;
+
+        // determine the delay between characters appearing depending on if m_generationSpeed should represent the time for the full message to appear or each character
+        m_letterDelay = (m_generateEachMessageOverSameDuration) ? m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length / m_generationSpeed : m_generationSpeed;
+
+        // update the speaker text
+        m_speakerText.text = m_characters[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_characterID].m_title;
+
+        // set the expression of the character speaking to the corresponding expression
+        m_characterPortrait.texture = m_characters[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_characterID].m_expressions[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_expressionID];
+    }
 
     void Awake()
     {
@@ -92,22 +122,12 @@ public class Dialogue : MonoBehaviour
 			// otherwise, if there are more messages to display and the current message is finished
 			else
 			{
-				// clear the text box
-				m_dialogueTextBox.text = "";
-				// reset the character index
-				m_characterIndex = 0;
-				// get the next message
-				++m_messageIndex;
+                // get the next message
+                ++m_messageIndex;
+				// reset the dialogue box for the next message
+				ResetForNewMessage();
 
-				// determine the delay between characters appearing depending on if m_generationSpeed should represent the time for the full message to appear or each character
-				m_letterDelay = (m_generateEachMessageOverSameDuration) ? m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length / m_generationSpeed : m_generationSpeed;
-
-				// update the speaker text
-				m_speakerText.text = m_characters[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_characterID].m_title;
-
-				// set the expression of the character speaking to the corresponding expression
-				m_characterPortrait.texture = m_characters[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_characterID].m_expressions[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_expressionID];
-			}
+            }
 		}
     }
 }
