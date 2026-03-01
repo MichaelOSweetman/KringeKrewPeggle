@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 23/02/2026
+	Last Modified: 01/03/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -367,8 +367,8 @@ public class PegManager : MonoBehaviour
                     break;
                 case PegType.Purple:
                     m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
-                    // display the pop up text associated with hitting the purple peg
-                    m_uiManager.DisplayPopUpText(m_purplePegHitText, m_pegs[a_pegID].transform.position, false);
+                    // display a peg sized pop up text showing the associated purple peg hit text at its location
+                    m_uiManager.DisplayPopUpText(UIManager.TextFormat.pegScale, m_purplePegHitText, m_pegs[a_pegID].transform.position, false);
                     // have the purple peg colourblind icon change to its hit colour
                     m_colorblindPurplePeg.color = m_colorblindPurplePegHit;
                     break;
@@ -392,8 +392,8 @@ public class PegManager : MonoBehaviour
 
             }
 
-            // have the UI Manager display the score as pop up text at the position of the hit peg
-            m_uiManager.DisplayPopUpText(m_hitPegScore.ToString("#,#"), m_pegs[a_pegID].transform.position, true);
+            // have the UI Manager display the score as peg sized pop up text at the position of the hit peg
+            m_uiManager.DisplayPopUpText(UIManager.TextFormat.pegScale, m_hitPegScore.ToString("#,#"), m_pegs[a_pegID].transform.position, true);
 
             // create a temporary audio source to play the current peg hit sound at the position of the hit peg, using the sound effect volume
             AudioSource.PlayClipAtPoint(m_pegHitSounds[m_pegHitPitchIndex], m_pegs[a_pegID].transform.position, GlobalSettings.m_soundEffectVolume);

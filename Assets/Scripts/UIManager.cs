@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 23/02/2026
+    Last Modified: 01/03/2026
 */
 
 public class Flicker
@@ -123,7 +123,7 @@ public class UIManager : MonoBehaviour
     public LauncherRotation m_launcherRotation;
     public LevelManager m_levelManager;
     public PegManager m_pegManager;
-	public Dialogue m_dialogue;
+    public Dialogue m_dialogue;
     public Camera m_camera;
     public MusicManager m_musicManager;
     public RoundScore m_roundScore;
@@ -132,7 +132,7 @@ public class UIManager : MonoBehaviour
     [Header("UI Screens")]
     public GameObject m_levelComplete;
     public GameObject m_tryAgain;
-	public GameObject m_dialogueScreen;
+    public GameObject m_dialogueScreen;
     public GameObject m_pauseMenu;
     public GameObject m_characterSelect;
     public RawImage m_helpScreen;
@@ -183,8 +183,6 @@ public class UIManager : MonoBehaviour
     [Header("Score")]
     public Text m_levelScoreText;
     public Text m_topScoreText;
-    public GameObject m_popUpTextPrefab;
-    public Transform m_popUpTextContainer;
     SaveFile m_saveFile;
     int m_selectedCharacterID = 0;
 
@@ -192,6 +190,16 @@ public class UIManager : MonoBehaviour
     public int m_flickerCount = 5;
     public float m_flickerInterval = 0.3f;
     List<Flicker> m_flickeringUIElements;
+
+    [Header("Pop Up Text")]
+    public Transform m_popUpTextContainer;
+    public GameObject m_pegScaleTextPrefab;
+    public GameObject m_largeScaleTextPrefab;
+    public enum TextFormat
+    { 
+        pegScale,
+        large
+    }
 
     // TEMP - have in struct for character art assets
     [Header("TEMP")]
@@ -451,22 +459,34 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void DisplayPopUpText(string a_text, Vector3 a_position, bool a_usePegOffset)
+    public void DisplayPopUpText(TextFormat a_format, string a_text, Vector3 a_position, bool a_usePrefabOffset)
     {
-        // instantiate the pop up text prefab
-        GameObject popUpText = Instantiate(m_popUpTextPrefab);
-        // set the text's parent to be the peg score text container
+        // determine the prefab to use for the text format
+        GameObject formatPrefab = null;
+        switch (a_format)
+        {
+            case TextFormat.pegScale:
+                formatPrefab = m_pegScaleTextPrefab;
+                break;
+            case TextFormat.large:
+                formatPrefab = m_largeScaleTextPrefab;
+                break;
+        }
+
+        //instantiate the pop up text prefab
+        GameObject popUpText = Instantiate(formatPrefab);
+        // set the text's parent to be the pop up text container
         popUpText.transform.SetParent(m_popUpTextContainer, false);
         // set the text to display
         popUpText.GetComponent<Text>().text = a_text;
         // position the text
         popUpText.transform.position = a_position;
 
-        // if the peg offset should be used
-        if (a_usePegOffset)
+        // if the prefab's position should be used as an offset
+        if (a_usePrefabOffset)
         {
             // apply the offset as stored in the prefab's transform's position
-            popUpText.transform.position += m_popUpTextPrefab.transform.position;
+            popUpText.transform.position += /*Vector3.down * 15.0f;*/formatPrefab.transform.position;
         }
     }
 
