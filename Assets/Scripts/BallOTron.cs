@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 16/02/2026
+    Last Modified: 09/03/2026
 */
 public class BallOTron : MonoBehaviour
 {
@@ -39,7 +39,7 @@ public class BallOTron : MonoBehaviour
         // apply the launch force to the ball holder, based on the current ball count
         m_ballHolder.AddForce(Vector2.up * (m_minimumLaunchForce + m_launchForcePerBall * transform.childCount));
     }
-    public void InitialiseBallCount(int a_ballCount)
+    public void InitializeBallCount(int a_ballCount)
     {
         // if there are more balls than there should be
         if (transform.childCount > a_ballCount)
@@ -85,7 +85,7 @@ public class BallOTron : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            InitialiseBallCount(10);
+            InitializeBallCount(10);
         }
     }
 }

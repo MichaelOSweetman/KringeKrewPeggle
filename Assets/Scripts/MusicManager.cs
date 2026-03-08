@@ -6,7 +6,7 @@ using UnityEngine;
     File name: MusicManager.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 20/10/2025
+    Last Modified: 09/03/2026
 */
 public class MusicManager : MonoBehaviour
 {
@@ -38,7 +38,7 @@ public class MusicManager : MonoBehaviour
         m_playlistSource.volume = m_secondarySource.volume = GlobalSettings.m_musicVolume;
     }
 
-    void InitialiseFade(float a_fadeDuration)
+    void InitializeFade(float a_fadeDuration)
     {
         // store that the song fading is occuring
         m_fading = true;
@@ -56,13 +56,13 @@ public class MusicManager : MonoBehaviour
     public void FadeToPlaylist(float a_fadeDuration)
     {
         m_fadeTarget = m_playlistSource;
-        InitialiseFade(a_fadeDuration);
+        InitializeFade(a_fadeDuration);
     }
 
     public void FadeToActive(float a_fadeDuration)
     {
         m_fadeTarget = m_activeSource;
-        InitialiseFade(a_fadeDuration);
+        InitializeFade(a_fadeDuration);
     }
 
     public void PlayNow(bool a_loop, AudioClip a_clip = null, float a_time = 0.0f)

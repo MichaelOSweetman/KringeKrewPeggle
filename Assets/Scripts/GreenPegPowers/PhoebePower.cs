@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 08/12/2025
+	Last Modified: 09/03/2026
 */
 public class PhoebePower : GreenPegPower
 {
@@ -32,6 +32,8 @@ public class PhoebePower : GreenPegPower
                 bocconcini.transform.position = peg.transform.position;
                 // add it to the list of bocconcinis
                 m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
+                // have the bocconcini initialise so it can access its parent
+                m_bocconcinis[m_bocconcinis.Count - 1].Initialize();
             }
         }
     }

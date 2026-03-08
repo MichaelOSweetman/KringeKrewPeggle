@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 01/03/2026
+	Last Modified: 09/03/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -593,7 +593,7 @@ public class PegManager : MonoBehaviour
     private void Start()
     {
         // have the UI manager initialise the fever meter
-        m_uiManager.InitialiseFeverMeter(m_startingOrangePegCount, m_scoreMultipliers, m_multiplierIncreaseThresholds);
+        m_uiManager.InitializeFeverMeter(m_startingOrangePegCount, m_scoreMultipliers, m_multiplierIncreaseThresholds);
     }
 
     // Update is called once per frame

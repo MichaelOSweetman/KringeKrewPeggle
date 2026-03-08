@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 01/03/2026
+    Last Modified: 09/03/2026
 */
 
 public class Flicker
@@ -370,7 +370,7 @@ public class UIManager : MonoBehaviour
         m_feverMeter.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, a_hitOrangePegs * m_feverMeterBlockHeight);
     }
 
-    public void InitialiseFeverMeter(int a_orangePegCount, int[] a_scoreMultipliers, int[] a_multiplierIncreaseThresholds)
+    public void InitializeFeverMeter(int a_orangePegCount, int[] a_scoreMultipliers, int[] a_multiplierIncreaseThresholds)
     {
         // create an index to iterate through the a_multiplierIncreaseThresholds array
         int increaseThresholdIndex = 0;
@@ -473,7 +473,7 @@ public class UIManager : MonoBehaviour
                 break;
         }
 
-        //instantiate the pop up text prefab
+        // instantiate the pop up text prefab
         GameObject popUpText = Instantiate(formatPrefab);
         // set the text's parent to be the pop up text container
         popUpText.transform.SetParent(m_popUpTextContainer, false);
@@ -486,7 +486,7 @@ public class UIManager : MonoBehaviour
         if (a_usePrefabOffset)
         {
             // apply the offset as stored in the prefab's transform's position
-            popUpText.transform.position += /*Vector3.down * 15.0f;*/formatPrefab.transform.position;
+            popUpText.transform.position += formatPrefab.transform.position;
         }
     }
 
@@ -501,7 +501,7 @@ public class UIManager : MonoBehaviour
         // reset the fever meter to 0
         UpdateFeverMeter(0);
         // set the Ball-O-Tron ball count to the current ball count in Player Controls
-        m_ballOTron.InitialiseBallCount(m_playerControls.m_ballCount);
+        m_ballOTron.InitializeBallCount(m_playerControls.m_ballCount);
     }
 
     public void NextLevel()

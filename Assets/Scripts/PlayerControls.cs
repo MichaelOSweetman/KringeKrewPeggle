@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 01/03/2026
+    Last Modified: 09/03/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -33,6 +33,7 @@ public class PlayerControls : MonoBehaviour
     public float m_ballLaunchSpeed;
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
+    public int m_ballCountWarningThreshold = 3;
     [HideInInspector] public GameObject m_ball = null;
     [HideInInspector] public int m_ballCount = 0;
     bool m_allow0PegFreeBall = false;
@@ -105,8 +106,8 @@ public class PlayerControls : MonoBehaviour
         // have the Ball-O-Tron launch a ball
         m_ballOTron.LaunchBall();
 
-        // if there are 3 or fewer balls remaining
-        if (m_ballCount <= 3)
+        // if there are ball count is at or lower than the warning threshold
+        if (m_ballCount <= m_ballCountWarningThreshold)
         {
             // have the UI manager display a large pop up warning the player of their ball count
             m_UIManager.DisplayPopUpText(UIManager.TextFormat.large, (m_ballCount > 1) ? m_ballCount + " BALLS REMAINING" : "LAST BALL", Vector3.zero, false);
