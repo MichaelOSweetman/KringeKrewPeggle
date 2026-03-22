@@ -128,6 +128,7 @@ public class UIManager : MonoBehaviour
     public MusicManager m_musicManager;
     public RoundScore m_roundScore;
     public BallOTron m_ballOTron;
+    public GameManager m_gameManager;
 
     [Header("UI Screens")]
     public GameObject m_levelComplete;
@@ -238,7 +239,8 @@ public class UIManager : MonoBehaviour
             // give player controls access to the character's power
             m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
 
-            // give the character's power script access to player controls and the power charges text
+            // give the character's power script access to game manager, player controls and the power charges text
+            m_playerControls.m_power.m_gameManager = m_gameManager;
             m_playerControls.m_power.m_playerControls = m_playerControls;
             m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
 
@@ -334,13 +336,27 @@ public class UIManager : MonoBehaviour
         m_dialogue.Activate(a_dialogueIndex);
 	}
     
-    public void DisplayFreeBallText()
+    public void FreeBall(bool a_diplayText)
     {
-        // update the ball count text with a message denoting that a free ball has been given
-        m_ballCountText.text = "Free Ball!";
-        // start a timer to determine how long the ballCountText should display the "Free Ball!" text
-        m_freeBallTextTimer = m_freeBallTextDuration;
+        // if the Free Ball text should be displayed
+        if (a_diplayText)
+        {
+            // update the ball count text with a message denoting that a free ball has been given
+            m_ballCountText.text = "Free Ball!";
+            // start a timer to determine how long the ballCountText should display the "Free Ball!" text
+            m_freeBallTextTimer = m_freeBallTextDuration;
+        }
+        // otherwise if the Free Ball text should not be displayed
+        else
+        {
+            // update the ball count text with the ball count as soon as possible
+            UpdateBallCountText();
+        }
+
+        // add a ball to the ball-o-tron
+        m_ballOTron.AddBall();
     }
+
 
     public void UpdateBallCountText()
     {

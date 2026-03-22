@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 16/02/2026
+    Last Modified: 23/03/2026
 */
 public class Mateja : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class Mateja : MonoBehaviour
         Slammed
     }
 
-
+    [HideInInspector] public GameManager m_gameManager;
     [HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public GameObject m_bucket;
     [HideInInspector] public GameObject m_victoryBuckets;
@@ -127,7 +127,7 @@ public class Mateja : MonoBehaviour
         if (m_matejaState == MatejaState.Slammed && (a_collision.transform.parent == m_bucket.transform || a_collision.transform.parent == m_victoryBuckets.transform))
         {
             // give the player a free ball, removing the chance to gain another from hitting 0 pegs
-            m_playerControls.FreeBall(true, false, false);
+            m_gameManager.FreeBall(true, false, false);
             // have player controls destroy Mateja
             m_playerControls.RemoveProjectile(gameObject);
         }

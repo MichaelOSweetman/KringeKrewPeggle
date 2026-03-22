@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 08/12/2025
+	Last Modified: 23/03/2026
 */
 public class EthenPower : GreenPegPower
 {
@@ -19,6 +19,7 @@ public class EthenPower : GreenPegPower
     public float m_minValidSquareMouseMovement = 0.05f;
 
     LauncherRotation m_launcherRotation;
+    PlayAreaBounds m_playAreaBounds;
     float m_ink = 0.0f;
     bool m_drawing = false;
     Transform m_lines;
@@ -102,6 +103,8 @@ public class EthenPower : GreenPegPower
     {
         // get access to the ui manager through player controls and use it to access and store the launcher's LauncherRotation component
         m_launcherRotation = m_playerControls.m_UIManager.m_launcherRotation;
+        // get access to the play area bounds through player controls
+        m_playAreaBounds = m_playerControls.m_playAreaBounds;
 
         // create an empty gameobject to store created lines and set its position to 0
         m_lines = new GameObject().transform;
@@ -199,7 +202,7 @@ public class EthenPower : GreenPegPower
         if (m_drawing)
         {
             // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
-            if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && m_playerControls.CursorWithinPlayArea())
+            if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
             {
                 // if the line is not currently flagged as beginning but there is not yet a line renderer, this is a new line
                 if (!m_lineBegun && m_currentLineRenderer == null)
@@ -240,7 +243,7 @@ public class EthenPower : GreenPegPower
                 }
             }
             // otherwise, if a line has been drawn, the line doesn't currently have a collider and either the Shoot / Use Power input was released or the cursor left the play area
-            else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && (Input.GetButtonUp("Shoot / Use Power") || !m_playerControls.CursorWithinPlayArea()))
+            else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && (Input.GetButtonUp("Shoot / Use Power") || !m_playAreaBounds.CursorWithinPlayArea()))
             {
                 // add an edge collider to the line
                 EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();

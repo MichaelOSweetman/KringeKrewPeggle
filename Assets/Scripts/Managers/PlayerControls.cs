@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 09/03/2026
+    Last Modified: 23/03/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -21,11 +21,7 @@ public class PlayerControls : MonoBehaviour
     public CameraZoom m_cameraZoom;
     public BallTrajectory m_ballTrajectory;
     public BallOTron m_ballOTron;
-
-    [Header("Play Area Bounds")]
-    public Transform m_playAreaBounds;
-    Vector2 m_boundsBottomLeft;
-    Vector2 m_boundsTopRight;
+    public PlayAreaBounds m_playAreaBounds;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
@@ -36,16 +32,12 @@ public class PlayerControls : MonoBehaviour
     public int m_ballCountWarningThreshold = 3;
     [HideInInspector] public GameObject m_ball = null;
     [HideInInspector] public int m_ballCount = 0;
-    bool m_allow0PegFreeBall = false;
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
     public float m_nearVictoryTimeScale = 0.25f;
     [HideInInspector] public float m_defaultTimeScale = 1.0f;
     [HideInInspector] float m_defaultDeltaTime = 0.02f;
-
-    [Header("Audio")]
-    public AudioClip[] m_freeBallSounds;
 
     public void RemoveProjectile(GameObject a_projectile)
     {
@@ -83,7 +75,7 @@ public class PlayerControls : MonoBehaviour
         m_ballInPlay = false;
 
         // reset the 0 peg free ball validity flag
-        m_allow0PegFreeBall = true;
+        //TEMP m_allow0PegFreeBall = true;
 
         // if the power should be set up
         if (m_setUpPowerNextTurn)
@@ -112,25 +104,6 @@ public class PlayerControls : MonoBehaviour
             // have the UI manager display a large pop up warning the player of their ball count
             m_UIManager.DisplayPopUpText(UIManager.TextFormat.large, (m_ballCount > 1) ? m_ballCount + " BALLS REMAINING" : "LAST BALL", Vector3.zero, false);
         }
-    }
-
-    public bool CursorWithinPlayArea()
-    {
-        // get the coordinates of the current mouse position in world space
-        Vector3 worldSpaceMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // return true if the following is true
-        return
-        (
-        // the cursor is further right than the bottom left point of the bounds
-        worldSpaceMousePosition.x >= m_boundsBottomLeft.x &&
-        // the cursor is further up than the bottom left point of the bounds
-        worldSpaceMousePosition.x <= m_boundsTopRight.x &&
-        // the cursor is not further right than the top right point of the bounds
-        worldSpaceMousePosition.y >= m_boundsBottomLeft.y &&
-        // the cursor is not further up than the top right point of the bounds
-        worldSpaceMousePosition.y <= m_boundsTopRight.y
-        );
     }
 
     GameObject Shoot()
@@ -162,48 +135,12 @@ public class PlayerControls : MonoBehaviour
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn, with the flag specifing whether a free ball can be gained if 0 pegs were hit
-        m_pegManager.ResolveTurn(m_allow0PegFreeBall);
+        m_pegManager.ResolveTurn(/*TEMP m_allow0PegFreeBall*/false);
         // tell the power to resolve the turn
         m_power.ResolveTurn();
 
         // set up the next turn
         SetUpTurn();
-    }
-
-    public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false, bool a_allow0PegFreeBall = true)
-    {
-        // increase the ball count by 1 as a ball has been gained
-        ++m_ballCount;
-
-        // if the free ball sound effect should be played
-        if (a_playSound)
-        {
-            // play the free ball sound that corresponds to the amount of free balls earned this round, using the sound effect volume
-            AudioSource.PlayClipAtPoint(m_freeBallSounds[m_pegManager.m_freeBallsAwarded], Vector3.zero, GlobalSettings.m_soundEffectVolume);
-        }
-
-        // if the free ball text should shown
-        if (a_showFreeBallText)
-        {
-            // have the UI manager show the free ball text
-            m_UIManager.DisplayFreeBallText();
-        }
-        // if the free ball text should not be shown
-        else
-        {
-            // have the UI manager update the text with the new ball count value
-            m_UIManager.UpdateBallCountText();
-        }
-
-        // if the chance to receive a free ball after hitting 0 pegs should be removed
-        if (!a_allow0PegFreeBall)
-        {
-            // store that the chance has been removed for this round
-            m_allow0PegFreeBall = false;
-        }
-
-        // add a ball to the Ball-O-Tron 
-        m_ballOTron.AddBall();
     }
 
     public void ModifyTimeScale(float a_newTimeScale = -1.0f)
@@ -246,10 +183,6 @@ public class PlayerControls : MonoBehaviour
 
         // initialise the ball count
         m_ballCount = m_startingBallCount;
-
-        // store the bottom left and top right coordinates of the play area bounds
-        m_boundsBottomLeft = new Vector2(m_playAreaBounds.position.x - m_playAreaBounds.lossyScale.x * 0.5f, m_playAreaBounds.position.y - m_playAreaBounds.lossyScale.y * 0.5f);
-        m_boundsTopRight   = new Vector2(m_playAreaBounds.position.x + m_playAreaBounds.lossyScale.x * 0.5f, m_playAreaBounds.position.y + m_playAreaBounds.lossyScale.y * 0.5f);
 
         // TEMP
         // if the green peg power has not been set
@@ -305,7 +238,7 @@ public class PlayerControls : MonoBehaviour
         else
         {
             // if the Shoot / Use Power input has been detected and the cursor is within the play area
-            if (Input.GetButtonDown("Shoot / Use Power") && CursorWithinPlayArea())
+            if (Input.GetButtonDown("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
             {
                 // trigger the power's on shoot function. If it should not override the default shoot function
                 if (!m_power.OnShoot())

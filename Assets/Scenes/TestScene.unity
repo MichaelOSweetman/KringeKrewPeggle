@@ -3442,6 +3442,7 @@ GameObject:
   - component: {fileID: 241605737}
   - component: {fileID: 241605738}
   - component: {fileID: 241605739}
+  - component: {fileID: 241605740}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -3518,6 +3519,7 @@ MonoBehaviour:
   m_musicManager: {fileID: 1676064810}
   m_roundScore: {fileID: 646874835}
   m_ballOTron: {fileID: 1915451536}
+  m_gameManager: {fileID: 241605740}
   m_levelComplete: {fileID: 1268357385}
   m_tryAgain: {fileID: 401892796}
   m_dialogueScreen: {fileID: 1819568582}
@@ -3635,6 +3637,29 @@ MonoBehaviour:
     - m_level: {fileID: 1310540538}
       m_dialogueIndex: -1
     m_defaultPowerID: 6
+--- !u!114 &241605740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241605733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2979d3bf509d2e4488c00538e460ac94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_dialogue: {fileID: 191030509}
+  m_levelManager: {fileID: 241605739}
+  m_musicManager: {fileID: 1676064810}
+  m_pegManager: {fileID: 2117815010}
+  m_playerControls: {fileID: 289750359}
+  m_saveFile: {fileID: 241605738}
+  m_UIManager: {fileID: 241605737}
+  m_freeBallSounds:
+  - {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
+  - {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
+  - {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
 --- !u!1 &242558810
 GameObject:
   m_ObjectHideFlags: 0
@@ -4349,7 +4374,7 @@ MonoBehaviour:
   m_cameraZoom: {fileID: 519420030}
   m_ballTrajectory: {fileID: 1982936866}
   m_ballOTron: {fileID: 1915451536}
-  m_playAreaBounds: {fileID: 518144201}
+  m_playAreaBounds: {fileID: 518144200}
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
   m_playerProjectilesContainer: {fileID: 1759281994}
   m_ballLaunchSpeed: 10
@@ -4361,10 +4386,6 @@ MonoBehaviour:
   m_spedUpTimeScale: 5
   m_nearVictoryTimeScale: 0.25
   m_defaultTimeScale: 1
-  m_freeBallSounds:
-  - {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
-  - {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
-  - {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
 --- !u!1 &291137620
 GameObject:
   m_ObjectHideFlags: 0
@@ -7964,6 +7985,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 518144201}
+  - component: {fileID: 518144200}
   m_Layer: 0
   m_Name: PlayAreaBounds
   m_TagString: Untagged
@@ -7971,6 +7993,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &518144200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518144199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19cb876d1a1f0044081134398cc03ebb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &518144201
 Transform:
   m_ObjectHideFlags: 0
@@ -9307,6 +9341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerControls: {fileID: 289750359}
+  m_gameManager: {fileID: 241605740}
 --- !u!212 &572137563
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -33043,6 +33078,7 @@ MonoBehaviour:
   m_playerControls: {fileID: 289750359}
   m_uiManager: {fileID: 241605737}
   m_musicManager: {fileID: 1676064810}
+  m_gameManager: {fileID: 0}
   m_colorblindGreenPegPrefab: {fileID: 1533571861803350, guid: 403d0fee75b1110438b55e87a47540b5, type: 3}
   m_colorblindPurplePeg: {fileID: 6300121125686469265}
   m_colorblindGreenPegHit: {r: 0.2783019, g: 1, b: 0.33499238, a: 1}

@@ -6,19 +6,24 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 16/03/2026
+    Last Modified: 23/03/2026
 */
 public class GameManager : MonoBehaviour
 {
     [Header("Other Scripts")]
-    Dialogue m_dialogue;
-    GreenPegPower m_magicPower;
-    LevelManager m_levelManager;
-    MusicManager m_musicManager;
-    PegManager m_pegManager;
-    PlayerControls m_playerControls;
-    SaveFile m_saveFile;
-    UIManager m_UIManager;
+    public Dialogue m_dialogue;
+    public LevelManager m_levelManager;
+    public MusicManager m_musicManager;
+    public PegManager m_pegManager;
+    public PlayerControls m_playerControls;
+    public SaveFile m_saveFile;
+    public UIManager m_UIManager;
+
+    [Header("Audio")]
+    public AudioClip[] m_freeBallSounds;
+
+    [Header("TEMP UNSORTED")]
+    bool m_allow0PegFreeBall = false;
 
     enum GameState
     { 
@@ -36,8 +41,9 @@ public class GameManager : MonoBehaviour
     // PlayerControls ballInPlay flag should be made redundant by GameState enumerator
     // Investigate potential issue with resolving power before setting up
     // Consider renaming GreenPegPower to magic power, as per in game help page
-    // Consider moving CursorWithinPlayArea function in PlayerControls to a new component on the playAreaBounds object
     // Do consistency pass on terminology; shot vs turn vs phase
+    // should ball trajectory be drawn on canvas like ball-o-tron?
+
     // playercontrols reload is called after pegmanager loads a level
     // LevelManager load level prompts functions in UIManager, prompts UI manager to reload and prompts PegManager to load the level. also shows dialogue based on level info and has music manager shuffle play
     // The toggling of the peg launcher should perhaps be managed here instead of UI manager
@@ -45,7 +51,8 @@ public class GameManager : MonoBehaviour
     // UI manager retry level toggles peg launcher and reloads current level
     // toggle pause menu is in UI manager, maybe ought to be in player controls
     // pegmanager prompts music manager to play victory music when last peg is hit
-    // should ball trajectory be drawn on canvas like ball-o-tron?
+    // player controls player projectile container should probably be managed here
+
 
     void InitialiseCharacter()
     {
@@ -59,15 +66,35 @@ public class GameManager : MonoBehaviour
         // prompt power to initialise
     }
 
-    void FreeBall()
+    public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false, bool a_allow0PegFreeBall = true)
     {
-        // PlayerControls:
-        // increase ball count
-        // play sound
-        // show free ball text, update ball count text
-        // invalidate allow0pegFreeBall flag if specified
-        // add ball to ball-o-tron
+        /// PlayerControls:
+        /// increase ball count
+        /// play sound
+        /// show free ball text, update ball count text
+        /// invalidate allow0pegFreeBall flag if specified
+        /// add ball to ball-o-tron
 
+        // TEMP - store variable here or perhaps call a 'get' function in PlayerControls
+        ++m_playerControls.m_ballCount;
+
+        // if the free ball sound effect should be played
+        if (a_playSound)
+        {
+            // play the free ball sound that corresponds to the amount of free balls earned this round, using the sound effect volume
+            AudioSource.PlayClipAtPoint(m_freeBallSounds[m_pegManager.m_freeBallsAwarded], Vector3.zero, GlobalSettings.m_soundEffectVolume);
+        }
+
+        // prompt the UI Manager to display free ball info to the player
+        m_UIManager.FreeBall(a_showFreeBallText);
+        
+
+        // if the chance to receive a free ball after hitting 0 pegs should be removed
+        if (!a_allow0PegFreeBall)
+        {
+            // store that the chance has been removed for this round
+            m_allow0PegFreeBall = false;
+        }
     }
 
     void LevelOver(bool a_won)

@@ -7,11 +7,12 @@ using UnityEngine.UI;
 	File name: GreenPegPower.cs
 	Summary: A base class used by classes that manage the power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 04/08/2025
+	Last Modified: 23/03/2026
 */
 public abstract class GreenPegPower : MonoBehaviour
 { 
 	public int m_gainedPowerCharges = 0;
+	[HideInInspector] public GameManager m_gameManager;
 	[HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public Text m_powerChargesText;
     [HideInInspector] public int m_powerCharges = 0;

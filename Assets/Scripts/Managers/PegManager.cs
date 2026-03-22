@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 09/03/2026
+	Last Modified: 23/03/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -25,6 +25,7 @@ public class PegManager : MonoBehaviour
     public PlayerControls m_playerControls;
     public UIManager m_uiManager;
     public MusicManager m_musicManager;
+    public GameManager m_gameManager;
 
     [Header("Visuals")]
     public GameObject m_colorblindGreenPegPrefab;
@@ -215,7 +216,7 @@ public class PegManager : MonoBehaviour
         if (!ClearHitPegs() && a_allow0PegFreeBall && Random.Range(0,2) == 1)
         {
             // give the player a free ball without playing the free ball sound
-            m_playerControls.FreeBall(false, false);
+            m_gameManager.FreeBall(false);
         }
 
         // add the score gained in this shoot phase to the total score
@@ -241,7 +242,7 @@ public class PegManager : MonoBehaviour
         if (m_freeBallsAwarded < m_freeBallScores.Length - 1 && m_currentShotScore >= m_freeBallScores[m_freeBallsAwarded])
         {
             // give the player a free ball and show the free ball text
-            m_playerControls.FreeBall(true, true);
+            m_gameManager.FreeBall(true, true);
 
             // switch to the next free ball milestone
             ++m_freeBallsAwarded;
