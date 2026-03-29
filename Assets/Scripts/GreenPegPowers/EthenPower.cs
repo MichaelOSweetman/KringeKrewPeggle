@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 /*
 	File name: EthenPower.cs
-	Summary: Manages the power gained from the green peg when playing as Ethen
+	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 23/03/2026
+	Last Modified: 30/03/2026
 */
-public class EthenPower : GreenPegPower
+public class EthenPower : MagicPower
 {
     public GameObject m_endDrawButtonPrefab;
     public GameObject m_clearButtonPrefab;
@@ -49,7 +49,7 @@ public class EthenPower : GreenPegPower
         m_launcherRotation.enabled = true;
 
         // turn on the ball trajectory
-        m_playerControls.m_ballTrajectory.ShowLine(true);
+        m_gameManager.m_ballTrajectory.ShowLine(true);
 
         // reduce the amount of power charges
         ModifyPowerCharges(-1);
@@ -58,7 +58,7 @@ public class EthenPower : GreenPegPower
         if (m_powerCharges > 0)
         {
             // have the drawing power get set up next turn
-            m_playerControls.m_setUpPowerNextTurn = true;
+            m_setUpNextTurn = true;
         }
     }
 
@@ -138,7 +138,7 @@ public class EthenPower : GreenPegPower
         UpdateInkResourceBar();
 
         // disable the ball trajectory
-        m_playerControls.m_ballTrajectory.ShowLine(false);
+        m_gameManager.m_ballTrajectory.ShowLine(false);
 
         // turn off the launcher rotation component of the launcher
         m_launcherRotation.enabled = false;
@@ -190,7 +190,7 @@ public class EthenPower : GreenPegPower
         m_launcherRotation.enabled = true;
 
         // turn on the ball trajectory
-        m_playerControls.m_ballTrajectory.ShowLine(true);
+        m_gameManager.m_ballTrajectory.ShowLine(true);
 
         // reset the power charges
         ResetPowerCharges();

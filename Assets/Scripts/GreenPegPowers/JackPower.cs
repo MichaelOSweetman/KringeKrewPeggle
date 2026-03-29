@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: JackPower.cs
-	Summary: Manages the power gained from the green peg when playing as Jack
+	Summary: Manages the magic power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 10/03/2025
+	Last Modified: 30/03/2026
 */
-public class JackPower : GreenPegPower
+public class JackPower : MagicPower
 {
     int m_communistPegScore = 0;
     int m_defaultBluePegScore = 0;
@@ -47,7 +47,7 @@ public class JackPower : GreenPegPower
             if (m_powerCharges == 0)
             {
                 // have the power resolve at the start of next turn
-                m_playerControls.m_resolvePowerNextTurn = true;
+                m_resolveNextTurn = true;
             }
         }
 

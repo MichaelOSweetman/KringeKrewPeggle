@@ -4,18 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /*
-	File name: GreenPegPower.cs
-	Summary: A base class used by classes that manage the power gained by the green peg
+	File name: MagicPower.cs
+	Summary: A base class used by classes that manage the magic power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 23/03/2026
+	Last Modified: 30/03/2026
 */
-public abstract class GreenPegPower : MonoBehaviour
+public abstract class MagicPower : MonoBehaviour
 { 
 	public int m_gainedPowerCharges = 0;
 	[HideInInspector] public GameManager m_gameManager;
 	[HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public Text m_powerChargesText;
     [HideInInspector] public int m_powerCharges = 0;
+	[HideInInspector] public bool m_setUpNextTurn = false;
+	[HideInInspector] public bool m_resolveNextTurn = false;
+
 
     public void ModifyPowerCharges(int a_modifier)
     {
@@ -40,17 +43,17 @@ public abstract class GreenPegPower : MonoBehaviour
     public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
 		// if there are 0 power charges and the power was not about to be resolved (and therefore already active)
-		if (m_powerCharges == 0 && !m_playerControls.m_resolvePowerNextTurn)
+		if (m_powerCharges == 0 && !m_resolveNextTurn)
 		{
 			// have the power set up next turn
-			m_playerControls.m_setUpPowerNextTurn = true;
+			m_setUpNextTurn = true;
         }
 
 		// add the charges
 		ModifyPowerCharges(m_gainedPowerCharges);
 
         // ensure the power doesn't resolve at the end of this turn
-        m_playerControls.m_resolvePowerNextTurn = false;
+        m_resolveNextTurn = false;
     }
 
 	public virtual void SetUp()

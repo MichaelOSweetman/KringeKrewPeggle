@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: BenPower.cs
-	Summary: Manages the power gained from the green peg when playing as Ben
+	Summary: Manages the magic power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 23/02/2026
+	Last Modified: 30/02/2026
 */
-public class BenPower : GreenPegPower
+public class BenPower : MagicPower
 {
     public GameObject m_IsaacPrefab;
     public Vector3 m_isaacSpawnPosition;
@@ -25,7 +25,7 @@ public class BenPower : GreenPegPower
         // add the charges
         ModifyPowerCharges(m_gainedPowerCharges);
         // ensure the power doesn't resolve at the end of this turn
-        m_playerControls.m_resolvePowerNextTurn = false;
+        m_resolveNextTurn = false;
     }
 
 	public override bool OnShoot()
@@ -44,7 +44,7 @@ public class BenPower : GreenPegPower
         if (m_powerCharges == 0)
         {
             // have the power resolve at the start of next turn
-            m_playerControls.m_resolvePowerNextTurn = true;
+            m_resolveNextTurn = true;
         }
 
         // create a copy of the Isaac prefab

@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: KevinPower.cs
-	Summary: Manages the power gained from the green peg when playing as Kevin
+	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 07/04/2025
+	Last Modified: 30/03/2026
 */
-public class KevinPower : GreenPegPower
+public class KevinPower : MagicPower
 {
     public GameObject m_scopeOverlayPrefab;
     public CameraZoom m_cameraZoom;

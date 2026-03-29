@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 /*
     File name: SashaPower.cs
-    Summary: Manages the power gained from the green peg when playing as Sasha
+    Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 15/12/2025
+    Last Modified: 30/03/2026
 */
-public class SashaPower : GreenPegPower
+public class SashaPower : MagicPower
 {
     public GameObject m_UIArrowPrefab;
     public Texture m_activeArrowTexture;
@@ -63,8 +63,8 @@ public class SashaPower : GreenPegPower
 
     public override void Trigger(Vector3 a_greenPegPosition)
     {
-        // if there are 0 power charges and the power was not about to be resolved (and therefore already active)
-        if (m_powerCharges == 0 && !m_playerControls.m_resolvePowerNextTurn)
+        // if there are 0 power charges
+        if (m_powerCharges == 0)
         {
             // show the UI Arrow
             m_UIArrow.gameObject.SetActive(true);

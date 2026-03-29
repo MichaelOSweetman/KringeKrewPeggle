@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 23/03/2026
+    Last Modified: 30/03/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -18,31 +18,35 @@ public class GameManager : MonoBehaviour
     public PlayerControls m_playerControls;
     public SaveFile m_saveFile;
     public UIManager m_UIManager;
+    public BallTrajectory m_ballTrajectory;
+    public CameraZoom m_cameraZoom;
 
     [Header("Audio")]
     public AudioClip[] m_freeBallSounds;
 
     [Header("TEMP UNSORTED")]
     bool m_allow0PegFreeBall = false;
+    MagicPower m_magicPower = null;
+    int m_ballCount = 0;
 
     enum GameState
     { 
          Menu,
          Paused,
+         Reloading,
          PreShot,
          Shooting,
          MidShot,
-         PostShot,
-         Reloading
+         PostShot
     }
 
     GameState m_gameState = GameState.Menu;
 
     // PlayerControls ballInPlay flag should be made redundant by GameState enumerator
     // Investigate potential issue with resolving power before setting up
-    // Consider renaming GreenPegPower to magic power, as per in game help page
     // Do consistency pass on terminology; shot vs turn vs phase
     // should ball trajectory be drawn on canvas like ball-o-tron?
+    // properly move ball count from player controls to game manager
 
     // playercontrols reload is called after pegmanager loads a level
     // LevelManager load level prompts functions in UIManager, prompts UI manager to reload and prompts PegManager to load the level. also shows dialogue based on level info and has music manager shuffle play
@@ -76,7 +80,7 @@ public class GameManager : MonoBehaviour
         /// add ball to ball-o-tron
 
         // TEMP - store variable here or perhaps call a 'get' function in PlayerControls
-        ++m_playerControls.m_ballCount;
+        ++m_ballCount;
 
         // if the free ball sound effect should be played
         if (a_playSound)
@@ -88,7 +92,6 @@ public class GameManager : MonoBehaviour
         // prompt the UI Manager to display free ball info to the player
         m_UIManager.FreeBall(a_showFreeBallText);
         
-
         // if the chance to receive a free ball after hitting 0 pegs should be removed
         if (!a_allow0PegFreeBall)
         {
@@ -108,7 +111,7 @@ public class GameManager : MonoBehaviour
         // show level complete or try again screen based on outcome
     }
 
-    void ResetLevel() // perhaps call reload
+    void ResetLevel()
     {
         // PlayerControls:
         // reset ball count
@@ -127,16 +130,31 @@ public class GameManager : MonoBehaviour
 
     void SetUpShot()
     {
-        // show ball trajectory line (PlayerControls)
-        // reset allow0PegFreeBall flag (PlayerControls)
-        // prompt power to set up if it was flagged to (PlayerControls)
-        // prompt Ball-O-Tron to launch a ball (Player Controls)
-        // prompt UIManager to display low ball count warning text if applicable (Player Controls)
+        /// show ball trajectory line (PlayerControls)
+        /// reset allow0PegFreeBall flag (PlayerControls)
+        /// prompt power to set up if it was flagged to (PlayerControls)
+        /// prompt Ball-O-Tron to launch a ball (Player Controls)
+        /// prompt UIManager to display low ball count warning text if applicable (Player Controls)
 
+        // show the ball trajectory line
+        m_ballTrajectory.ShowLine(true);
+        // reset the 0 peg free ball validity flag
+        m_allow0PegFreeBall = true;
 
+        // if the power should be set up
+        if (m_magicPower.m_setUpNextTurn)
+        {
+            // set up the power
+            m_magicPower.SetUp();
+            // store that the power has been set up
+            m_magicPower.m_setUpNextTurn = false;
+        }
+
+        // prompt the UI manager to display the set up shot phase info to the player
+        m_UIManager.SetUpShot(m_ballCount);
     }
 
-    void Shooting() // rename, presently misnomer?
+    void OnShoot()
     {
         // triggered by shooting the ball
 
@@ -150,8 +168,8 @@ public class GameManager : MonoBehaviour
         // triggered from 0 projectiles remaining in mid shot phase (PlayerControls)
 
         // PlayerControls:
-        // prompt power to resolve if it was flagged to
-        // prompt CameraZoom to return camera to default state
+        /// prompt power to resolve if it was flagged to
+        /// prompt CameraZoom to return camera to default state
         // prompt PegManager to resolve turn, with allow0pegfreeball flag
         // prompt Power to resolveturn
         // run set up turn function
@@ -165,6 +183,18 @@ public class GameManager : MonoBehaviour
         // reset turn score
         // replace purple peg
 
+        
+        // if the power should be resolved
+        if (m_magicPower.m_resolveNextTurn)
+        {
+            // resolve the power
+            m_magicPower.ResolvePower();
+            // store that the power has been resolved
+            m_magicPower.m_resolveNextTurn = false;
+        }
+
+        // tell the camera to return to default in case it had moved while the ball was in play
+        m_cameraZoom.ReturnToDefault();
 
     }
 
@@ -183,14 +213,14 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Paused:
                 break;
+            case GameState.Reloading:
+                break;
             case GameState.PreShot:
                 break;
             case GameState.MidShot:
                 break;
             case GameState.PostShot:
                 // if x and y are finished, switch to pre shot
-                break;
-            case GameState.Reloading:
                 break;
         }
     }

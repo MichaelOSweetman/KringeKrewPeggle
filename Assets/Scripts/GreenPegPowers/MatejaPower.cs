@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: MatejaPower.cs
-	Summary: Manages the power gained from the green peg when playing as Mateja
+	Summary: Manages the magic power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 23/03/2026
+	Last Modified: 30/03/2026
 */
-public class MatejaPower : GreenPegPower
+public class MatejaPower : MagicPower
 {
 	public GameObject m_matejaPrefab;
 	GameObject m_mateja = null;
@@ -31,7 +31,7 @@ public class MatejaPower : GreenPegPower
         else
         {
             // have another Mateja be created next turn
-            m_playerControls.m_setUpPowerNextTurn = true;
+            m_setUpNextTurn = true;
         }
     }
 

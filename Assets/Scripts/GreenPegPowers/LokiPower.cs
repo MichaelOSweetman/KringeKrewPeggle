@@ -5,11 +5,11 @@ using UnityEngine.PlayerLoop;
 
 /*
 	File name: LokiPower.cs
-	Summary: Manages the power gained from the green peg when playing as Loki
+	Summary: Manages the magic power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 12/01/2026
+	Last Modified: 30/03/2026
 */
-public class LokiPower : GreenPegPower
+public class LokiPower : MagicPower
 {
 
     public GameObject m_cordPrefab;

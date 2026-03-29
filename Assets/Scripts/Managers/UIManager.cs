@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 09/03/2026
+    Last Modified: 30/03/2026
 */
 
 public class Flicker
@@ -205,6 +205,7 @@ public class UIManager : MonoBehaviour
     // TEMP - have in struct for character art assets
     [Header("TEMP")]
     public RawImage m_gameOverlay;
+    public int m_ballCountWarningThreshold = 3;
 
     public void LockInCharacter(bool a_useLevelDefault = false)
     {
@@ -237,7 +238,7 @@ public class UIManager : MonoBehaviour
             m_playerIcon = Instantiate(m_characters[m_selectedCharacterID].m_playerIconPrefab, m_launcher.transform);
 
             // give player controls access to the character's power
-            m_playerControls.m_power = m_playerIcon.GetComponent<GreenPegPower>();
+            m_playerControls.m_power = m_playerIcon.GetComponent<MagicPower>();
 
             // give the character's power script access to game manager, player controls and the power charges text
             m_playerControls.m_power.m_gameManager = m_gameManager;
@@ -336,6 +337,19 @@ public class UIManager : MonoBehaviour
         m_dialogue.Activate(a_dialogueIndex);
 	}
     
+    public void SetUpShot(int a_ballCount)
+    {
+        // have the Ball-O-Tron launch a ball
+        m_ballOTron.LaunchBall();
+
+        // if there are ball count is at or lower than the warning threshold
+        if (a_ballCount <= m_ballCountWarningThreshold)
+        {
+            // Display a large pop up warning the player of their ball count
+            DisplayPopUpText(TextFormat.large, (a_ballCount > 1) ? a_ballCount + " BALLS REMAINING" : "LAST BALL", Vector3.zero, false);
+        }
+    }
+
     public void FreeBall(bool a_diplayText)
     {
         // if the Free Ball text should be displayed
@@ -517,7 +531,7 @@ public class UIManager : MonoBehaviour
         // reset the fever meter to 0
         UpdateFeverMeter(0);
         // set the Ball-O-Tron ball count to the current ball count in Player Controls
-        m_ballOTron.InitializeBallCount(m_playerControls.m_ballCount);
+        m_ballOTron.SetBallCount(m_playerControls.m_ballCount);
     }
 
     public void NextLevel()

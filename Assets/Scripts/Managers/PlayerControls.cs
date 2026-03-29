@@ -6,32 +6,28 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 23/03/2026
+    Last Modified: 30/03/2026
 */
 public class PlayerControls : MonoBehaviour
 {
-    [HideInInspector] public bool m_setUpPowerNextTurn = false;
-    [HideInInspector] public bool m_resolvePowerNextTurn = false;
-    [HideInInspector] public bool m_ballInPlay = false;
-    [HideInInspector] public GreenPegPower m_power;
+    [HideInInspector] public bool m_ballInPlay = false; // TEMP
+    [HideInInspector] public MagicPower m_power;
 
     [Header("Other Scripts")]
-    public UIManager m_UIManager;
+    public UIManager m_UIManager; // TEMP
     public PegManager m_pegManager;
-    public CameraZoom m_cameraZoom;
-    public BallTrajectory m_ballTrajectory;
-    public BallOTron m_ballOTron;
+    public CameraZoom m_cameraZoom; // TEMP
+    public BallTrajectory m_ballTrajectory; // TEMP
     public PlayAreaBounds m_playAreaBounds;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
-    public Transform m_playerProjectilesContainer;
+    public Transform m_playerProjectilesContainer; // TEMP
     public float m_ballLaunchSpeed;
     public byte m_startingBallCount = 10;
     public float m_ballKillFloor = -7.0f;
-    public int m_ballCountWarningThreshold = 3;
     [HideInInspector] public GameObject m_ball = null;
-    [HideInInspector] public int m_ballCount = 0;
+    [HideInInspector] public int m_ballCount = 0; // TEMP
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
@@ -63,46 +59,6 @@ public class PlayerControls : MonoBehaviour
                 // tell the UI Manager that the level is over and the player failed
                 m_UIManager.LevelOver(false);
             }
-        }
-    }
-
-    public void SetUpTurn()
-    {
-        // enable the ball trajectory line
-        m_ballTrajectory.ShowLine(true);
-
-        // store that the ball is not in play
-        m_ballInPlay = false;
-
-        // reset the 0 peg free ball validity flag
-        //TEMP m_allow0PegFreeBall = true;
-
-        // if the power should be set up
-        if (m_setUpPowerNextTurn)
-        {
-            // set up the power
-            m_power.SetUp();
-            // store that the power has been set up
-            m_setUpPowerNextTurn = false;
-        }
-
-        // if the power should be resolved
-        if (m_resolvePowerNextTurn)
-        {
-            // resolve the power
-            m_power.ResolvePower();
-            // store that the power has been resolved
-            m_resolvePowerNextTurn = false;
-        }
-
-        // have the Ball-O-Tron launch a ball
-        m_ballOTron.LaunchBall();
-
-        // if there are ball count is at or lower than the warning threshold
-        if (m_ballCount <= m_ballCountWarningThreshold)
-        {
-            // have the UI manager display a large pop up warning the player of their ball count
-            m_UIManager.DisplayPopUpText(UIManager.TextFormat.large, (m_ballCount > 1) ? m_ballCount + " BALLS REMAINING" : "LAST BALL", Vector3.zero, false);
         }
     }
 
@@ -140,7 +96,7 @@ public class PlayerControls : MonoBehaviour
         m_power.ResolveTurn();
 
         // set up the next turn
-        SetUpTurn();
+        //TEMP SetUpTurn();
     }
 
     public void ModifyTimeScale(float a_newTimeScale = -1.0f)
@@ -172,7 +128,7 @@ public class PlayerControls : MonoBehaviour
 		ModifyTimeScale();
 
         // set up the turn
-        SetUpTurn();
+        // TEMP SetUpTurn();
     }
 
     void Awake()

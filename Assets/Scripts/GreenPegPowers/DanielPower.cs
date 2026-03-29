@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: DanielPower.cs
-	Summary: Manages the power gained from the green peg when playing as Daniel
+	Summary: Manages the magic power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 08/12/2025
+	Last Modified: 30/03/2026
 */
-public class DanielPower : GreenPegPower
+public class DanielPower : MagicPower
 {
     public GameObject m_wasp;
     public float m_searchRadius = 5.0f;

@@ -4,11 +4,11 @@ using UnityEngine;
 
 /*
 	File name: PhoebePower.cs
-	Summary: Manages the power gained from the green peg when playing as Phoebe
+	Summary: Manages the magic power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 09/03/2026
+	Last Modified: 30/03/2026
 */
-public class PhoebePower : GreenPegPower
+public class PhoebePower : MagicPower
 {
 	public GameObject m_bocconciniPrefab;
 	List<Bocconcini> m_bocconcinis;
@@ -48,7 +48,7 @@ public class PhoebePower : GreenPegPower
             if (m_powerCharges == 0)
             {
                 // have the power resolve at the start of next turn
-                m_playerControls.m_resolvePowerNextTurn = true;
+                m_resolveNextTurn = true;
             }
         }
 
