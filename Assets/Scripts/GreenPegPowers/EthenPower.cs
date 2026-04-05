@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 06/04/2026
 */
 public class EthenPower : MagicPower
 {
@@ -110,10 +110,10 @@ public class EthenPower : MagicPower
         m_lines = new GameObject().transform;
         m_lines.position = Vector3.zero;
 
-        // create the end draw button, clear button and ink resource bar and set their parent to be the parent of the power charges text so they are on the canvas
-        m_endDrawButton = Instantiate(m_endDrawButtonPrefab, m_powerChargesText.rectTransform.parent);
-        m_clearButton = Instantiate(m_clearButtonPrefab, m_powerChargesText.rectTransform.parent);
-        m_inkResourceBarBackground = Instantiate(m_inkResourceBarPrefab, m_powerChargesText.rectTransform.parent);
+        // have the UI Manager create the end draw button, clear button and ink resource bar
+        m_endDrawButton = m_UIManager.CreatePowerUIAsset(m_endDrawButtonPrefab);
+        m_clearButton = m_UIManager.CreatePowerUIAsset(m_clearButtonPrefab);
+        m_inkResourceBarBackground = m_UIManager.CreatePowerUIAsset(m_inkResourceBarPrefab);
 
         // get the child of the ink resource bar background as the ink resource bar
         m_inkResourceBar = m_inkResourceBarBackground.transform.GetChild(0).GetComponent<RectTransform>();

@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 30/03/2026
+    Last Modified: 06/04/2026
 */
 
 public class Flicker
@@ -113,12 +113,6 @@ public class Flicker
 
 public class UIManager : MonoBehaviour
 {
-    [System.Serializable] public struct CharacterAssets
-    {
-        public GameObject m_playerIconPrefab;
-        public AudioClip m_victoryMusic;
-    }
-
     public PlayerControls m_playerControls;
     public LauncherRotation m_launcherRotation;
     public LevelManager m_levelManager;
@@ -152,7 +146,6 @@ public class UIManager : MonoBehaviour
     [Header("Character Select")]
     public GameObject m_launcher;
     public RectTransform m_selectedBorder;
-    public CharacterAssets[] m_characters;
     public Text m_powerChargesText;
     GameObject m_playerIcon;
 
@@ -202,74 +195,41 @@ public class UIManager : MonoBehaviour
         large
     }
 
-    // TEMP - have in struct for character art assets
+    // TEMP - have in struct for character art assets / organise
     [Header("TEMP")]
     public RawImage m_gameOverlay;
     public int m_ballCountWarningThreshold = 3;
+    public Transform m_powerUIContainer;
 
-    public void LockInCharacter(bool a_useLevelDefault = false)
+    public GameObject LoadCharacter(GameObject a_characterPrefab)
+    {
+        // destroy the current player icon
+        Destroy(m_playerIcon);
+
+        // set the player icon to be the prefab for the corresponding character
+        m_playerIcon = Instantiate(a_characterPrefab, m_launcher.transform);
+
+        return m_playerIcon;
+    }
+
+    public void LockInCharacter()
     {
         // enable the peg launcher
         TogglePegLauncher(true);
-
-        // reset the ball count text and timer
-        m_freeBallTextTimer = 0.0f;
-        UpdateBallCountText();
-
         // set the character select screen to be inactive if it was active
         m_characterSelect.SetActive(false);
         // store that this sub menu is no longer active
         --m_activeNonPauseSubMenus;
 
-        // if the level's default character should be used
-        if (a_useLevelDefault)
-        {
-            // set the selected character ID to the level's default
-            m_selectedCharacterID = m_levelManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID;
-        }
-
-        // if the selected character ID is different to the currently loaded character
-        if (!ReferenceEquals(m_playerIcon, m_characters[m_selectedCharacterID].m_playerIconPrefab))  // TEMP //m_playerIcon.Equals(m_characterPrefabs[m_selectedCharacterID]))
-        {
-            // destroy the current player icon
-            Destroy(m_playerIcon);
-
-            // set the player icon to be the prefab for the corresponding character
-            m_playerIcon = Instantiate(m_characters[m_selectedCharacterID].m_playerIconPrefab, m_launcher.transform);
-
-            // give player controls access to the character's power
-            m_playerControls.m_power = m_playerIcon.GetComponent<MagicPower>();
-
-            // give the character's power script access to game manager, player controls and the power charges text
-            m_playerControls.m_power.m_gameManager = m_gameManager;
-            m_playerControls.m_power.m_playerControls = m_playerControls;
-            m_playerControls.m_power.m_powerChargesText = m_powerChargesText;
-
-            // set the victory music to this character's victory music
-            m_musicManager.m_victoryMusic = m_characters[m_selectedCharacterID].m_victoryMusic;
-
-            // TEMP
-            // set corresponding art assets for character, etc
-
-            // initialise the power
-            m_playerControls.m_power.Initialize();
-        }
+        // have the game manager initialise the corresponding character
+        m_gameManager.InitializeCharacter(m_selectedCharacterID);
     }
 
     public void SelectCharacter(int a_characterID)
     {
-        // if the character ID is greater than the amount of characters, the random option has been selected
-        if (a_characterID >= m_characters.Length)
-        {
-            // get a random character
-            m_selectedCharacterID = Random.Range(0, m_characters.Length);
-        }
-        else
-        {
-            // set the selected character to the character clicked on
-            m_selectedCharacterID = a_characterID;
-        }
-
+        // set the selected character to the character clicked on
+        m_selectedCharacterID = a_characterID;
+        
         // TEMP
         m_selectedBorder.position = EventSystem.current.currentSelectedGameObject.transform.position;
 
@@ -462,6 +422,11 @@ public class UIManager : MonoBehaviour
         m_freeBallProgressBar.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Clamp01((float)(a_currentShotScore - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1])) / (float)(m_pegManager.m_freeBallScores[a_freeBallsAwarded] - ((a_freeBallsAwarded == 0) ? 0 : m_pegManager.m_freeBallScores[a_freeBallsAwarded - 1]))) * m_freeBallProgressBarHeight);
     }
 
+    public void UpdatePowerChargeText(int a_powerCharges)
+    {
+        m_powerChargesText.text = a_powerCharges.ToString();
+    }
+
     public void DisplayRoundScore(int a_scoreUnit, int a_increaseFrequency)
     {
         m_roundScore.Activate(a_scoreUnit, a_increaseFrequency);
@@ -520,10 +485,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public GameObject CreatePowerUIAsset(GameObject a_UIPrefab)
+    {
+        return Instantiate(a_UIPrefab, m_powerUIContainer);
+    }
+
     public void ReloadGameUI()
     {
-        // reset the ball count text display
-        m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+        // reset the ball count text and timer
+        m_freeBallTextTimer = 0.0f;
+        UpdateBallCountText();
         // reset the power charge display to 0
         m_powerChargesText.text = 0.ToString();
         // reset the level score display to 0

@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.WSA;
 
 /*
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 30/03/2026
+    Last Modified: 06/04/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -28,6 +29,15 @@ public class GameManager : MonoBehaviour
     bool m_allow0PegFreeBall = false;
     MagicPower m_magicPower = null;
     int m_ballCount = 0;
+    int m_characterID = 0;
+
+    [System.Serializable] public struct CharacterAssets
+    {
+        public GameObject m_playerIconPrefab;
+        public AudioClip m_victoryMusic;
+    }
+
+    public CharacterAssets[] m_characters;
 
     enum GameState
     { 
@@ -56,18 +66,61 @@ public class GameManager : MonoBehaviour
     // toggle pause menu is in UI manager, maybe ought to be in player controls
     // pegmanager prompts music manager to play victory music when last peg is hit
     // player controls player projectile container should probably be managed here
+    
+    // new Power UI container can be used to reload, clear all children from it
+    // perhaps better system than having UI manager instantiate power UI objects for magic power scripts, give power scripts the power UI container directly?
+    // look into kevin power scope overlay - how does it get set?
+    // toggling peg launcher in UIManager is messy, if multiple pop up screens were open and one was closed, wouldn't the peg launcher be toggled back on despite screens still being present?
 
-
-    void InitialiseCharacter()
+    public void InitializeCharacter(int a_characterID = -1)
     {
-        // triggered by choosing character from character select screen or from loading into level in adventure mode (UIManager)
+        // determine the new character ID
+        int newCharacterID = 0;
 
-        // UI Manager:
-        // store specific power
-        // give power script access
-        // update victory music
-        // update other associated assets
-        // prompt power to initialise
+        // if the argument ID is -1
+        if (a_characterID == -1)
+        {
+            // get a random character
+            newCharacterID = Random.Range(0, m_characters.Length);
+        }
+        // otherwise, if the argument ID any other invalid value, use the default stage ID
+        else if (a_characterID < -1 || a_characterID >= m_characters.Length)
+        {
+            // get the default ID for the current stage
+            newCharacterID = m_levelManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID;
+        }
+        // otherwise, if the argument ID is valid
+        else
+        {
+            // use the argument ID
+            newCharacterID = a_characterID;
+        }
+
+        // if the new ID is not the same as the current ID
+        if (m_characterID != newCharacterID)
+        { 
+            // set the selected character ID as the new ID
+            m_characterID = newCharacterID;
+            // have the UI manager load the character assets and get the magic power from the loaded prefab
+            m_magicPower = m_UIManager.LoadCharacter(m_characters[m_characterID].m_playerIconPrefab).GetComponent<MagicPower>();
+
+            // give the magic power access to player controls, the UI manager and this
+            m_magicPower.m_playerControls = m_playerControls;
+            m_magicPower.m_UIManager = m_UIManager;
+            m_magicPower.m_gameManager = this;
+
+            // initialise the power
+            m_magicPower.Initialize();
+
+            // set the victory music to this character's victory music
+            m_musicManager.m_victoryMusic = m_characters[m_characterID].m_victoryMusic;
+        }
+        // if the new ID is the same as the current ID
+        else
+        {
+            // reload the power
+            m_magicPower.Reload();
+        }
     }
 
     public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false, bool a_allow0PegFreeBall = true)

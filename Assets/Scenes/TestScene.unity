@@ -3535,27 +3535,6 @@ MonoBehaviour:
   m_freeBallTextDuration: 2
   m_launcher: {fileID: 1327515134}
   m_selectedBorder: {fileID: 1983578314}
-  m_characters:
-  - m_playerIconPrefab: {fileID: 790517065195160300, guid: 213cf211b2d0dec45b6be40583620fbd, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 2495236964133223142, guid: a77d6b3e35c60454eb5c074f9e7ff26a, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 6436564665698769374, guid: bd70f7087adf5fd4f878b8ba80520ce5, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 7103137853110505618, guid: 7521683e1892a62438dc7edc3fe756ec, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 1319127128931644837, guid: eabd28890b405e942af04e0bceeb25ad, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 2138660463205013303, guid: cecd0a3824e8962469004890de9a791b, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 8554423165822955954, guid: 9e0cbadd549f4d04c832ae96b7558a11, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 5969855082896416360, guid: 52e770bae1016be4ea33a383b9d13019, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 1640484969442033771, guid: d953f3e71b5ae4f49984bb01f22efd03, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
-  - m_playerIconPrefab: {fileID: 2633783071375015938, guid: f09588958cd35274ea88bc29fe7f048b, type: 3}
-    m_victoryMusic: {fileID: 8300000, guid: 92f2e510a01d4f64babcac42e5956e7f, type: 3}
   m_powerChargesText: {fileID: 631596763}
   m_helpPages:
   - {fileID: 2800000, guid: ab29c4e892ee45c47bb318e863ffc7c7, type: 3}
@@ -3587,6 +3566,8 @@ MonoBehaviour:
   m_pegScaleTextPrefab: {fileID: 7456070119279739998, guid: 6bf64a015dd01324aa63a8bf0c7f104a, type: 3}
   m_largeScaleTextPrefab: {fileID: 8683464622921222459, guid: 1d6ac0880cfc3b544bb4e9ac5a485432, type: 3}
   m_gameOverlay: {fileID: 1636977273}
+  m_ballCountWarningThreshold: 3
+  m_powerUIContainer: {fileID: 770584478}
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3619,6 +3600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb31de6ba05d9db4a8378c0e08f08b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gameManager: {fileID: 0}
   m_pegManager: {fileID: 2117815010}
   m_uiManager: {fileID: 241605737}
   m_musicManager: {fileID: 1676064810}
@@ -3656,10 +3638,13 @@ MonoBehaviour:
   m_playerControls: {fileID: 289750359}
   m_saveFile: {fileID: 241605738}
   m_UIManager: {fileID: 241605737}
+  m_ballTrajectory: {fileID: 1982936866}
+  m_cameraZoom: {fileID: 519420030}
   m_freeBallSounds:
   - {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
   - {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
   - {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
+  m_characters: []
 --- !u!1 &242558810
 GameObject:
   m_ObjectHideFlags: 0
@@ -4365,22 +4350,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06e0389fc2b46e44d9a3a937b4634a7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_setUpPowerNextTurn: 0
-  m_resolvePowerNextTurn: 0
   m_ballInPlay: 0
   m_power: {fileID: 0}
   m_UIManager: {fileID: 241605737}
   m_pegManager: {fileID: 2117815010}
   m_cameraZoom: {fileID: 519420030}
   m_ballTrajectory: {fileID: 1982936866}
-  m_ballOTron: {fileID: 1915451536}
   m_playAreaBounds: {fileID: 518144200}
   m_ballPrefab: {fileID: 5669556024543014711, guid: 017c50c7dc8feac4c9ba8151a7525476, type: 3}
   m_playerProjectilesContainer: {fileID: 1759281994}
   m_ballLaunchSpeed: 10
   m_startingBallCount: 10
   m_ballKillFloor: -7
-  m_ballCountWarningThreshold: 3
   m_ball: {fileID: 0}
   m_ballCount: 0
   m_spedUpTimeScale: 5
@@ -12270,6 +12251,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &770584477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 770584478}
+  m_Layer: 5
+  m_Name: PowerUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &770584478
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 770584477}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1072146973}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -75}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &777075995
 GameObject:
   m_ObjectHideFlags: 0
@@ -17362,6 +17378,7 @@ RectTransform:
   - {fileID: 906082552}
   - {fileID: 1275951802}
   - {fileID: 646874832}
+  - {fileID: 770584478}
   m_Father: {fileID: 1539352618}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -29044,7 +29061,7 @@ MonoBehaviour:
       - m_Target: {fileID: 241605737}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: LockInCharacter
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -29493,7 +29510,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 9
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -33078,7 +33095,7 @@ MonoBehaviour:
   m_playerControls: {fileID: 289750359}
   m_uiManager: {fileID: 241605737}
   m_musicManager: {fileID: 1676064810}
-  m_gameManager: {fileID: 0}
+  m_gameManager: {fileID: 241605740}
   m_colorblindGreenPegPrefab: {fileID: 1533571861803350, guid: 403d0fee75b1110438b55e87a47540b5, type: 3}
   m_colorblindPurplePeg: {fileID: 6300121125686469265}
   m_colorblindGreenPegHit: {r: 0.2783019, g: 1, b: 0.33499238, a: 1}

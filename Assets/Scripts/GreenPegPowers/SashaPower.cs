@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 30/03/2026
+    Last Modified: 06/04/2026
 */
 public class SashaPower : MagicPower
 {
@@ -40,8 +40,8 @@ public class SashaPower : MagicPower
 
     public override void Initialize()
     {
-        // create the ui arrow and set its parent to be the parent of the power charges text so they are on the canvas
-        m_UIArrow = Instantiate(m_UIArrowPrefab, m_powerChargesText.rectTransform.parent).GetComponent<RawImage>();
+        // have the UI Manager create the UI arrow and store its image component
+        m_UIArrow = m_UIManager.CreatePowerUIAsset(m_UIArrowPrefab).GetComponent<RawImage>();
         // store the arrow's current texture as the active texture
         m_inactiveArrowTexture = m_UIArrow.texture;
         // store the arrow's current colour as the default colour

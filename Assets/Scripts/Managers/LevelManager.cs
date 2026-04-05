@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: LevelManager.cs
 	Summary: Manages the loading of specific levels and stages of the game
 	Creation Date: 27/04/2025
-	Last Modified: 12/01/2026
+	Last Modified: 06/04/2026
 */
 public class LevelManager : MonoBehaviour
 {
@@ -23,6 +23,7 @@ public class LevelManager : MonoBehaviour
         public int m_defaultPowerID;
     }
 
+    public GameManager m_gameManager;
     public PegManager m_pegManager;
     public UIManager m_uiManager;
     public MusicManager m_musicManager;
@@ -82,8 +83,8 @@ public class LevelManager : MonoBehaviour
         // if the game is in adventure mode
         if (GlobalSettings.m_adventureMode)
         {
-            // have the UI Manager set assets for the default character of the level's stage
-            m_uiManager.LockInCharacter(true);
+            // have the Game Manager initialize the default character
+            m_gameManager.InitializeCharacter(-2);
 
             // if this level has a valid dialogue index
             if (m_stages[a_stageID].m_levels[a_levelID].m_dialogueIndex >= 0)

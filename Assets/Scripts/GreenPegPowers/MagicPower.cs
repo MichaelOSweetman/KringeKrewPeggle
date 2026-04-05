@@ -1,20 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 /*
 	File name: MagicPower.cs
 	Summary: A base class used by classes that manage the magic power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 06/04/2026
 */
 public abstract class MagicPower : MonoBehaviour
 { 
 	public int m_gainedPowerCharges = 0;
 	[HideInInspector] public GameManager m_gameManager;
 	[HideInInspector] public PlayerControls m_playerControls;
-    [HideInInspector] public Text m_powerChargesText;
+    [HideInInspector] public UIManager m_UIManager;
     [HideInInspector] public int m_powerCharges = 0;
 	[HideInInspector] public bool m_setUpNextTurn = false;
 	[HideInInspector] public bool m_resolveNextTurn = false;
@@ -24,16 +23,16 @@ public abstract class MagicPower : MonoBehaviour
     {
         // increase the power charges by the modifier
         m_powerCharges += a_modifier;
-        // update the UI text
-        m_powerChargesText.text = m_powerCharges.ToString();
+		// update the UI text
+		m_UIManager.UpdatePowerChargeText(m_powerCharges);
     }
 
 	public void ResetPowerCharges()
 	{
 		// reset the power charges
 		m_powerCharges = 0;
-		m_powerChargesText.text = m_powerCharges.ToString();
-	}
+        m_UIManager.UpdatePowerChargeText(m_powerCharges);
+    }
 
 	public virtual void Initialize()
 	{
