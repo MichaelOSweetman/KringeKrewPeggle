@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Wasp.cs
     Summary: Manages the movement and behaviour of a wasp created by the Daniel Power
     Creation Date: 27/11/2023
-    Last Modified: 30/11/2025
+    Last Modified: 13/04/2026
 */
 public class Wasp : MonoBehaviour
 {
@@ -58,8 +58,8 @@ public class Wasp : MonoBehaviour
             m_targetPeg.Hit();
             // remove this wasp from the wasp list
             m_danielPower.m_wasps.Remove(this);
-            // have player controls destroy this wasp
-            m_danielPower.m_playerControls.RemoveProjectile(gameObject);
+            // have the game manager destroy this wasp
+            m_danielPower.m_gameManager.RemoveProjectile(gameObject);
         }
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 23/03/2026
+	Last Modified: 13/04/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -210,15 +210,8 @@ public class PegManager : MonoBehaviour
         m_pegHitPitchIndex = 0;
     }
 
-    public void ResolveTurn(bool a_allow0PegFreeBall = true)
+    public bool ResolveTurn()
     {
-        // clear all the hit pegs. If there were no pegs to clear and the chance is allowed, give the player a 50% chance to get back a free ball
-        if (!ClearHitPegs() && a_allow0PegFreeBall && Random.Range(0,2) == 1)
-        {
-            // give the player a free ball without playing the free ball sound
-            m_gameManager.FreeBall(false);
-        }
-
         // add the score gained in this shoot phase to the total score
         AddShotScoreToTotal(m_currentShotScore * m_roundHitPegs);
         // have the ui manager display the round score
@@ -231,6 +224,9 @@ public class PegManager : MonoBehaviour
         ResetTurnScore();
         // assign a random blue peg to be purple
         ReplacePurplePeg();
+
+        // clear all the hit pegs. Return whether there were pegs to clear
+        return ClearHitPegs();
     }
 
     void UpdatePhaseScore(int a_scoreIncrease)
@@ -566,8 +562,8 @@ public class PegManager : MonoBehaviour
         // turn the colourblind icons on or off as per the colourblind setting
         UpdateColorblindIcons();
 
-        // have the player controls reset for the new level
-        m_playerControls.Reload();
+        // have the game manager reset for the new level
+        m_gameManager.ResetLevel();
     }
 
     void Awake()

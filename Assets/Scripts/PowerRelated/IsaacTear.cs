@@ -6,11 +6,11 @@ using UnityEngine;
 File name: IsaacTear.cs
 Summary: Manages the collision and duration of a tear created by Isaac
 Creation Date: 03/06/2024
-Last Modified: 30/11/2025
+Last Modified: 13/04/2026
 */
 public class IsaacTear : MonoBehaviour
 {
-    [HideInInspector] public PlayerControls m_playerControls;
+    [HideInInspector] public GameManager m_gameManager;
     [HideInInspector] public float m_duration = 0.0f;
     float m_timer = 0.0f;
 
@@ -43,7 +43,7 @@ public class IsaacTear : MonoBehaviour
             a_collision.gameObject.GetComponent<Peg>().Hit();
         }
 
-        // have player controls destroy this tear
-        m_playerControls.RemoveProjectile(gameObject);
+        // have the game manager destroy this tear
+        m_gameManager.RemoveProjectile(gameObject);
     }
 }

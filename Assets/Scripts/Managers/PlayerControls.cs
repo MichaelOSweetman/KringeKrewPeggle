@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 30/03/2026
+    Last Modified: 13/04/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -19,15 +19,16 @@ public class PlayerControls : MonoBehaviour
     public CameraZoom m_cameraZoom; // TEMP
     public BallTrajectory m_ballTrajectory; // TEMP
     public PlayAreaBounds m_playAreaBounds;
+    public GameManager m_gameManager;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
-    public Transform m_playerProjectilesContainer; // TEMP
+    //public Transform m_playerProjectilesContainer; // TEMP
     public float m_ballLaunchSpeed;
-    public byte m_startingBallCount = 10;
+    public byte m_startingBallCount = 10; // TEMP
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
-    [HideInInspector] public int m_ballCount = 0; // TEMP
+    //[HideInInspector] public int m_ballCount = 0; // TEMP
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
@@ -35,6 +36,7 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public float m_defaultTimeScale = 1.0f;
     [HideInInspector] float m_defaultDeltaTime = 0.02f;
 
+    /* // TEMP
     public void RemoveProjectile(GameObject a_projectile)
     {
         // set the projectile to have no parent
@@ -61,6 +63,7 @@ public class PlayerControls : MonoBehaviour
             }
         }
     }
+    */
 
     GameObject Shoot()
     {
@@ -68,7 +71,7 @@ public class PlayerControls : MonoBehaviour
         ModifyTimeScale();
 
         // create a copy of the ball prefab and put it in the player projectiles container
-        GameObject Ball = Instantiate(m_ballPrefab, m_playerProjectilesContainer);
+        GameObject Ball = Instantiate(m_ballPrefab, m_gameManager.m_playerProjectilesContainer);
 		// set its position to be the same as this game object
 		Ball.transform.position = transform.position;
 		// apply the launch speed force to the ball, in the direction this gameobject is facing
@@ -78,26 +81,27 @@ public class PlayerControls : MonoBehaviour
 		// give the ball this component
 		Ball.GetComponent<Ball>().m_playerControls = this;
 
-        // reduce the ball count by one as a ball has been expended
-        --m_ballCount;
-        // have the UI Manager update the ball count text
-        m_UIManager.UpdateBallCountText();
+        // tell the game manager that the ball has been shot
+        m_gameManager.OnShoot();
+
         // return the ball gameobject
         return Ball;
     }
 
+    /*
     public void ResolveTurn()
     {
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
         // tell the peg manager to resolve the turn, with the flag specifing whether a free ball can be gained if 0 pegs were hit
-        m_pegManager.ResolveTurn(/*TEMP m_allow0PegFreeBall*/false);
+        m_pegManager.ResolveTurn(/m_allow0PegFreeBall);
         // tell the power to resolve the turn
         m_power.ResolveTurn();
 
         // set up the next turn
         //TEMP SetUpTurn();
     }
+    */
 
     public void ModifyTimeScale(float a_newTimeScale = -1.0f)
     {
@@ -109,8 +113,9 @@ public class PlayerControls : MonoBehaviour
 
     public void Reload()
     {
+        /*
         // reset the ball count
-        m_ballCount = m_startingBallCount;
+        m_gameManager.m_ballCount = m_startingBallCount; //TEMP
 
         // reload the power if it exists
         if (m_power != null)
@@ -123,7 +128,7 @@ public class PlayerControls : MonoBehaviour
 		{
 		    Destroy(m_ball);
 		}
-		
+		*/
 		// reset the time scale
 		ModifyTimeScale();
 
@@ -138,7 +143,7 @@ public class PlayerControls : MonoBehaviour
         m_defaultDeltaTime = Time.fixedDeltaTime;
 
         // initialise the ball count
-        m_ballCount = m_startingBallCount;
+        //m_ballCount = m_startingBallCount; // TEMP
 
         // TEMP
         // if the green peg power has not been set
@@ -185,8 +190,8 @@ public class PlayerControls : MonoBehaviour
             // if the ball exists, trigger the power's ball removal check function. If it does not override the default ball removal check and the ball has fallen low enough
             if (m_ball != null && !m_power.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
             {
-                // remove the ball from play
-                RemoveProjectile(m_ball);
+                // have the game manager remove the ball from play
+                m_gameManager.RemoveProjectile(m_ball);
             }
             
         }

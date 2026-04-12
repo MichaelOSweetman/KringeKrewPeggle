@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 06/04/2026
+    Last Modified: 13/04/2026
 */
 
 public class Flicker
@@ -248,6 +248,7 @@ public class UIManager : MonoBehaviour
         TogglePegLauncher(false);
     }
 
+    /*
     public void LevelOver(bool a_won)
     {
         // disable the peg launcher
@@ -280,6 +281,7 @@ public class UIManager : MonoBehaviour
         // increase the active submenu count
         ++m_activeNonPauseSubMenus;
     }
+    */
 
     public void CloseDialogueScreen()
     {
@@ -337,8 +339,8 @@ public class UIManager : MonoBehaviour
         // if the ball count text is not currently displaying the 'Free Ball!' text
         if (m_freeBallTextTimer <= 0.0f)
         {
-            // set the ball count text to display the current ball count as per the player controls component
-            m_ballCountText.text = m_playerControls.m_ballCount.ToString();
+            // set the ball count text to display the current ball count as per the Game Manager component
+            m_ballCountText.text = m_gameManager.m_ballCount.ToString();
         }
     }
 
@@ -501,8 +503,8 @@ public class UIManager : MonoBehaviour
         UpdateLevelScoreText(0);
         // reset the fever meter to 0
         UpdateFeverMeter(0);
-        // set the Ball-O-Tron ball count to the current ball count in Player Controls
-        m_ballOTron.SetBallCount(m_playerControls.m_ballCount);
+        // set the Ball-O-Tron ball count to the current ball count in Game Manager
+        m_ballOTron.SetBallCount(m_gameManager.m_ballCount);
     }
 
     public void NextLevel()

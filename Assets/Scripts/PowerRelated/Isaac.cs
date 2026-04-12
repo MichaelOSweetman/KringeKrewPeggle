@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 30/11/2025
+    Last Modified: 13/04/2026
 */
 public class Isaac : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class Isaac : MonoBehaviour
 	}
 
 
-	[HideInInspector] public PlayerControls m_playerControls;
+	[HideInInspector] public GameManager m_gameManager;
     public int m_health = 6;
 	public float m_timeBeforeHealthLoss = 1.0f;
 	public float m_moveSpeed = 5.0f;
@@ -69,8 +69,8 @@ public class Isaac : MonoBehaviour
 			// if Isaac's health has reached 0
 			if (m_health == 0)
 			{
-				// have player controls destroy Isaac
-				m_playerControls.RemoveProjectile(gameObject);
+				// have the game manager destroy Isaac
+				m_gameManager.RemoveProjectile(gameObject);
 			}
 		}
 		
@@ -146,7 +146,7 @@ public class Isaac : MonoBehaviour
         if (m_fireRateTimer >= m_fireRate && m_shootDirection != Vector2.zero)
 		{
             // create a copy of the tear prefab and add it to the player projectiles container
-            GameObject tear = Instantiate(m_isaacTearPrefab, m_playerControls.m_playerProjectilesContainer);
+            GameObject tear = Instantiate(m_isaacTearPrefab, m_gameManager.m_playerProjectilesContainer);
             // set the tear's position to Isaac's
             tear.transform.position = transform.position;
             // shoot the tear in the specified direction
@@ -154,7 +154,7 @@ public class Isaac : MonoBehaviour
             // tell the tear how long it should last
             tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
 			// give the tear access to player controls
-			tear.GetComponent<IsaacTear>().m_playerControls = m_playerControls;
+			tear.GetComponent<IsaacTear>().m_gameManager = m_gameManager;
             // reset the fire rate timer
             m_fireRateTimer = 0.0f;
 			// store that Isaac's eyes should be closed
@@ -176,11 +176,11 @@ public class Isaac : MonoBehaviour
         if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
 		{
 			// create a copy of the IsaacBomb prefab and add it to the player projectiles container
-			GameObject bomb = Instantiate(m_isaacBombPrefab, m_playerControls.m_playerProjectilesContainer);
+			GameObject bomb = Instantiate(m_isaacBombPrefab, m_gameManager.m_playerProjectilesContainer);
 			// position the bomb on Isaac
 			bomb.transform.position = transform.position;
-			// give the bomb access to player controls
-			bomb.GetComponent<IsaacBomb>().m_playerControls = m_playerControls;
+			// give the bomb access to the game manager
+			bomb.GetComponent<IsaacBomb>().m_gameManager = m_gameManager;
 			// reduce the bomb count by 1
 			--m_bombCount;
 		}

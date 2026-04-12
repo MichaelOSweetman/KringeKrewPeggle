@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 13/04/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -99,8 +99,8 @@ public class SweetsPower : MagicPower
 		// if the ball is in play and has fallen low enough (or high enough if Hillside is active)
 		if (a_ball.transform.position.y <= m_playerControls.m_ballKillFloor || a_ball.transform.position.y >= -m_playerControls.m_ballKillFloor)
 		{
-            // have player controls remove the ball from play
-            m_playerControls.RemoveProjectile(a_ball);
+            // have the game manager remove the ball from play
+            m_gameManager.RemoveProjectile(a_ball);
         }
 
 		// return that this function should override the default ball removal check

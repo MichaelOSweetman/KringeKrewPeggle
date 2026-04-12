@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 30/02/2026
+	Last Modified: 13/04/2026
 */
 public class BenPower : MagicPower
 {
@@ -48,17 +48,17 @@ public class BenPower : MagicPower
         }
 
         // create a copy of the Isaac prefab
-        GameObject Isaac = Instantiate(m_IsaacPrefab, m_playerControls.m_playerProjectilesContainer);
+        GameObject Isaac = Instantiate(m_IsaacPrefab, m_gameManager.m_playerProjectilesContainer);
         // set its position to be the Isaac Spawn Position
         Isaac.transform.position = m_isaacSpawnPosition;
-        // give Isaac the player controls component
-        Isaac.GetComponent<Isaac>().m_playerControls = m_playerControls;
+        // give Isaac the game manager component
+        Isaac.GetComponent<Isaac>().m_gameManager = m_gameManager;
 
         // give player controls Isaac in place of the ball
         m_playerControls.m_ball = Isaac;
 
         // reduce the ball count by one as a the Isaac counts as a ball for the purposes of the ball count
-        --m_playerControls.m_ballCount;
+        --m_gameManager.m_ballCount;
         // have the ui manager update the ball count text
         m_playerControls.m_UIManager.UpdateBallCountText();
 

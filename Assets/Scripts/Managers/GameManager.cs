@@ -7,7 +7,7 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 06/04/2026
+    Last Modified: 13/04/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -28,8 +28,10 @@ public class GameManager : MonoBehaviour
     [Header("TEMP UNSORTED")]
     bool m_allow0PegFreeBall = false;
     MagicPower m_magicPower = null;
-    int m_ballCount = 0;
     int m_characterID = 0;
+    public Transform m_playerProjectilesContainer;
+    public byte m_startingBallCount = 10;
+    [HideInInspector] public int m_ballCount = 0; // TEMP
 
     [System.Serializable] public struct CharacterAssets
     {
@@ -56,18 +58,20 @@ public class GameManager : MonoBehaviour
     // Investigate potential issue with resolving power before setting up
     // Do consistency pass on terminology; shot vs turn vs phase
     // should ball trajectory be drawn on canvas like ball-o-tron?
-    // properly move ball count from player controls to game manager
+    // look into - using UnityEngine.WSA;
+    // consider having the resolveturn ui manager function calls instead be the ui manager's own resolve shot function
+    // probably call for player controls to reset its time scale rather than calling a whole reload function
 
     // playercontrols reload is called after pegmanager loads a level
     // LevelManager load level prompts functions in UIManager, prompts UI manager to reload and prompts PegManager to load the level. also shows dialogue based on level info and has music manager shuffle play
+    // load level function in level manager should probably be prompting game manager to resetlevel, rather than peg manager
     // The toggling of the peg launcher should perhaps be managed here instead of UI manager
     // UI manager next level toggles peg launcher and has level manager load next level
     // UI manager retry level toggles peg launcher and reloads current level
     // toggle pause menu is in UI manager, maybe ought to be in player controls
     // pegmanager prompts music manager to play victory music when last peg is hit
-    // player controls player projectile container should probably be managed here
-    
-    // new Power UI container can be used to reload, clear all children from it
+
+    // new Power UI container can be used to reload, clear all children from it - look into if could be used in magic power reload functions
     // perhaps better system than having UI manager instantiate power UI objects for magic power scripts, give power scripts the power UI container directly?
     // look into kevin power scope overlay - how does it get set?
     // toggling peg launcher in UIManager is messy, if multiple pop up screens were open and one was closed, wouldn't the peg launcher be toggled back on despite screens still being present?
@@ -123,6 +127,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void RemoveProjectile(GameObject a_projectile)
+    {
+        // set the projectile to have no parent
+        a_projectile.transform.parent = null;
+        // destroy the projectile
+        Destroy(a_projectile);
+
+        // if the projectile count is now equal to 0
+        if (m_playerProjectilesContainer.childCount == 0)
+        {
+            // if the ball count is over 0
+            if (m_ballCount > 0)
+            {
+                // resolve the turn
+                ResolveShot();
+            }
+            // if the player has run out of balls
+            else
+            {
+                // have the player lose the level
+                LevelLost();
+            }
+        }
+    }
+
     public void FreeBall(bool a_playSound = true, bool a_showFreeBallText = false, bool a_allow0PegFreeBall = true)
     {
         /// PlayerControls:
@@ -153,32 +182,66 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void LevelOver(bool a_won)
+    void LevelLost()
     {
         // triggered when 0 projectiles remaining in mid shot phase and player has no balls remaining (Player Controls)
-        
+
         // UIManager
         // disable peg launcher
-        // update save file if won and new high score
-        // update top score text if won and new high score
-        // show level complete or try again screen based on outcome
+        // show try again screen
+
+
     }
 
-    void ResetLevel()
+    public void LevelWon()
+    {
+        // triggered when ball enters victory buckets
+
+        // UIManager
+        // disable peg launcher
+        // update save file if new high score
+        // update top score text if and new high score
+        // show level complete screen
+    }
+
+    public void ResetLevel()
     {
         // PlayerControls:
-        // reset ball count
-        // reload power
-        // destroy ball
-        // reset time scale
-        // run set up turn function
+        /// reset ball count
+        /// reload power
+        /// destroy ball
+        /// reset time scale
+        // run set up turn function - determine that everything has reloaded
 
         // UI Manager:
-        // reset ball count text display
-        // reset power charge text display
-        // reset level score display
-        // reset fever meter
-        // reset ball-o-tron
+        /// reset ball count text display
+        /// reset power charge text display
+        /// reset level score display
+        /// reset fever meter
+        /// reset ball-o-tron
+
+        // reset the ball count
+        m_ballCount = m_startingBallCount;
+
+        // if the power has been set
+        if (m_magicPower != null)
+        { 
+            // prompt it to reload
+            m_magicPower.Reload();
+        }
+
+        // loop for each player projectile
+        for (int i = m_playerProjectilesContainer.childCount - 1; i >= 0; --i)
+        {
+            // destroy the current player projectile
+            Destroy(m_playerProjectilesContainer.GetChild(i).gameObject);
+        }
+
+        // prompt the player controls to reload
+        m_playerControls.Reload();
+
+        // prompt the UI manager to reload the game UI
+        m_UIManager.ReloadGameUI();
     }
 
     void SetUpShot()
@@ -207,15 +270,21 @@ public class GameManager : MonoBehaviour
         m_UIManager.SetUpShot(m_ballCount);
     }
 
-    void OnShoot()
+    public void OnShoot()
     {
         // triggered by shooting the ball
-
         // switch GameState to MidShot
         // have UIManager update ball count text
+
+        // reduce the ball count by one as a ball has been expended
+        --m_ballCount;
+        // have the UI Manager update the ball count text
+        m_UIManager.UpdateBallCountText();
+
+        // switch GameState to MidShot
+        m_gameState = GameState.MidShot;
     }
-
-
+    
     void ResolveShot()
     {
         // triggered from 0 projectiles remaining in mid shot phase (PlayerControls)
@@ -223,12 +292,12 @@ public class GameManager : MonoBehaviour
         // PlayerControls:
         /// prompt power to resolve if it was flagged to
         /// prompt CameraZoom to return camera to default state
-        // prompt PegManager to resolve turn, with allow0pegfreeball flag
-        // prompt Power to resolveturn
-        // run set up turn function
+        /// prompt PegManager to resolve turn, with allow0pegfreeball flag
+        // run set up turn function - determine that everything has resolved
 
         // PegManager:
-        // prompt all hit pegs to be cleared, run 50/50 on free ball if allowed and no hit pegs
+        // prompt all hit pegs to be cleared
+        ///run 50/50 on free ball if allowed and no hit pegs
         // add shot score to total score
         // prompt ui manager to display round score
         // prompt ui manager to flicker fever meter
@@ -249,6 +318,18 @@ public class GameManager : MonoBehaviour
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
 
+        // tell the peg manager to resolve the turn. If there were no hit pegs this shot and the chance is allowed, give the player a 50% chance to get a free ball
+        if (!m_pegManager.ResolveTurn() && m_allow0PegFreeBall && Random.Range(0, 2) == 1)
+        {
+            // give the player a free ball without playing the free ball sound
+            FreeBall(false);
+        }
+    }
+
+    private void Awake()
+    {
+        // initialise the ball count
+        m_ballCount = m_startingBallCount;
     }
 
     // Start is called before the first frame update
