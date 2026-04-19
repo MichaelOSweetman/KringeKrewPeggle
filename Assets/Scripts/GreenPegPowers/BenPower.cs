@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 13/04/2026
+	Last Modified: 20/04/2026
 */
 public class BenPower : MagicPower
 {
@@ -57,10 +57,8 @@ public class BenPower : MagicPower
         // give player controls Isaac in place of the ball
         m_playerControls.m_ball = Isaac;
 
-        // reduce the ball count by one as a the Isaac counts as a ball for the purposes of the ball count
-        --m_gameManager.m_ballCount;
-        // have the ui manager update the ball count text
-        m_playerControls.m_UIManager.UpdateBallCountText();
+        // tell the game manager that the shot has occurred
+        m_gameManager.OnShoot();
 
         // return that this function should override the default shoot function
         return true;

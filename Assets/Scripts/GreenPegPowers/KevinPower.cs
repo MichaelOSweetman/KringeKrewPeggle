@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 06/04/2026
+	Last Modified: 20/04/2026
 */
 public class KevinPower : MagicPower
 {
@@ -34,8 +34,8 @@ public class KevinPower : MagicPower
         // give the sniper ball indicator access to player controls so it can access the ball
         m_scopeOverlay.transform.GetChild(0).GetComponent<RotateToBall>().m_playerControls = m_playerControls;
 
-        // get access to the camera zoom component from player controls
-        m_cameraZoom = m_playerControls.m_cameraZoom;
+        // get access to the camera zoom component from the game manager
+        m_cameraZoom = m_gameManager.m_cameraZoom;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -53,7 +53,7 @@ public class KevinPower : MagicPower
     public override void Reload()
     {
         // tell the camera to return to its default state instantly
-        m_playerControls.m_cameraZoom.ReturnToDefault(true);
+        m_cameraZoom.ReturnToDefault(true);
 
         // destroy the scope overlay
         Destroy(m_scopeOverlay);

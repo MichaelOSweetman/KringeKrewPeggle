@@ -6,12 +6,11 @@ using UnityEngine;
     File name: Ball.cs
     Summary: Prevents the ball from getting stuck
     Creation Date: 30/10/2023
-    Last Modified: 04/05/2025
+    Last Modified: 20/04/2026
 */
 public class Ball : MonoBehaviour
 {
     [HideInInspector] public PegManager m_pegManager;
-    [HideInInspector] public PlayerControls m_playerControls;
     Rigidbody2D m_rigidbody;
     public float m_lowestAllowedVelocitySquared = 0.01f;
     public float m_maxLowVelocityDuration = 1.0f;

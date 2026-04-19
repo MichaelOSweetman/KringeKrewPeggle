@@ -6,18 +6,18 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 13/04/2026
+    Last Modified: 20/04/2026
 */
 public class PlayerControls : MonoBehaviour
 {
     [HideInInspector] public bool m_ballInPlay = false; // TEMP
-    [HideInInspector] public MagicPower m_power;
+    //[HideInInspector] public MagicPower m_power;
 
     [Header("Other Scripts")]
-    public UIManager m_UIManager; // TEMP
-    public PegManager m_pegManager;
-    public CameraZoom m_cameraZoom; // TEMP
-    public BallTrajectory m_ballTrajectory; // TEMP
+    //public UIManager m_UIManager; // TEMP
+    public PegManager m_pegManager; // TEMP - get from game manager?
+    //public CameraZoom m_cameraZoom; // TEMP
+    //public BallTrajectory m_ballTrajectory; // TEMP
     public PlayAreaBounds m_playAreaBounds;
     public GameManager m_gameManager;
 
@@ -25,7 +25,7 @@ public class PlayerControls : MonoBehaviour
     public GameObject m_ballPrefab;
     //public Transform m_playerProjectilesContainer; // TEMP
     public float m_ballLaunchSpeed;
-    public byte m_startingBallCount = 10; // TEMP
+    //public byte m_startingBallCount = 10; // TEMP
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
     //[HideInInspector] public int m_ballCount = 0; // TEMP
@@ -78,8 +78,6 @@ public class PlayerControls : MonoBehaviour
 		Ball.GetComponent<Rigidbody2D>().AddForce(transform.up * m_ballLaunchSpeed, ForceMode2D.Impulse);
 		// give the ball the peg manager
 		Ball.GetComponent<Ball>().m_pegManager = m_pegManager;
-		// give the ball this component
-		Ball.GetComponent<Ball>().m_playerControls = this;
 
         // tell the game manager that the ball has been shot
         m_gameManager.OnShoot();
@@ -158,15 +156,15 @@ public class PlayerControls : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
-    {
-        // if the ball is not currently in play and the ball trajectory line is currently active
-        if (!m_ballInPlay && m_ballTrajectory.enabled)
-        {
-            // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
-            m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);
-        }
-    }
+    //private void FixedUpdate()
+    //{
+    //    // if the ball is not currently in play and the ball trajectory line is currently active
+    //    if (!m_ballInPlay && m_ballTrajectory.enabled)
+    //    {
+    //        // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
+    //        m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);
+    //    }
+    //}
 
     void Update()
     {
@@ -188,7 +186,7 @@ public class PlayerControls : MonoBehaviour
         if (m_ballInPlay)
         {
             // if the ball exists, trigger the power's ball removal check function. If it does not override the default ball removal check and the ball has fallen low enough
-            if (m_ball != null && !m_power.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
+            if (m_ball != null && !m_gameManager.m_magicPower.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
             {
                 // have the game manager remove the ball from play
                 m_gameManager.RemoveProjectile(m_ball);
@@ -202,7 +200,7 @@ public class PlayerControls : MonoBehaviour
             if (Input.GetButtonDown("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
             {
                 // trigger the power's on shoot function. If it should not override the default shoot function
-                if (!m_power.OnShoot())
+                if (!m_gameManager.m_magicPower.OnShoot())
                 {
                     // shoot a ball
                     m_ball = Shoot();
@@ -212,7 +210,7 @@ public class PlayerControls : MonoBehaviour
                 m_ballInPlay = true;
 
                 // disable the ball trajectory line
-                m_ballTrajectory.ShowLine(false);
+                //m_ballTrajectory.ShowLine(false);
             }
         }
     }

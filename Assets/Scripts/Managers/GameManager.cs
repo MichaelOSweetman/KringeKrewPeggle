@@ -7,10 +7,27 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 13/04/2026
+    Last Modified: 20/04/2026
 */
 public class GameManager : MonoBehaviour
 {
+    [System.Serializable]
+    public struct CharacterAssets
+    {
+        public GameObject m_playerIconPrefab;
+        public AudioClip m_victoryMusic;
+    }
+
+    enum GameState
+    {
+        Menu,
+        Reloading,
+        PreShot,
+        Shooting,
+        MidShot,
+        PostShot
+    }
+
     [Header("Other Scripts")]
     public Dialogue m_dialogue;
     public LevelManager m_levelManager;
@@ -22,36 +39,21 @@ public class GameManager : MonoBehaviour
     public BallTrajectory m_ballTrajectory;
     public CameraZoom m_cameraZoom;
 
-    [Header("Audio")]
-    public AudioClip[] m_freeBallSounds;
+    [Header("Characters")]
+    public CharacterAssets[] m_characters;
+    [HideInInspector] public MagicPower m_magicPower = null;
+    int m_characterID = -1;
 
-    [Header("TEMP UNSORTED")]
-    bool m_allow0PegFreeBall = false;
-    MagicPower m_magicPower = null;
-    int m_characterID = 0;
+    [Header("Player Projectiles")]
     public Transform m_playerProjectilesContainer;
     public byte m_startingBallCount = 10;
     [HideInInspector] public int m_ballCount = 0; // TEMP
+    bool m_allow0PegFreeBall = false;
 
-    [System.Serializable] public struct CharacterAssets
-    {
-        public GameObject m_playerIconPrefab;
-        public AudioClip m_victoryMusic;
-    }
+    [Header("Audio")]
+    public AudioClip[] m_freeBallSounds;
 
-    public CharacterAssets[] m_characters;
-
-    enum GameState
-    { 
-         Menu,
-         Paused,
-         Reloading,
-         PreShot,
-         Shooting,
-         MidShot,
-         PostShot
-    }
-
+    bool m_paused = false;
     GameState m_gameState = GameState.Menu;
 
     // PlayerControls ballInPlay flag should be made redundant by GameState enumerator
@@ -75,6 +77,9 @@ public class GameManager : MonoBehaviour
     // perhaps better system than having UI manager instantiate power UI objects for magic power scripts, give power scripts the power UI container directly?
     // look into kevin power scope overlay - how does it get set?
     // toggling peg launcher in UIManager is messy, if multiple pop up screens were open and one was closed, wouldn't the peg launcher be toggled back on despite screens still being present?
+
+    // reset level should reopen the character select screen if in quick play
+    // time scale should be stored he but still modified in player controls?
 
     public void InitializeCharacter(int a_characterID = -1)
     {
@@ -125,6 +130,9 @@ public class GameManager : MonoBehaviour
             // reload the power
             m_magicPower.Reload();
         }
+
+        // switch the game state to pre shot
+        m_gameState = GameState.PreShot;
     }
 
     public void RemoveProjectile(GameObject a_projectile)
@@ -140,12 +148,16 @@ public class GameManager : MonoBehaviour
             // if the ball count is over 0
             if (m_ballCount > 0)
             {
+                // switch the game state to post shot
+                m_gameState = GameState.PostShot;
                 // resolve the turn
                 ResolveShot();
             }
             // if the player has run out of balls
             else
             {
+                // switch the game state to menu
+                m_gameState = GameState.Menu;
                 // have the player lose the level
                 LevelLost();
             }
@@ -272,7 +284,7 @@ public class GameManager : MonoBehaviour
 
     public void OnShoot()
     {
-        // triggered by shooting the ball
+        // triggered by shooting the ball or possibly from magic power on shoot function
         // switch GameState to MidShot
         // have UIManager update ball count text
 
@@ -280,6 +292,9 @@ public class GameManager : MonoBehaviour
         --m_ballCount;
         // have the UI Manager update the ball count text
         m_UIManager.UpdateBallCountText();
+
+        // disable the ball trajectory
+        m_ballTrajectory.enabled = false;
 
         // switch GameState to MidShot
         m_gameState = GameState.MidShot;
@@ -338,14 +353,20 @@ public class GameManager : MonoBehaviour
         
     }
 
+    private void FixedUpdate()
+    {
+        if (m_gameState == GameState.Shooting)
+        {
+            m_ballTrajectory.CreateTrajectoryLine(m_playerControls.m_ballLaunchSpeed);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         switch (m_gameState)
         {
             case GameState.Menu:
-                break;
-            case GameState.Paused:
                 break;
             case GameState.Reloading:
                 break;

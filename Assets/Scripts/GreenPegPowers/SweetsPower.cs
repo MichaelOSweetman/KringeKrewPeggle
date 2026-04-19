@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 13/04/2026
+	Last Modified: 20/04/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -53,15 +53,15 @@ public class SweetsPower : MagicPower
 
 	public override void Initialize()
 	{
-		// get access to the peg manager through player controls and use it to access the bucket's MoveToPoints component and the victory buckets
-        m_bucket = m_playerControls.m_pegManager.m_bucket.GetComponent<MoveToPoints>();
-		m_victoryBuckets = m_playerControls.m_pegManager.m_victoryBuckets;
+		// get access to the peg manager through the game manager and use it to access the bucket's MoveToPoints component and the victory buckets
+        m_bucket = m_gameManager.m_pegManager.m_bucket.GetComponent<MoveToPoints>();
+		m_victoryBuckets = m_gameManager.m_pegManager.m_victoryBuckets;
 
-        // get access to the ui manager through player controls and use it to access and store the launcher's LauncherRotation component
-        m_launcherRotation = m_playerControls.m_UIManager.m_launcherRotation;
+        // get access to the ui manager through the game manager and use it to access and store the launcher's LauncherRotation component
+        m_launcherRotation = m_gameManager.m_UIManager.m_launcherRotation;
 
-		// get access to the ui manager through player controls and use it to access and store the game overlay
-		m_gameOverlay = m_playerControls.m_UIManager.m_gameOverlay;
+		// get access to the ui manager through the game manager and use it to access and store the game overlay
+		m_gameOverlay = m_gameManager.m_UIManager.m_gameOverlay;
 
 		// store the game overlay's current texture as the default overlay
 		m_defaultOverlay = m_gameOverlay.texture;

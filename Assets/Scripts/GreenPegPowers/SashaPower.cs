@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 06/04/2026
+    Last Modified: 20/04/2026
 */
 public class SashaPower : MagicPower
 {
@@ -54,8 +54,8 @@ public class SashaPower : MagicPower
         // store its current position as the default position
         m_pegContainer.transform.position = m_containerDefaultPosition;
 
-        // get the music manager through the peg manager
-        m_musicManager = m_playerControls.m_UIManager.m_musicManager;
+        // get the music manager through the game manager
+        m_musicManager = m_gameManager.m_musicManager;
 
         // store the current gravity as the default gravity
         m_defaultGravity = Physics2D.gravity;
