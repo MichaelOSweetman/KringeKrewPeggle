@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: JackPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 27/04/2026
 */
 public class JackPower : MagicPower
 {
@@ -23,6 +23,9 @@ public class JackPower : MagicPower
         m_defaultOrangePegScore = m_playerControls.m_pegManager.m_baseOrangePegScore;
         m_defaultPurplePegScore = m_playerControls.m_pegManager.m_basePurplePegScore;
         m_defaultGreenPegScore = m_playerControls.m_pegManager.m_baseGreenPegScore;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void SetUp()
@@ -35,6 +38,9 @@ public class JackPower : MagicPower
         m_playerControls.m_pegManager.m_baseOrangePegScore = m_communistPegScore;
         m_playerControls.m_pegManager.m_basePurplePegScore = m_communistPegScore;
         m_playerControls.m_pegManager.m_baseGreenPegScore = m_communistPegScore;
+
+        // store that the power is ready for the game to be in the shooting state
+        m_powerState = GameManager.GameState.Shooting;
     }
 
     public override bool OnShoot()
@@ -65,5 +71,8 @@ public class JackPower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 }

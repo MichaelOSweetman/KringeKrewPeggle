@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 20/04/2026
+	Last Modified: 27/04/2026
 */
 public class KevinPower : MagicPower
 {
@@ -36,6 +36,9 @@ public class KevinPower : MagicPower
 
         // get access to the camera zoom component from the game manager
         m_cameraZoom = m_gameManager.m_cameraZoom;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -48,6 +51,9 @@ public class KevinPower : MagicPower
     {
         // hide the sniper scope and return to the default camera position and zoom immediately
         HideSniperScope(true);
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Reload()
@@ -60,6 +66,9 @@ public class KevinPower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Update()

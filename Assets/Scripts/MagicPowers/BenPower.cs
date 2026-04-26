@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 20/04/2026
+	Last Modified: 27/04/2026
 */
 public class BenPower : MagicPower
 {
@@ -18,6 +18,9 @@ public class BenPower : MagicPower
     {
         // get access to the peg manager through player controls and use it to access and store the bucket
         m_bucket = m_playerControls.m_pegManager.m_bucket;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -71,5 +74,8 @@ public class BenPower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 }

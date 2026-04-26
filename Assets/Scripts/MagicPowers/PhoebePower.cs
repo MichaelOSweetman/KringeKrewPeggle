@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 27/04/2026
 */
 public class PhoebePower : MagicPower
 {
@@ -36,6 +36,9 @@ public class PhoebePower : MagicPower
                 m_bocconcinis[m_bocconcinis.Count - 1].Initialize();
             }
         }
+
+        // store that the power is ready for the game to be in the shooting state
+        m_powerState = GameManager.GameState.Shooting;
     }
 
     public override bool OnShoot()
@@ -72,6 +75,9 @@ public class PhoebePower : MagicPower
                 }
             }
         }
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Reload()
@@ -92,5 +98,8 @@ public class PhoebePower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 }

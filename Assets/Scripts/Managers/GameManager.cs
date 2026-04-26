@@ -7,7 +7,7 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 20/04/2026
+    Last Modified: 27/04/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
         public AudioClip m_victoryMusic;
     }
 
-    enum GameState
+    public enum GameState
     {
         Menu,
         Reloading,
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     public AudioClip[] m_freeBallSounds;
 
     bool m_paused = false;
-    GameState m_gameState = GameState.Menu;
+    [HideInInspector] public GameState m_gameState = GameState.Reloading;
 
     // PlayerControls ballInPlay flag should be made redundant by GameState enumerator
     // Investigate potential issue with resolving power before setting up
@@ -79,7 +79,10 @@ public class GameManager : MonoBehaviour
     // toggling peg launcher in UIManager is messy, if multiple pop up screens were open and one was closed, wouldn't the peg launcher be toggled back on despite screens still being present?
 
     // reset level should reopen the character select screen if in quick play
-    // time scale should be stored he but still modified in player controls?
+    // time scale should be stored here but still modified in player controls?
+
+    // if power doesn't need to be set up, skip its game state tracker straight to Shooting
+    // Ethen Power may not need to disable playercontrols etc, with new Power State system
 
     public void InitializeCharacter(int a_characterID = -1)
     {
@@ -284,9 +287,9 @@ public class GameManager : MonoBehaviour
 
     public void OnShoot()
     {
-        // triggered by shooting the ball or possibly from magic power on shoot function
-        // switch GameState to MidShot
-        // have UIManager update ball count text
+        /// triggered by shooting the ball or possibly from magic power on shoot function
+        /// switch GameState to MidShot
+        /// have UIManager update ball count text
 
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;
@@ -369,14 +372,51 @@ public class GameManager : MonoBehaviour
             case GameState.Menu:
                 break;
             case GameState.Reloading:
+                if (m_magicPower.IsReady(GameState.PreShot))
+                {
+
+                }
                 break;
             case GameState.PreShot:
+                if (m_magicPower.IsReady(GameState.Shooting))
+                {
+
+                }
                 break;
             case GameState.MidShot:
                 break;
             case GameState.PostShot:
-                // if x and y are finished, switch to pre shot
+                if (m_magicPower.IsReady(GameState.PreShot))
+                {
+
+                }
                 break;
         }
+
+        // TEMP
+        print(m_gameState);
     }
 }
+
+/*
+ * Game State Checklist (to move to next phase): 
+ * 
+ * Reloading:
+ *  Power Reloaded -> pre shot
+ *  Ball-O-Tron Reset
+ * 
+ * PreShot:
+ *  Power Set Up -> shooting        [MatejaPower - Mateja needs to move to ground before set up is complete] [EthenPower - Drawing may need to be done first?]
+ *  UI ball remaining pop up cleared
+ *  
+ * Shooting:
+ *  Ball Shot
+ *  
+ * Mid Shot:
+ *  All Player Projectiles Destroyed
+ *  
+ * Post Shot:
+ *  Power Resolved -> pre shot
+ *  Camera Returned
+ *  Hit Pegs Cleared
+ */

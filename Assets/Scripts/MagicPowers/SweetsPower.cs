@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 20/04/2026
+	Last Modified: 27/04/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -68,12 +68,18 @@ public class SweetsPower : MagicPower
 
 		// get the launcher's parent's parent to access the top wall
 		m_topWall = m_launcherRotation.transform.parent.parent.gameObject;
-    }
+
+		// store that the power is ready for the game to be in the pre shot state
+		m_powerState = GameManager.GameState.PreShot;
+	}
 
 	public override void SetUp()
 	{
 		// flip the bucket, launcher and gravity
 		ToggleHillside();
+
+		// store that the power is ready for the game to be in the shooting state
+		m_powerState = GameManager.GameState.Shooting;
 	}
 
     public override bool OnShoot()
@@ -118,5 +124,8 @@ public class SweetsPower : MagicPower
 
 		// reset the power charges
 		ResetPowerCharges();
+
+		// store that the power is ready for the game to be in the pre shot state
+		m_powerState = GameManager.GameState.PreShot;
 	}
 }

@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 30/03/2026
+	Last Modified: 27/04/2026
 */
 public class LokiPower : MagicPower
 {
@@ -41,6 +41,9 @@ public class LokiPower : MagicPower
         m_hook.GetComponent<Hook>().m_lokiPower = this;
         GameObject cord = Instantiate(m_cordPrefab);
         m_cord = cord.GetComponent<LineRenderer>();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -56,6 +59,9 @@ public class LokiPower : MagicPower
 
         // disable the hook
         m_hook.SetActive(false);
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void ResolvePower()
@@ -77,6 +83,9 @@ public class LokiPower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Update()

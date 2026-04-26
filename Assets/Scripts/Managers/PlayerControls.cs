@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 20/04/2026
+    Last Modified: 27/04/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -182,8 +182,8 @@ public class PlayerControls : MonoBehaviour
         }
         // TEMP
 
-        // if the ball is in play
-        if (m_ballInPlay)
+        // if the game state is mid shot
+        if (m_gameManager.m_gameState == GameManager.GameState.MidShot)
         {
             // if the ball exists, trigger the power's ball removal check function. If it does not override the default ball removal check and the ball has fallen low enough
             if (m_ball != null && !m_gameManager.m_magicPower.BallRemovalCheck(m_ball) && m_ball.transform.position.y <= m_ballKillFloor)
@@ -193,8 +193,8 @@ public class PlayerControls : MonoBehaviour
             }
             
         }
-        // if the ball does not exist, allow the player to shoot a ball
-        else
+        // otherwise, if the game state is shooting
+        else if (m_gameManager.m_gameState == GameManager.GameState.Shooting)
         {
             // if the Shoot / Use Power input has been detected and the cursor is within the play area
             if (Input.GetButtonDown("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
@@ -208,9 +208,6 @@ public class PlayerControls : MonoBehaviour
 
                 // store that the ball is now in play
                 m_ballInPlay = true;
-
-                // disable the ball trajectory line
-                //m_ballTrajectory.ShowLine(false);
             }
         }
     }

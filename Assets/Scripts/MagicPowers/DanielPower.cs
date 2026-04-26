@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: DanielPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Daniel
 	Creation Date: 27/01/2025
-	Last Modified: 13/04/2026
+	Last Modified: 27/04/2026
 */
 public class DanielPower : MagicPower
 {
@@ -64,5 +64,8 @@ public class DanielPower : MagicPower
             Destroy(m_wasps[m_wasps.Count - 1]);
             m_wasps.RemoveAt(m_wasps.Count - 1);
         }
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 }

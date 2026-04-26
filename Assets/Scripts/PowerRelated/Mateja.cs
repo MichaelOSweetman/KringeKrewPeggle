@@ -6,11 +6,11 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 13/04/2026
+    Last Modified: 27/04/2026
 */
 public class Mateja : MonoBehaviour
 {
-    enum MatejaState
+    public enum MatejaState
     {
         Spawned,
         Ready,
@@ -29,7 +29,7 @@ public class Mateja : MonoBehaviour
     public float m_launchForce = 5.0f;
     public float m_slamSpeed = 5.0f;
     public float m_rotationSpeed = 5.0f;
-    MatejaState m_matejaState = MatejaState.Spawned;
+    [HideInInspector] public MatejaState m_matejaState = MatejaState.Spawned;
     float m_gravityScale = 0.0f;
     Rigidbody2D m_rigidbody;
     GameObject m_matejaBody;

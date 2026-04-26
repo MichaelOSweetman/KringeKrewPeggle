@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 20/04/2026
+	Last Modified: 27/04/2026
 */
 public class EthenPower : MagicPower
 {
@@ -60,6 +60,9 @@ public class EthenPower : MagicPower
             // have the drawing power get set up next turn
             m_setUpNextTurn = true;
         }
+
+        // store that the power is ready for the game to be in the shooting state
+        m_powerState = GameManager.GameState.Shooting;
     }
 
     public void ClearDrawingButtonPressed()
@@ -124,6 +127,9 @@ public class EthenPower : MagicPower
         // set the buttons to trigger their corresponding functions when clicked
         m_endDrawButton.GetComponent<Button>().onClick.AddListener(EndDrawButtonPressed);
         m_clearButton.GetComponent<Button>().onClick.AddListener(ClearDrawingButtonPressed);
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void SetUp()
@@ -157,6 +163,9 @@ public class EthenPower : MagicPower
     {
         // destroy any active lines
         DestroyLines();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void ResolvePower()
@@ -194,6 +203,9 @@ public class EthenPower : MagicPower
 
         // reset the power charges
         ResetPowerCharges();
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Update()

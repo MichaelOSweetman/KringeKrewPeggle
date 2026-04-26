@@ -17,7 +17,7 @@ public abstract class MagicPower : MonoBehaviour
     [HideInInspector] public int m_powerCharges = 0;
 	[HideInInspector] public bool m_setUpNextTurn = false;
 	[HideInInspector] public bool m_resolveNextTurn = false;
-
+	[HideInInspector] public GameManager.GameState m_powerState;
 
     public void ModifyPowerCharges(int a_modifier)
     {
@@ -36,7 +36,8 @@ public abstract class MagicPower : MonoBehaviour
 
 	public virtual void Initialize()
 	{
-
+		// store that the power is ready for the game to be in the pre shot state
+		m_powerState = GameManager.GameState.PreShot;
 	}
 
     public virtual void Trigger(Vector3 a_greenPegPosition)
@@ -57,7 +58,8 @@ public abstract class MagicPower : MonoBehaviour
 
 	public virtual void SetUp()
 	{
-
+		// store that the power is ready for the game to be in the shooting state
+		m_powerState = GameManager.GameState.Shooting;
 	}
 
 	public virtual bool OnShoot()
@@ -74,7 +76,8 @@ public abstract class MagicPower : MonoBehaviour
 
 	public virtual void ResolveTurn()
 	{
-
+		// store that the power is ready for the game to be in the pre shot state
+		m_powerState = GameManager.GameState.PreShot;
 	}
 
 	public virtual void ResolvePower()
@@ -89,7 +92,14 @@ public abstract class MagicPower : MonoBehaviour
 
 	public virtual void Reload()
 	{
+		// store that the power is ready for the game to be in the pre shot state
+		m_powerState = GameManager.GameState.PreShot;
+	}
 
+	public virtual bool IsReady(GameManager.GameState a_goalState)
+	{
+		// return whether the power is ready for the game to be at the goal state
+		return (m_powerState == a_goalState);
 	}
 
 	public virtual void Update()

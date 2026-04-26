@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 20/04/2026
+    Last Modified: 27/04/2026
 */
 public class SashaPower : MagicPower
 {
@@ -59,6 +59,9 @@ public class SashaPower : MagicPower
 
         // store the current gravity as the default gravity
         m_defaultGravity = Physics2D.gravity;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Trigger(Vector3 a_greenPegPosition)
@@ -128,6 +131,9 @@ public class SashaPower : MagicPower
 
         // reset the arrow colour
         m_UIArrow.color = m_defaultArrowColor;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Reload()
@@ -146,6 +152,9 @@ public class SashaPower : MagicPower
 
         // set the gravity to its default state
         Physics2D.gravity = m_defaultGravity;
+
+        // store that the power is ready for the game to be in the pre shot state
+        m_powerState = GameManager.GameState.PreShot;
     }
 
     public override void Update()
