@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 20/04/2026
+	Last Modified: 04/05/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -208,6 +208,12 @@ public class PegManager : MonoBehaviour
         m_uiManager.UpdateFreeBallProgressBar(m_currentShotScore, m_freeBallsAwarded);
         // reset the peg hit sound
         m_pegHitPitchIndex = 0;
+    }
+
+    public bool ResolveComplete()
+    {
+        // if there are still pegs to be cleared, return that this has not finished resolving, otherwise return that it has
+        return !m_clearHitPegQueue;
     }
 
     public bool ResolveTurn()

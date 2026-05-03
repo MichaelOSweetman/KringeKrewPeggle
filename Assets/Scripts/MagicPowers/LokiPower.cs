@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 04/05/2026
 */
 public class LokiPower : MagicPower
 {
@@ -90,8 +90,8 @@ public class LokiPower : MagicPower
 
     public override void Update()
     {
-        // if the ball is in play
-        if (m_playerControls.m_ballInPlay)
+        // if the game is in the mid shot state
+        if (m_gameManager.m_gameState == GameManager.GameState.MidShot)
         {
             // if the shoot / use power button is currently pressed
             if (Input.GetButton("Shoot / Use Power"))

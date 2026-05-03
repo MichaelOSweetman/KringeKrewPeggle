@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /*
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 13/04/2026
+    Last Modified: 04/05/2026
 */
 
 public class Flicker
@@ -200,6 +201,8 @@ public class UIManager : MonoBehaviour
     public RawImage m_gameOverlay;
     public int m_ballCountWarningThreshold = 3;
     public Transform m_powerUIContainer;
+    // TEMP put in category
+    public int m_mainMenuSceneID = 1;
 
     public GameObject LoadCharacter(GameObject a_characterPrefab)
     {
@@ -456,6 +459,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public bool IsPopUpClear()
+    {
+        // return whether there are 0 active pop up texts
+        return m_popUpTextContainer.transform.childCount == 0;
+    }
+
     public void DisplayPopUpText(TextFormat a_format, string a_text, Vector3 a_position, bool a_usePrefabOffset)
     {
         // determine the prefab to use for the text format
@@ -539,6 +548,11 @@ public class UIManager : MonoBehaviour
             // make the pause menu inactive
             m_pauseMenu.SetActive(false);
         }
+    }
+
+    public void MainMenu()
+    {
+        SceneManager.LoadSceneAsync(m_mainMenuSceneID);
     }
 
     public void UpdateMusicVolume()

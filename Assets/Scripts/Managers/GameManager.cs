@@ -7,7 +7,7 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 27/04/2026
+    Last Modified: 04/05/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
     bool m_paused = false;
     [HideInInspector] public GameState m_gameState = GameState.Reloading;
 
-    // PlayerControls ballInPlay flag should be made redundant by GameState enumerator
     // Investigate potential issue with resolving power before setting up
     // Do consistency pass on terminology; shot vs turn vs phase
     // should ball trajectory be drawn on canvas like ball-o-tron?
@@ -83,6 +82,8 @@ public class GameManager : MonoBehaviour
 
     // if power doesn't need to be set up, skip its game state tracker straight to Shooting
     // Ethen Power may not need to disable playercontrols etc, with new Power State system
+
+    // powers need their set up and resolveturn functions run regardless of if they should be set up/ resolve next turn so their state trackers can progress
 
     public void InitializeCharacter(int a_characterID = -1)
     {
@@ -136,6 +137,8 @@ public class GameManager : MonoBehaviour
 
         // switch the game state to pre shot
         m_gameState = GameState.PreShot;
+        // set up the shot
+        SetUpShot();
     }
 
     public void RemoveProjectile(GameObject a_projectile)
@@ -280,6 +283,12 @@ public class GameManager : MonoBehaviour
             // store that the power has been set up
             m_magicPower.m_setUpNextTurn = false;
         }
+        // TEMP
+        else
+        {
+            m_magicPower.m_powerState = GameState.Shooting;
+        }
+        // TEMP
 
         // prompt the UI manager to display the set up shot phase info to the player
         m_UIManager.SetUpShot(m_ballCount);
@@ -297,7 +306,7 @@ public class GameManager : MonoBehaviour
         m_UIManager.UpdateBallCountText();
 
         // disable the ball trajectory
-        m_ballTrajectory.enabled = false;
+        m_ballTrajectory.ShowLine(false);
 
         // switch GameState to MidShot
         m_gameState = GameState.MidShot;
@@ -332,6 +341,12 @@ public class GameManager : MonoBehaviour
             // store that the power has been resolved
             m_magicPower.m_resolveNextTurn = false;
         }
+        // TEMP
+        else
+        {
+            m_magicPower.m_powerState = GameState.PreShot;
+        }
+        // TEMP
 
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
@@ -369,26 +384,24 @@ public class GameManager : MonoBehaviour
     {
         switch (m_gameState)
         {
-            case GameState.Menu:
-                break;
-            case GameState.Reloading:
-                if (m_magicPower.IsReady(GameState.PreShot))
-                {
-
-                }
-                break;
+            // if the game state is Pre Shot
             case GameState.PreShot:
-                if (m_magicPower.IsReady(GameState.Shooting))
+                // if the magic power is ready to be in the Shooting state and the UI manager is clear of pop ups
+                if (m_magicPower.IsReady(GameState.Shooting) && m_UIManager.IsPopUpClear())
                 {
-
+                    // switch the game state to Shooting
+                    m_gameState = GameState.Shooting;
                 }
                 break;
-            case GameState.MidShot:
-                break;
+            // if the game state is Post Shot
             case GameState.PostShot:
-                if (m_magicPower.IsReady(GameState.PreShot))
+                // if the magic power is ready to be in the Pre Shot state, the peg manager has finished resolving, and the camera is in its default state
+                if (m_magicPower.IsReady(GameState.PreShot) && m_pegManager.ResolveComplete() && m_cameraZoom.CameraAtDefault())
                 {
-
+                    // switch the game state to Pre Shot
+                    m_gameState = GameState.PreShot;
+                    // set up the next shot
+                    SetUpShot();
                 }
                 break;
         }
@@ -408,6 +421,7 @@ public class GameManager : MonoBehaviour
  * PreShot:
  *  Power Set Up -> shooting        [MatejaPower - Mateja needs to move to ground before set up is complete] [EthenPower - Drawing may need to be done first?]
  *  UI ball remaining pop up cleared
+ *  ** Ball-O-Tron Settled
  *  
  * Shooting:
  *  Ball Shot

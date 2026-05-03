@@ -6,29 +6,20 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 27/04/2026
+    Last Modified: 04/05/2026
 */
 public class PlayerControls : MonoBehaviour
 {
-    [HideInInspector] public bool m_ballInPlay = false; // TEMP
-    //[HideInInspector] public MagicPower m_power;
-
     [Header("Other Scripts")]
-    //public UIManager m_UIManager; // TEMP
-    public PegManager m_pegManager; // TEMP - get from game manager?
-    //public CameraZoom m_cameraZoom; // TEMP
-    //public BallTrajectory m_ballTrajectory; // TEMP
-    public PlayAreaBounds m_playAreaBounds;
     public GameManager m_gameManager;
+    public PegManager m_pegManager;
+    public PlayAreaBounds m_playAreaBounds;
 
     [Header("Ball")]
     public GameObject m_ballPrefab;
-    //public Transform m_playerProjectilesContainer; // TEMP
     public float m_ballLaunchSpeed;
-    //public byte m_startingBallCount = 10; // TEMP
     public float m_ballKillFloor = -7.0f;
     [HideInInspector] public GameObject m_ball = null;
-    //[HideInInspector] public int m_ballCount = 0; // TEMP
 
     [Header("Time Scale")]
     public float m_spedUpTimeScale = 5.0f;
@@ -36,35 +27,7 @@ public class PlayerControls : MonoBehaviour
     [HideInInspector] public float m_defaultTimeScale = 1.0f;
     [HideInInspector] float m_defaultDeltaTime = 0.02f;
 
-    /* // TEMP
-    public void RemoveProjectile(GameObject a_projectile)
-    {
-        // set the projectile to have no parent
-        a_projectile.transform.parent = null;
-        // destroy the projectile
-        Destroy(a_projectile);
-
-        // if the projectile count is now equal to 0
-        if (m_playerProjectilesContainer.childCount == 0)
-        {
-            // if the ball count is over 0
-            if (m_ballCount > 0)
-            {
-                // resolve the turn
-                ResolveTurn();
-            }
-            // if the player has run out of balls
-            else
-            {
-                // destroy the ball
-                Destroy(m_ball); // TEMP - investigate necessity
-                // tell the UI Manager that the level is over and the player failed
-                m_UIManager.LevelOver(false);
-            }
-        }
-    }
-    */
-
+    
     GameObject Shoot()
     {
         // switch the time scale back to default
@@ -86,21 +49,6 @@ public class PlayerControls : MonoBehaviour
         return Ball;
     }
 
-    /*
-    public void ResolveTurn()
-    {
-        // tell the camera to return to default in case it had moved while the ball was in play
-        m_cameraZoom.ReturnToDefault();
-        // tell the peg manager to resolve the turn, with the flag specifing whether a free ball can be gained if 0 pegs were hit
-        m_pegManager.ResolveTurn(/m_allow0PegFreeBall);
-        // tell the power to resolve the turn
-        m_power.ResolveTurn();
-
-        // set up the next turn
-        //TEMP SetUpTurn();
-    }
-    */
-
     public void ModifyTimeScale(float a_newTimeScale = -1.0f)
     {
         // set the time scale to the new value (use the default time scale if the value is below 0 or if no argument value has been provided)
@@ -111,27 +59,7 @@ public class PlayerControls : MonoBehaviour
 
     public void Reload()
     {
-        /*
-        // reset the ball count
-        m_gameManager.m_ballCount = m_startingBallCount; //TEMP
-
-        // reload the power if it exists
-        if (m_power != null)
-        {
-            m_power.Reload();
-        }
-		
-		// destroy the ball if one exists
-		if (m_ball != null)
-		{
-		    Destroy(m_ball);
-		}
-		*/
-		// reset the time scale
-		ModifyTimeScale();
-
-        // set up the turn
-        // TEMP SetUpTurn();
+        ModifyTimeScale();
     }
 
     void Awake()
@@ -139,32 +67,7 @@ public class PlayerControls : MonoBehaviour
         // initialise default time variables
         m_defaultTimeScale = Time.timeScale;
         m_defaultDeltaTime = Time.fixedDeltaTime;
-
-        // initialise the ball count
-        //m_ballCount = m_startingBallCount; // TEMP
-
-        // TEMP
-        // if the green peg power has not been set
-        //if (m_greenPegPower == null)
-        //{
-        //    // set it to the default power for the stage
-        //    SetGreenPegPower(m_pegManager.m_stages[GlobalSettings.m_currentStageID].m_defaultPowerID);
-        //}
-
-        // TEMP
-        //m_power.Initialize();
-
     }
-
-    //private void FixedUpdate()
-    //{
-    //    // if the ball is not currently in play and the ball trajectory line is currently active
-    //    if (!m_ballInPlay && m_ballTrajectory.enabled)
-    //    {
-    //        // draw a line to show the expected trajectory of the ball, using the speed at which the ball will be launched from the launcher
-    //        m_ballTrajectory.CreateTrajectoryLine(m_ballLaunchSpeed);
-    //    }
-    //}
 
     void Update()
     {
@@ -205,9 +108,6 @@ public class PlayerControls : MonoBehaviour
                     // shoot a ball
                     m_ball = Shoot();
                 }
-
-                // store that the ball is now in play
-                m_ballInPlay = true;
             }
         }
     }

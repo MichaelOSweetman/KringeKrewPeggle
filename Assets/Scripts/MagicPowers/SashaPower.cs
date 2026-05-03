@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 27/04/2026
+    Last Modified: 04/05/2026
 */
 public class SashaPower : MagicPower
 {
@@ -209,8 +209,8 @@ public class SashaPower : MagicPower
             m_UIArrow.texture = m_inactiveArrowTexture;
         }
 
-        // if the ball is in play and there are power charges
-        if (m_playerControls.m_ballInPlay && m_powerCharges > 0)
+        // if the game is in the mid shot state and there are power charges
+        if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
         {
             // increase the timer
             m_timer += Time.unscaledDeltaTime;

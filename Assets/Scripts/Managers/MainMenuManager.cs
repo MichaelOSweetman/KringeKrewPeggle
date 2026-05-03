@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 14/04/2025
+	Last Modified: 04/05/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -54,7 +54,7 @@ public class MainMenuManager : MonoBehaviour
     public string[] m_writtenNumbers;
 
     [Header("Other")]
-    public int m_GameplaySceneID = 0;
+    public int m_gameplaySceneID = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -211,7 +211,7 @@ public class MainMenuManager : MonoBehaviour
         GlobalSettings.m_adventureMode = a_adventure;
 
         // load the Gameplay scene
-        SceneManager.LoadSceneAsync(m_GameplaySceneID);
+        SceneManager.LoadSceneAsync(m_gameplaySceneID);
     }
 
     public void RandomLevel()

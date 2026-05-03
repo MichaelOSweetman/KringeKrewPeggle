@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 04/05/2026
 */
 public class KevinPower : MagicPower
 {
@@ -80,8 +80,8 @@ public class KevinPower : MagicPower
             HideSniperScope();
         }
 
-        // if the ball is in play and there are power charges
-        if (m_playerControls.m_ballInPlay && m_powerCharges > 0)
+        // if the game is in the mid shot state and there are power charges
+        if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
 		{
             // if the show sniper scope button has been pressed
             if (Input.GetButtonDown("Show Sniper Scope"))
