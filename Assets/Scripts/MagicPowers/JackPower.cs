@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: JackPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 11/05/2026
 */
 public class JackPower : MagicPower
 {
@@ -30,14 +30,21 @@ public class JackPower : MagicPower
 
     public override void SetUp()
 	{
-        // get the average of the scores of all the active pegs
-        m_communistPegScore = m_playerControls.m_pegManager.GetAverageActivePegScore();
+        // if the power should be set up this turn
+        if (m_setUpNextTurn)
+        {
+            // get the average of the scores of all the active pegs
+            m_communistPegScore = m_playerControls.m_pegManager.GetAverageActivePegScore();
 
-        // replace the score gained from these pegs with this average
-        m_playerControls.m_pegManager.m_baseBluePegScore = m_communistPegScore;
-        m_playerControls.m_pegManager.m_baseOrangePegScore = m_communistPegScore;
-        m_playerControls.m_pegManager.m_basePurplePegScore = m_communistPegScore;
-        m_playerControls.m_pegManager.m_baseGreenPegScore = m_communistPegScore;
+            // replace the score gained from these pegs with this average
+            m_playerControls.m_pegManager.m_baseBluePegScore = m_communistPegScore;
+            m_playerControls.m_pegManager.m_baseOrangePegScore = m_communistPegScore;
+            m_playerControls.m_pegManager.m_basePurplePegScore = m_communistPegScore;
+            m_playerControls.m_pegManager.m_baseGreenPegScore = m_communistPegScore;
+
+            // disable the set up power flag
+            m_setUpNextTurn = false;
+        }
 
         // store that the power is ready for the game to be in the shooting state
         m_powerState = GameManager.GameState.Shooting;
@@ -52,8 +59,8 @@ public class JackPower : MagicPower
             // if there are now 0 charges
             if (m_powerCharges == 0)
             {
-                // have the power resolve at the start of next turn
-                m_resolveNextTurn = true;
+                // have the power resolve at the end of turn
+                m_resolvePowerThisTurn = true;
             }
         }
 

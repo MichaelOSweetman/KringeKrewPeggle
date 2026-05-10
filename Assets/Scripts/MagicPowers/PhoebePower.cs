@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 11/05/2026
 */
 public class PhoebePower : MagicPower
 {
@@ -14,27 +14,33 @@ public class PhoebePower : MagicPower
 	List<Bocconcini> m_bocconcinis;
 
     public override void SetUp()
-	{
-        // set up the bocconcini list
-        m_bocconcinis = new List<Bocconcini>();
-
-        // loop for each peg in the current level
-        foreach (Peg peg in m_playerControls.m_pegManager.m_pegs)
+    {
+        // if the power should be set up this turn
+        if (m_setUpNextTurn)
         {
-            // if the peg is not set to null, it is active
-            if (peg != null)
+            // set up the bocconcini list
+            m_bocconcinis = new List<Bocconcini>();
+
+            // loop for each peg in the current level
+            foreach (Peg peg in m_playerControls.m_pegManager.m_pegs)
             {
-                // create a Bocconcini
-                GameObject bocconcini = Instantiate(m_bocconciniPrefab);
-                // set its parent to be the peg after creation so its scale isn't modified
-                bocconcini.transform.parent = peg.transform;
-                // position the bocconcini at the peg's position
-                bocconcini.transform.position = peg.transform.position;
-                // add it to the list of bocconcinis
-                m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
-                // have the bocconcini initialise so it can access its parent
-                m_bocconcinis[m_bocconcinis.Count - 1].Initialize();
+                // if the peg is not set to null, it is active
+                if (peg != null)
+                {
+                    // create a Bocconcini
+                    GameObject bocconcini = Instantiate(m_bocconciniPrefab);
+                    // set its parent to be the peg after creation so its scale isn't modified
+                    bocconcini.transform.parent = peg.transform;
+                    // position the bocconcini at the peg's position
+                    bocconcini.transform.position = peg.transform.position;
+                    // add it to the list of bocconcinis
+                    m_bocconcinis.Add(bocconcini.GetComponent<Bocconcini>());
+                    // have the bocconcini initialise so it can access its parent
+                    m_bocconcinis[m_bocconcinis.Count - 1].Initialize();
+                }
             }
+            // disable the set up power flag
+            m_setUpNextTurn = false;
         }
 
         // store that the power is ready for the game to be in the shooting state
@@ -50,8 +56,8 @@ public class PhoebePower : MagicPower
             // if there are now 0 charges
             if (m_powerCharges == 0)
             {
-                // have the power resolve at the start of next turn
-                m_resolveNextTurn = true;
+                // have the power resolve at the end of this turn
+                m_resolvePowerThisTurn = true;
             }
         }
 
@@ -74,6 +80,14 @@ public class PhoebePower : MagicPower
                     m_bocconcinis[i].CopyParentPegColor();
                 }
             }
+        }
+        // if the power should resolve this turn
+        else if (m_resolvePowerThisTurn)
+        {
+            // resolve the power
+            ResolvePower();
+            // disable the resolve power flag
+            m_resolvePowerThisTurn = false;
         }
 
         // store that the power is ready for the game to be in the pre shot state

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 04/05/2026
+	Last Modified: 11/05/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -218,16 +218,21 @@ public class PegManager : MonoBehaviour
 
     public bool ResolveTurn()
     {
-        // add the score gained in this shoot phase to the total score
-        AddShotScoreToTotal(m_currentShotScore * m_roundHitPegs);
-        // have the ui manager display the round score
-        m_uiManager.DisplayRoundScore(m_currentShotScore, m_roundHitPegs);
-        // have the UI manager make the Fever Meter flicker with between the old hit orange peg count and the current count
-        m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
-        // store the current amount of hit orange pegs as the amount hit at the start of the next round
-        m_roundStartHitOrangePegs = m_hitOrangePegs;
-        // reset the score trackers for the turn
-        ResetTurnScore();
+        // if score was gained this turn
+        if (m_currentShotScore > 0)
+        {
+            // add the score gained in this shoot phase to the total score
+            AddShotScoreToTotal(m_currentShotScore * m_roundHitPegs);
+            // have the ui manager display the round score
+            m_uiManager.DisplayRoundScore(m_currentShotScore, m_roundHitPegs);
+            // have the UI manager make the Fever Meter flicker with between the old hit orange peg count and the current count
+            m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
+            // store the current amount of hit orange pegs as the amount hit at the start of the next round
+            m_roundStartHitOrangePegs = m_hitOrangePegs;
+            // reset the score trackers for the turn
+            ResetTurnScore();
+        }
+
         // assign a random blue peg to be purple
         ReplacePurplePeg();
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: RoundScore.cs
     Summary: Manages the text display of the score gained in a round
     Creation Date: 29/12/2025
-    Last Modified: 05/01/2026
+    Last Modified: 11/05/2026
 */
 public class RoundScore : MonoBehaviour
 {
@@ -27,6 +27,11 @@ public class RoundScore : MonoBehaviour
     int m_score = 0;
     float m_lap = 0.0f;
     int m_increaseCount = 0;
+
+    public bool IsActive()
+    {
+        return m_text.enabled;
+    }
 
     public void Activate(int a_scoreUnit, int a_increaseFrequency)
     {

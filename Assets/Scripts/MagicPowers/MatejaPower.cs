@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 11/05/2026
 */
 public class MatejaPower : MagicPower
 {
@@ -40,11 +40,16 @@ public class MatejaPower : MagicPower
         CreateMateja();
 	}
 
-	public override void SetUp()
-	{
-        // create Mateja
-        CreateMateja();
-
+    public override void SetUp()
+    {
+        // if the power should be set up this turn
+        if (m_setUpNextTurn)
+        { 
+            // create Mateja
+            CreateMateja();
+            // disable the set up power flag
+            m_setUpNextTurn = false;
+        }
         // store that the power is ready for the game to be in the shooting state
         m_powerState = GameManager.GameState.Shooting;
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: BenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ben
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 11/05/2026
 */
 public class BenPower : MagicPower
 {
@@ -28,7 +28,7 @@ public class BenPower : MagicPower
         // add the charges
         ModifyPowerCharges(m_gainedPowerCharges);
         // ensure the power doesn't resolve at the end of this turn
-        m_resolveNextTurn = false;
+        m_resolvePowerThisTurn = false;
     }
 
 	public override bool OnShoot()
@@ -46,8 +46,8 @@ public class BenPower : MagicPower
         // if there are now 0 charges
         if (m_powerCharges == 0)
         {
-            // have the power resolve at the start of next turn
-            m_resolveNextTurn = true;
+            // have the power resolve at the end of this turn
+            m_resolvePowerThisTurn = true;
         }
 
         // create a copy of the Isaac prefab

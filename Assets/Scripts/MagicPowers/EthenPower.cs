@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 27/04/2026
+	Last Modified: 11/05/2026
 */
 public class EthenPower : MagicPower
 {
@@ -134,29 +134,42 @@ public class EthenPower : MagicPower
 
     public override void SetUp()
 	{
-        // set the UI elements required for drawing to be active
-        m_endDrawButton.SetActive(true);
-        m_clearButton.SetActive(true);
-        m_inkResourceBarBackground.SetActive(true);
+        // if the power should be set up this turn
+        if (m_setUpNextTurn)
+        {
+            // set the UI elements required for drawing to be active
+            m_endDrawButton.SetActive(true);
+            m_clearButton.SetActive(true);
+            m_inkResourceBarBackground.SetActive(true);
 
-        // reset the ink meter
-        m_ink = m_maxInk;
-        UpdateInkResourceBar();
+            // reset the ink meter
+            m_ink = m_maxInk;
+            UpdateInkResourceBar();
 
-        // disable the ball trajectory
-        m_gameManager.m_ballTrajectory.ShowLine(false);
+            // disable the ball trajectory
+            m_gameManager.m_ballTrajectory.ShowLine(false);
 
-        // turn off the launcher rotation component of the launcher
-        m_launcherRotation.enabled = false;
+            // turn off the launcher rotation component of the launcher
+            m_launcherRotation.enabled = false;
 
-        // disable player controls
-        m_playerControls.enabled = false;
+            // disable player controls
+            m_playerControls.enabled = false;
 
-        // put the player in drawing mode
-        m_drawing = true;
+            // put the player in drawing mode
+            m_drawing = true;
 
-        // initialise the previous mouse position variable
-        m_previousMousePosition = Input.mousePosition;
+            // initialise the previous mouse position variable
+            m_previousMousePosition = Input.mousePosition;
+
+            // disable the set up power flag
+            m_setUpNextTurn = false;
+        }
+        // if the power is not to be set up this turn
+        else
+        {
+            // store that the power is ready for the game to be in the shooting phase
+            m_powerState = GameManager.GameState.Shooting;
+        }
     }
 
     public override void ResolveTurn()

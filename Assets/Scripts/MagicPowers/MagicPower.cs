@@ -16,7 +16,7 @@ public abstract class MagicPower : MonoBehaviour
     [HideInInspector] public UIManager m_UIManager;
     [HideInInspector] public int m_powerCharges = 0;
 	[HideInInspector] public bool m_setUpNextTurn = false;
-	[HideInInspector] public bool m_resolveNextTurn = false;
+	[HideInInspector] public bool m_resolvePowerThisTurn = false;
 	[HideInInspector] public GameManager.GameState m_powerState;
 
     public void ModifyPowerCharges(int a_modifier)
@@ -43,7 +43,7 @@ public abstract class MagicPower : MonoBehaviour
     public virtual void Trigger(Vector3 a_greenPegPosition)
 	{
 		// if there are 0 power charges and the power was not about to be resolved (and therefore already active)
-		if (m_powerCharges == 0 && !m_resolveNextTurn)
+		if (m_powerCharges == 0 && !m_resolvePowerThisTurn)
 		{
 			// have the power set up next turn
 			m_setUpNextTurn = true;
@@ -53,7 +53,7 @@ public abstract class MagicPower : MonoBehaviour
 		ModifyPowerCharges(m_gainedPowerCharges);
 
         // ensure the power doesn't resolve at the end of this turn
-        m_resolveNextTurn = false;
+        m_resolvePowerThisTurn = false;
     }
 
 	public virtual void SetUp()
@@ -76,6 +76,15 @@ public abstract class MagicPower : MonoBehaviour
 
 	public virtual void ResolveTurn()
 	{
+		// if the power should resolve this turn
+		if (m_resolvePowerThisTurn)
+		{
+			// resolve the power
+			ResolvePower();
+			// disable the resolve power flag
+			m_resolvePowerThisTurn = false;
+		}
+
 		// store that the power is ready for the game to be in the pre shot state
 		m_powerState = GameManager.GameState.PreShot;
 	}

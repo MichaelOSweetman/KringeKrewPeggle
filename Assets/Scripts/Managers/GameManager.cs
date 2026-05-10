@@ -7,7 +7,7 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 04/05/2026
+    Last Modified: 11/05/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
     // if power doesn't need to be set up, skip its game state tracker straight to Shooting
     // Ethen Power may not need to disable playercontrols etc, with new Power State system
 
-    // powers need their set up and resolveturn functions run regardless of if they should be set up/ resolve next turn so their state trackers can progress
+    // should rename resolveturn or resolvepower - too easy to mix up, difference unclear
+    // save file should be managed here
 
     public void InitializeCharacter(int a_characterID = -1)
     {
@@ -202,24 +203,42 @@ public class GameManager : MonoBehaviour
 
     void LevelLost()
     {
-        // triggered when 0 projectiles remaining in mid shot phase and player has no balls remaining (Player Controls)
+        /// triggered when 0 projectiles remaining in mid shot phase and player has no balls remaining (Player Controls)
 
         // UIManager
         // disable peg launcher
-        // show try again screen
+        /// show try again screen
 
-
+        // have the UI Manager show the Try Again screen
+        m_UIManager.ShowTryAgainScreen();
+        // switch the game state to menu
+        m_gameState = GameState.Menu;
     }
 
     public void LevelWon()
     {
-        // triggered when ball enters victory buckets
+        /// triggered when ball enters victory buckets
 
         // UIManager
         // disable peg launcher
-        // update save file if new high score
-        // update top score text if and new high score
-        // show level complete screen
+        /// update save file if new high score
+        /// update top score text if and new high score
+        /// show level complete screen
+
+        // if the stored top score for this level is lower than or equal to the scored achieved
+        if (m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
+        {
+            // update the top score
+            m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
+
+            // have the update the top score text
+            m_UIManager.UpdateTopScoreText();
+        }
+
+        // have the UI Manager show the Level Complete screen
+        m_UIManager.ShowLevelCompleteScreen();
+        // switch the game state to menu
+        m_gameState = GameState.Menu;
     }
 
     public void ResetLevel()
@@ -275,20 +294,8 @@ public class GameManager : MonoBehaviour
         // reset the 0 peg free ball validity flag
         m_allow0PegFreeBall = true;
 
-        // if the power should be set up
-        if (m_magicPower.m_setUpNextTurn)
-        {
-            // set up the power
-            m_magicPower.SetUp();
-            // store that the power has been set up
-            m_magicPower.m_setUpNextTurn = false;
-        }
-        // TEMP
-        else
-        {
-            m_magicPower.m_powerState = GameState.Shooting;
-        }
-        // TEMP
+        // prompt the magic power to set up for the turn
+        m_magicPower.SetUp();
 
         // prompt the UI manager to display the set up shot phase info to the player
         m_UIManager.SetUpShot(m_ballCount);
@@ -332,21 +339,8 @@ public class GameManager : MonoBehaviour
         // reset turn score
         // replace purple peg
 
-        
-        // if the power should be resolved
-        if (m_magicPower.m_resolveNextTurn)
-        {
-            // resolve the power
-            m_magicPower.ResolvePower();
-            // store that the power has been resolved
-            m_magicPower.m_resolveNextTurn = false;
-        }
-        // TEMP
-        else
-        {
-            m_magicPower.m_powerState = GameState.PreShot;
-        }
-        // TEMP
+        // prompt the magic power to resolve for this shot
+        m_magicPower.ResolveTurn();
 
         // tell the camera to return to default in case it had moved while the ball was in play
         m_cameraZoom.ReturnToDefault();
@@ -373,10 +367,8 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (m_gameState == GameState.Shooting)
-        {
-            m_ballTrajectory.CreateTrajectoryLine(m_playerControls.m_ballLaunchSpeed);
-        }
+        // have the ball trajectory create the trajectory line
+        m_ballTrajectory.CreateTrajectoryLine(m_playerControls.m_ballLaunchSpeed);
     }
 
     // Update is called once per frame
@@ -386,8 +378,8 @@ public class GameManager : MonoBehaviour
         {
             // if the game state is Pre Shot
             case GameState.PreShot:
-                // if the magic power is ready to be in the Shooting state and the UI manager is clear of pop ups
-                if (m_magicPower.IsReady(GameState.Shooting) && m_UIManager.IsPopUpClear())
+                // if the magic power is ready to be in the Shooting state and the UI manager is clear
+                if (m_magicPower.IsReady(GameState.Shooting) && m_UIManager.IsClear())
                 {
                     // switch the game state to Shooting
                     m_gameState = GameState.Shooting;
@@ -395,8 +387,8 @@ public class GameManager : MonoBehaviour
                 break;
             // if the game state is Post Shot
             case GameState.PostShot:
-                // if the magic power is ready to be in the Pre Shot state, the peg manager has finished resolving, and the camera is in its default state
-                if (m_magicPower.IsReady(GameState.PreShot) && m_pegManager.ResolveComplete() && m_cameraZoom.CameraAtDefault())
+                // if the magic power is ready to be in the Pre Shot state, the peg manager has finished resolving the camera is in its default state and the UI manager is clear
+                if (m_magicPower.IsReady(GameState.PreShot) && m_pegManager.ResolveComplete() && m_cameraZoom.CameraAtDefault() && m_UIManager.IsClear())
                 {
                     // switch the game state to Pre Shot
                     m_gameState = GameState.PreShot;
@@ -433,4 +425,5 @@ public class GameManager : MonoBehaviour
  *  Power Resolved -> pre shot
  *  Camera Returned
  *  Hit Pegs Cleared
+ *  round score text cleared
  */

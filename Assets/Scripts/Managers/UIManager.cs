@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 04/05/2026
+    Last Modified: 11/05/2026
 */
 
 public class Flicker
@@ -251,6 +251,27 @@ public class UIManager : MonoBehaviour
         TogglePegLauncher(false);
     }
 
+    public void ShowLevelCompleteScreen()
+    {
+        // show the character select menu
+        m_levelComplete.SetActive(true);
+        // add this screen to the sub menu count
+        ++m_activeNonPauseSubMenus;
+        // disable the peg launcher
+        TogglePegLauncher(false);
+    }
+
+    public void ShowTryAgainScreen()
+    {
+        // show the character select menu
+        m_tryAgain.SetActive(true);
+        // add this screen to the sub menu count
+        ++m_activeNonPauseSubMenus;
+        // disable the peg launcher
+        TogglePegLauncher(false);
+    }
+
+
     /*
     public void LevelOver(bool a_won)
     {
@@ -459,10 +480,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public bool IsPopUpClear()
+    public bool IsClear()
     {
-        // return whether there are 0 active pop up texts
-        return m_popUpTextContainer.transform.childCount == 0;
+        // return whether the UI is clear of pop ups and the round score display
+        return m_popUpTextContainer.transform.childCount == 0 && !m_roundScore.IsActive();
     }
 
     public void DisplayPopUpText(TextFormat a_format, string a_text, Vector3 a_position, bool a_usePrefabOffset)
