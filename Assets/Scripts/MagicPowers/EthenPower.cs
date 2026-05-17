@@ -7,10 +7,11 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 11/05/2026
+	Last Modified: 18/05/2026
 */
 public class EthenPower : MagicPower
 {
+    public PegManager m_pegManager;
     public GameObject m_endDrawButtonPrefab;
     public GameObject m_clearButtonPrefab;
     public GameObject m_inkResourceBarPrefab;
@@ -31,6 +32,7 @@ public class EthenPower : MagicPower
     RectTransform m_inkResourceBar;
     float m_inkResourceBarMaxWidth = 0.0f;
     Vector3 m_previousMousePosition = Vector3.zero;
+    bool m_resolving = false;
 
     public void EndDrawButtonPressed()
     {
@@ -108,6 +110,8 @@ public class EthenPower : MagicPower
         m_launcherRotation = m_gameManager.m_UIManager.m_launcherRotation;
         // get access to the play area bounds through player controls
         m_playAreaBounds = m_playerControls.m_playAreaBounds;
+        // get access to the peg manager through the game manager
+        m_pegManager = m_gameManager.m_pegManager;
 
         // create an empty gameobject to store created lines and set its position to 0
         m_lines = new GameObject().transform;
@@ -174,11 +178,8 @@ public class EthenPower : MagicPower
 
     public override void ResolveTurn()
     {
-        // destroy any active lines
-        DestroyLines();
-
-        // store that the power is ready for the game to be in the pre shot state
-        m_powerState = GameManager.GameState.PreShot;
+        // store that the power is resolving
+        m_resolving = true;
     }
 
     public override void ResolvePower()
@@ -204,6 +205,9 @@ public class EthenPower : MagicPower
 
         // store that a line has not begun being drawn
         m_lineBegun = false;
+
+        // ensure that the resolving flag is disabled
+        m_resolving = false;
 
         // ensure that player controls is enabled
         m_playerControls.enabled = true;
@@ -289,6 +293,18 @@ public class EthenPower : MagicPower
 
             // store the mouse position for next frame
             m_previousMousePosition = Input.mousePosition;
+        }
+        // otherwise, if the power is ready to resolve and the pegmanager has finished resolving
+        else if (m_resolving && m_pegManager.ResolveComplete())
+        {
+            // destroy any active lines
+            DestroyLines();
+
+            // store that the power is ready for the game to be in the pre shot state
+            m_powerState = GameManager.GameState.PreShot;
+
+            // store that the power is no longer resolving
+            m_resolving = false;
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine.WSA;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 11/05/2026
+    Last Modified: 18/05/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
 
     // new Power UI container can be used to reload, clear all children from it - look into if could be used in magic power reload functions
     // perhaps better system than having UI manager instantiate power UI objects for magic power scripts, give power scripts the power UI container directly?
-    // look into kevin power scope overlay - how does it get set?
     // toggling peg launcher in UIManager is messy, if multiple pop up screens were open and one was closed, wouldn't the peg launcher be toggled back on despite screens still being present?
 
     // reset level should reopen the character select screen if in quick play
@@ -85,6 +84,9 @@ public class GameManager : MonoBehaviour
 
     // should rename resolveturn or resolvepower - too easy to mix up, difference unclear
     // save file should be managed here
+
+    // should benpower remove issac, tears and bombs on reload?
+    // kevin power - camera is never over ball
 
     public void InitializeCharacter(int a_characterID = -1)
     {

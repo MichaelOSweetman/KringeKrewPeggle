@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 04/05/2026
+	Last Modified: 18/05/2026
 */
 public class KevinPower : MagicPower
 {
@@ -29,7 +29,7 @@ public class KevinPower : MagicPower
     public override void Initialize()
     {
         // have the UI Manager create the scope overlay
-        m_UIManager.CreatePowerUIAsset(m_scopeOverlayPrefab);
+        m_scopeOverlay = m_UIManager.CreatePowerUIAsset(m_scopeOverlayPrefab);
 
         // give the sniper ball indicator access to player controls so it can access the ball
         m_scopeOverlay.transform.GetChild(0).GetComponent<RotateToBall>().m_playerControls = m_playerControls;
@@ -83,6 +83,10 @@ public class KevinPower : MagicPower
         // if the game is in the mid shot state and there are power charges
         if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
 		{
+            // TEMP
+            print(m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z)));
+            // TEMP
+
             // if the show sniper scope button has been pressed
             if (Input.GetButtonDown("Show Sniper Scope"))
             {
@@ -114,6 +118,8 @@ public class KevinPower : MagicPower
                 }
             }
         }
-        
+
+
+
     }
 }

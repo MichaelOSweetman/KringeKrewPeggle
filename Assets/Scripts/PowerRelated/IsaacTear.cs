@@ -6,7 +6,7 @@ using UnityEngine;
 File name: IsaacTear.cs
 Summary: Manages the collision and duration of a tear created by Isaac
 Creation Date: 03/06/2024
-Last Modified: 13/04/2026
+Last Modified: 18/05/2026
 */
 public class IsaacTear : MonoBehaviour
 {
@@ -29,8 +29,8 @@ public class IsaacTear : MonoBehaviour
         // if the tear has lasted its full duration
         if (m_timer >= m_duration)
         {
-            // destroy this tear
-            Destroy(gameObject);
+            // have the game manager destroy this tear
+            m_gameManager.RemoveProjectile(gameObject);
         }
     }
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 11/05/2026
+	Last Modified: 18/05/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -616,13 +616,6 @@ public class PegManager : MonoBehaviour
             // if the enough time has passed since the last peg was cleared from the queue
             if (m_clearHitPegQueueTimer >= m_clearHitPegDelay)
             {
-                // loop until the next peg has not been destroyed
-                while (m_hitPegs.Peek() == null)
-                {
-                    // remove this destroyed gameobject from the queue
-                    m_hitPegs.Dequeue();
-                }
-
                 // create a temporary audio source to play the peg remove sound at the position of the peg, using the sound effect volume
                 AudioSource.PlayClipAtPoint(m_pegRemoveSound, m_hitPegs.Peek().transform.position, GlobalSettings.m_soundEffectVolume);
 

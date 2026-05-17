@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 11/05/2026
+	Last Modified: 18/05/2026
 */
 public class MatejaPower : MagicPower
 {
@@ -87,8 +87,8 @@ public class MatejaPower : MagicPower
 
     public override bool IsReady(GameManager.GameState a_goalState)
     {
-        // if the goal state is Shooting
-        if (a_goalState == GameManager.GameState.Shooting)
+        // if the goal state is Shooting and there is an active Mateja
+        if (a_goalState == GameManager.GameState.Shooting && m_mateja != null)
         {
             // return true if the power's state is Shooting and the Mateja object is in its Ready state
             return (m_powerState == a_goalState && m_mateja.m_matejaState == Mateja.MatejaState.Ready);
