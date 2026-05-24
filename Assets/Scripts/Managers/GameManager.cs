@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.WSA;
 
 /*
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 18/05/2026
+    Last Modified: 25/05/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -59,7 +58,6 @@ public class GameManager : MonoBehaviour
     // Investigate potential issue with resolving power before setting up
     // Do consistency pass on terminology; shot vs turn vs phase
     // should ball trajectory be drawn on canvas like ball-o-tron?
-    // look into - using UnityEngine.WSA;
     // consider having the resolveturn ui manager function calls instead be the ui manager's own resolve shot function
     // probably call for player controls to reset its time scale rather than calling a whole reload function
 
@@ -80,13 +78,11 @@ public class GameManager : MonoBehaviour
     // time scale should be stored here but still modified in player controls?
 
     // if power doesn't need to be set up, skip its game state tracker straight to Shooting
-    // Ethen Power may not need to disable playercontrols etc, with new Power State system
 
     // should rename resolveturn or resolvepower - too easy to mix up, difference unclear
     // save file should be managed here
 
     // should benpower remove issac, tears and bombs on reload?
-    // kevin power - camera is never over ball
 
     public void InitializeCharacter(int a_characterID = -1)
     {
@@ -314,6 +310,9 @@ public class GameManager : MonoBehaviour
         // have the UI Manager update the ball count text
         m_UIManager.UpdateBallCountText();
 
+        // have the player controls reset the time scale
+        m_playerControls.ModifyTimeScale();
+
         // disable the ball trajectory
         m_ballTrajectory.ShowLine(false);
 
@@ -401,7 +400,7 @@ public class GameManager : MonoBehaviour
         }
 
         // TEMP
-        print(m_gameState);
+        //print(m_gameState);
     }
 }
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 18/05/2026
+	Last Modified: 25/05/2026
 */
 public class EthenPower : MagicPower
 {
@@ -43,9 +43,6 @@ public class EthenPower : MagicPower
 
         // take the player out of drawing mode
         m_drawing = false;
-
-        // enable player controls
-        m_playerControls.enabled = true;
 
         // turn on the launcher rotation component of the launcher
         m_launcherRotation.enabled = true;
@@ -156,9 +153,6 @@ public class EthenPower : MagicPower
             // turn off the launcher rotation component of the launcher
             m_launcherRotation.enabled = false;
 
-            // disable player controls
-            m_playerControls.enabled = false;
-
             // put the player in drawing mode
             m_drawing = true;
 
@@ -208,9 +202,6 @@ public class EthenPower : MagicPower
 
         // ensure that the resolving flag is disabled
         m_resolving = false;
-
-        // ensure that player controls is enabled
-        m_playerControls.enabled = true;
 
         // ensure the LookAtCursor component of the launcher is on
         m_launcherRotation.enabled = true;

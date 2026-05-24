@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 04/05/2026
+    Last Modified: 25/05/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -30,9 +30,6 @@ public class PlayerControls : MonoBehaviour
     
     GameObject Shoot()
     {
-        // switch the time scale back to default
-        ModifyTimeScale();
-
         // create a copy of the ball prefab and put it in the player projectiles container
         GameObject Ball = Instantiate(m_ballPrefab, m_gameManager.m_playerProjectilesContainer);
 		// set its position to be the same as this game object
@@ -71,21 +68,7 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
-        // TEMP
-        if (Input.GetButton("Speed Up Time"))
-        {
-            // change the timescale to the sped up timescale
-            ModifyTimeScale(m_spedUpTimeScale);
-        }
-        // otherwise, if the Speed Up Time button has been released
-        else if (Input.GetButtonUp("Speed Up Time"))
-        {
-            // reset the timescale
-            ModifyTimeScale();
-        }
-        // TEMP
-
-        // if the game state is mid shot
+        // if the game state is Mid Shot
         if (m_gameManager.m_gameState == GameManager.GameState.MidShot)
         {
             // if the ball exists, trigger the power's ball removal check function. If it does not override the default ball removal check and the ball has fallen low enough
@@ -96,17 +79,34 @@ public class PlayerControls : MonoBehaviour
             }
             
         }
-        // otherwise, if the game state is shooting
-        else if (m_gameManager.m_gameState == GameManager.GameState.Shooting)
+        // otherwise, if the game state is Shooting or Post Shot
+        else if (m_gameManager.m_gameState == GameManager.GameState.Shooting || m_gameManager.m_gameState == GameManager.GameState.PostShot)
         {
-            // if the Shoot / Use Power input has been detected and the cursor is within the play area
-            if (Input.GetButtonDown("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
+            // if the Speed Up Time input is active
+            if (Input.GetButtonDown("Speed Up Time"))
             {
-                // trigger the power's on shoot function. If it should not override the default shoot function
-                if (!m_gameManager.m_magicPower.OnShoot())
+                // change the timescale to the sped up timescale
+                ModifyTimeScale(m_spedUpTimeScale);
+            }
+            // if the Speed Up Time input is released
+            else if (Input.GetButtonUp("Speed Up Time"))
+            {
+                // reset the timescale
+                ModifyTimeScale();
+            }
+
+            // if the game state is shooting
+            if (m_gameManager.m_gameState == GameManager.GameState.Shooting)
+            {
+                // if the Shoot / Use Power input has been detected and the cursor is within the play area
+                if (Input.GetButtonDown("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
                 {
-                    // shoot a ball
-                    m_ball = Shoot();
+                    // trigger the power's on shoot function. If it should not override the default shoot function
+                    if (!m_gameManager.m_magicPower.OnShoot())
+                    {
+                        // shoot a ball
+                        m_ball = Shoot();
+                    }
                 }
             }
         }
