@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: RoundScore.cs
     Summary: Manages the text display of the score gained in a round
     Creation Date: 29/12/2025
-    Last Modified: 11/05/2026
+    Last Modified: 01/06/2026
 */
 public class RoundScore : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class RoundScore : MonoBehaviour
     public float m_increaseDuration = 0.4f;
     public float m_displayDuration = 1.0f;
     public float m_moveSpeed = 15.0f;
-    public float m_sizeLossRate = 0.05f;
+    public float m_sizeLossRate = 3.0f;
     public float m_maxValidSquaredDistanceFromTarget = 0.05f;
     Text m_text;
     Vector3 m_defaultPosition = Vector3.zero;
@@ -83,7 +83,7 @@ public class RoundScore : MonoBehaviour
         if (m_text.enabled)
         {
             // increase the timer
-            m_timer += Time.unscaledDeltaTime;
+            m_timer += Time.deltaTime;
 
             // if the score has not yet increased enough times to reach the total round score
             if (m_increaseCount < m_increaseFrequency)
@@ -113,9 +113,9 @@ public class RoundScore : MonoBehaviour
                 // display the score
                 m_text.text = m_score.ToString("#,#");
                 // move the round score text towards the level score text
-                transform.position = Vector3.MoveTowards(transform.position, m_levelScoreText.position, m_moveSpeed);
+                transform.position = Vector3.MoveTowards(transform.position, m_levelScoreText.position, m_moveSpeed * Time.deltaTime);
                 // reduce the scale of this gameobject
-                transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.zero, m_sizeLossRate);
+                transform.localScale = Vector3.MoveTowards(transform.localScale, Vector3.zero, m_sizeLossRate * Time.deltaTime);
 
                 // if the round score text is close enough to the level score text
                 if ((transform.position - m_levelScoreText.position).sqrMagnitude <= m_maxValidSquaredDistanceFromTarget)
