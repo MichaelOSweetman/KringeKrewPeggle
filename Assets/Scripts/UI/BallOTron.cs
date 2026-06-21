@@ -6,22 +6,30 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 15/06/2026
+    Last Modified: 21/06/2026
 */
 public class BallOTron : MonoBehaviour
 {
 
     /*
-        first added ball is instantly made a placeholder since it starts with 0 velocity
-        subsequent ball collision with ball group collider not being recognised
-        ball holder launch force doesn't interact well with having balls on it, experiement with bosy type
+        ball holder launch force doesn't interact well with having balls on it, experiement with body type
      */
+
+    /*
+        on launch
+        top two balls are disconnected
+        highest launches to top
+        second most does slight bounce then reconnects
+
+        this shouldn't be attached to a collider for deleting - no collider need exist, topball should be destroyed when high up enough
+    */
 
     public float m_spawnHeight = 4.5f;
     public float m_destroyHeight = 5.0f;
     public GameObject m_BallOTronBallPrefab;
     public Rigidbody2D m_ballHolder;
     public float m_lowestAllowedVerticalVelocity = 0.01f;
+    public float m_ballStationaryConversionDelay = 0.1f;
 
     Rigidbody2D m_ballGroupRigidbody;
     BoxCollider2D m_ballGroupCollider;
@@ -29,7 +37,7 @@ public class BallOTron : MonoBehaviour
     Stack<Rigidbody2D> m_balls;
     Rigidbody2D m_newBall;
     Collider2D m_newBallCollider;
-    bool m_newBallSpawnedThisFrame = false;
+    float m_ballStopTimer = 0.0f;
 
     enum LaunchState
     { 
@@ -39,19 +47,14 @@ public class BallOTron : MonoBehaviour
     }
     LaunchState m_launchState = LaunchState.Idle;
     public float m_holderDropDistance = 0.4f;
-    public float m_holderDropSpeed = 0.2f;
+    public float m_holderDropSpeed = 1.0f;
     public float m_holderLaunchForce = 100.0f;
     Vector3 m_holderDefaultPosition;
 
-
-    private void OnCollisionEnter2D(Collision2D a_collision)
+    public void LaunchBall()
     {
-        print(a_collision.gameObject);
-        // if the collision object is the spawned ball
-        if (a_collision.gameObject == m_newBall && Mathf.Abs(m_newBall.velocity.y) < m_lowestAllowedVerticalVelocity)
-        {
-            ConvertToPlaceholderBall();
-        }
+        // set the launch state to retracting
+        m_launchState = LaunchState.Retracting;
     }
 
     public void AddBall()
@@ -62,8 +65,6 @@ public class BallOTron : MonoBehaviour
         m_newBallCollider = m_newBall.GetComponent<Collider2D>();
         // position the ball at the spawn point
         m_newBall.transform.position = transform.position + Vector3.up * m_spawnHeight;
-        // store that the new ball has been spawned this frame
-        m_newBallSpawnedThisFrame = true;
     }
 
     void ResizeBallGroup()
@@ -82,7 +83,8 @@ public class BallOTron : MonoBehaviour
         // apply the collider scale
         m_ballGroupCollider.size = m_ballGroupColliderSize;
         // position the ball group to be on top of the ball holder
-        transform.position = m_ballHolder.transform.position + Vector3.up * (m_ballGroupColliderSize.y * 0.5f + m_ballHolder.transform.localScale.y * 0.5f);
+        //transform.position = m_ballHolder.transform.position + Vector3.up * (m_ballGroupColliderSize.y * 0.5f + m_ballHolder.transform.localScale.y * 0.5f);
+        m_ballGroupCollider.offset = Vector2.up * (0.5f * m_ballGroupCollider.size);
     }
 
     void ConvertToPlaceholderBall()
@@ -92,7 +94,7 @@ public class BallOTron : MonoBehaviour
         // disable the ball's collider
         m_newBallCollider.enabled = false;
         // position the ball on the top of the ball group
-        m_newBall.transform.position = transform.position + Vector3.up * (m_balls.Count * 0.5f/* + m_BallOTronBallPrefab.transform.localScale.y * 0.5f*/); // TEMP
+        m_newBall.transform.position = transform.position + Vector3.up * ((m_balls.Count + 0.5f) * m_newBall.transform.localScale.y);
         // make the ball a child of the ball group
         m_newBall.transform.parent = this.transform;
         // add the ball to the ball group stack
@@ -118,7 +120,6 @@ public class BallOTron : MonoBehaviour
         m_ballGroupRigidbody.isKinematic = true;
         // start with the ball group collider disabled
         m_ballGroupCollider.enabled = false;
-
         // store the default ball holder position
         m_holderDefaultPosition = m_ballHolder.transform.position;
     }
@@ -136,45 +137,76 @@ public class BallOTron : MonoBehaviour
             LaunchBall();
         }
 
+        // if the launch state is Launching
         if (m_launchState == LaunchState.Launching)
         {
+            // if the ball holder has returned to its default position
             if (m_ballHolder.transform.position.y >= m_holderDefaultPosition.y)
             {
+                // set the ball holder's position to its default position
                 m_ballHolder.transform.position = m_holderDefaultPosition;
+                // set the ball holder's velocity to 0
                 m_ballHolder.velocity = Vector3.zero;
+                // store that the launch state is now Idle
                 m_launchState = LaunchState.Idle;
+
+                // make the ball group a child of its original parent again
+                m_ballGroupRigidbody.transform.parent = m_ballHolder.transform.parent;
+                // set the ball group to no longer be kinematic
+                m_ballGroupRigidbody.isKinematic = false;
             }
         }
+        // otherwise, if the launch state is Retracting
         else if (m_launchState == LaunchState.Retracting)
         {
-            m_ballHolder.transform.position += Vector3.down * m_holderDropSpeed;
+            // move the ball holder down 
+            m_ballHolder.transform.position -= Vector3.up * m_holderDropSpeed * Time.unscaledDeltaTime;
 
+            // if the ball holder has moved down enough
             if (m_ballHolder.transform.position.y <= m_holderDefaultPosition.y - m_holderDropDistance)
             {
-                m_ballHolder.transform.position = m_holderDefaultPosition + Vector3.down * m_holderDropDistance;
+                // make the ball group a child of the ball holder
+                m_ballGroupRigidbody.transform.parent = m_ballHolder.transform;
+                // prevent the ball group from being affected by physics
+                m_ballGroupRigidbody.isKinematic = true;
+
+                // position the ball holder exactly at its designated drop height
+                m_ballHolder.transform.position = m_holderDefaultPosition - Vector3.up * m_holderDropDistance;
+                // apply an upwards impulse force to the ball holder
                 m_ballHolder.AddForce(Vector3.up * m_holderLaunchForce, ForceMode2D.Impulse);
+                // store that the launch state is now Launching
                 m_launchState = LaunchState.Launching;
             }
         }
 
-        print(m_launchState);
-
-        // if there are currently no balls in the stack, there is a new ball that wasn't spawned this frame and it has stopped falling (discard first frame of new ball life as it will have a velocity of 0)
-        if (m_balls.Count == 0 && m_newBall != null && !m_newBallSpawnedThisFrame && Mathf.Abs(m_newBall.velocity.y) < m_lowestAllowedVerticalVelocity)
+        // if there are currently no balls in the stack, there is a new ball and it has stopped falling
+        if (m_newBall != null && Mathf.Abs(m_newBall.velocity.y) < m_lowestAllowedVerticalVelocity)
         {
-            // convert the ball to a placeholder ball that is part of the main ball group
-            ConvertToPlaceholderBall();
+            // increase the timer
+            m_ballStopTimer += Time.unscaledDeltaTime;
+
+            // if the max time that the ball can be low velocity has been reached
+            if (m_ballStopTimer >= m_ballStationaryConversionDelay)
+            {
+                // convert the ball to a placeholder ball that is part of the main ball group
+                ConvertToPlaceholderBall();
+                // reset the timer
+                m_ballStopTimer = 0.0f;
+            }
+        }
+        // if the ball's velocity is high enough
+        else
+        {
+            // reest the timer
+            m_ballStopTimer = 0.0f;
         }
 
-        // reset the new ball spawned this frame flag
-        m_newBallSpawnedThisFrame = false;
+
+        // TEMP
+        //print(m_launchState);
     }
 
     // TEMP
-    public void LaunchBall()
-    {
-        m_launchState = LaunchState.Retracting;
-    }
 
     public void SetBallCount(int a_ballCount)
     {
@@ -295,17 +327,4 @@ public class BallOTron : MonoBehaviour
         }
     }
 }
-
-/*
-Need to fake the physics as Unity isn't accurate enough 
- 
-balls are connected as one cohesive unit
-
-on launch
-top two balls are disconnected
-highest launches to top
-second most does slight bounce then reconnects
-
-
-this shouldn't be attached to a collider for deleting - no collider need exist, topball should be destroyed when high up enough
 */
