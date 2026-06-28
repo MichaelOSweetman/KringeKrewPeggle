@@ -12848,15 +12848,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41e8d628f5a2264186f736e32b4bfb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BallOTronBallPrefab: {fileID: 3067063268403385163, guid: 84d771178e5b89a44b54d32bccae6d39, type: 3}
   m_spawnHeight: 4.5
   m_destroyHeight: 5
-  m_BallOTronBallPrefab: {fileID: 3067063268403385163, guid: 84d771178e5b89a44b54d32bccae6d39, type: 3}
-  m_ballHolder: {fileID: 1129996621}
   m_lowestAllowedVerticalVelocity: 0.01
   m_ballStationaryConversionDelay: 0.1
+  m_ballHolder: {fileID: 1129996621}
   m_holderDropDistance: 0.4
   m_holderDropSpeed: 1
   m_holderLaunchForce: 100
+  m_topBallLaunchForce: 10
+  m_secondBallLaunchForce: 3
 --- !u!1 &784442101
 GameObject:
   m_ObjectHideFlags: 0
@@ -30817,15 +30819,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41e8d628f5a2264186f736e32b4bfb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BallOTronBallPrefab: {fileID: 0}
   m_spawnHeight: -1
   m_destroyHeight: 5
-  m_BallOTronBallPrefab: {fileID: 0}
-  m_ballHolder: {fileID: 0}
   m_lowestAllowedVerticalVelocity: 0.01
   m_ballStationaryConversionDelay: 0.1
+  m_ballHolder: {fileID: 0}
   m_holderDropDistance: 0.4
   m_holderDropSpeed: 0.2
   m_holderLaunchForce: 100
+  m_topBallLaunchForce: 100
+  m_secondBallLaunchForce: 5
 --- !u!212 &1915451537
 SpriteRenderer:
   m_ObjectHideFlags: 0

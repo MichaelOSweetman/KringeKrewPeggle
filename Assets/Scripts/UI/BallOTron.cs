@@ -6,13 +6,14 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 21/06/2026
+    Last Modified: 29/06/2026
 */
 public class BallOTron : MonoBehaviour
 {
 
     /*
-        ball holder launch force doesn't interact well with having balls on it, experiement with body type
+        ball group falls if emptied
+        second ball from top not behaving as intended when launched
      */
 
     /*
@@ -24,37 +25,47 @@ public class BallOTron : MonoBehaviour
         this shouldn't be attached to a collider for deleting - no collider need exist, topball should be destroyed when high up enough
     */
 
+    enum LaunchState
+    {
+        Idle,
+        Retracting,
+        Launching
+    }
+
+    [Header("Ball Spawning")]
+    public GameObject m_BallOTronBallPrefab;
     public float m_spawnHeight = 4.5f;
     public float m_destroyHeight = 5.0f;
-    public GameObject m_BallOTronBallPrefab;
-    public Rigidbody2D m_ballHolder;
     public float m_lowestAllowedVerticalVelocity = 0.01f;
     public float m_ballStationaryConversionDelay = 0.1f;
+    float m_ballStopTimer = 0.0f;
 
+    [Header("Ball Launching")]
+    public Rigidbody2D m_ballHolder;
+    public float m_holderDropDistance = 0.4f;
+    public float m_holderDropSpeed = 1.0f;
+    public float m_holderLaunchForce = 100.0f;
+    public float m_topBallLaunchForce = 10.0f;
+    public float m_secondBallLaunchForce = 1.0f;
+    Vector3 m_holderDefaultPosition;
+    SpringJoint2D m_holderSpring;
+    LaunchState m_launchState = LaunchState.Idle;
+    Rigidbody2D m_launchedBall = null;
+
+    [Header("Ball Group")]
     Rigidbody2D m_ballGroupRigidbody;
     BoxCollider2D m_ballGroupCollider;
     Vector2 m_ballGroupColliderSize = Vector2.zero;
     Stack<Rigidbody2D> m_balls;
     Rigidbody2D m_newBall;
     Collider2D m_newBallCollider;
-    float m_ballStopTimer = 0.0f;
-
-    enum LaunchState
-    { 
-        Idle,
-        Retracting,
-        Launching
-    }
-    LaunchState m_launchState = LaunchState.Idle;
-    public float m_holderDropDistance = 0.4f;
-    public float m_holderDropSpeed = 1.0f;
-    public float m_holderLaunchForce = 100.0f;
-    Vector3 m_holderDefaultPosition;
 
     public void LaunchBall()
     {
         // set the launch state to retracting
         m_launchState = LaunchState.Retracting;
+        // disable the ball holder spring
+        m_holderSpring.enabled = false;
     }
 
     public void AddBall()
@@ -69,22 +80,33 @@ public class BallOTron : MonoBehaviour
 
     void ResizeBallGroup()
     {
-        // if the ball group collider is currently disabled but there are balls in the group
-        if (!m_ballGroupCollider.enabled && m_balls.Count > 0)
+        // if the ball group collider is enabled but there are 0 balls in the group
+        if (m_ballGroupCollider.enabled && m_balls.Count == 0)
         {
-            // enable the collider
-            m_ballGroupCollider.enabled = true;
-            // enable the ball group physics
-            m_ballGroupRigidbody.isKinematic = false;
+            // disable the collider
+            m_ballGroupCollider.enabled = false;
+            // disable the ball group physics
+            m_ballGroupRigidbody.isKinematic = true;
         }
+        // otherwise if the ball group collider is disabled, or if there is more than 1 ball in the group
+        else
+        {
+            // if the ball group collider is currently disabled but there are balls in the group
+            if (!m_ballGroupCollider.enabled && m_balls.Count > 0)
+            {
+                // enable the collider
+                m_ballGroupCollider.enabled = true;
+                // enable the ball group physics
+                m_ballGroupRigidbody.isKinematic = false;
+            }
 
-        // scale the collider size to the total height of each of the balls in the ball stack
-        m_ballGroupColliderSize.y = m_BallOTronBallPrefab.transform.localScale.y * m_balls.Count;
-        // apply the collider scale
-        m_ballGroupCollider.size = m_ballGroupColliderSize;
-        // position the ball group to be on top of the ball holder
-        //transform.position = m_ballHolder.transform.position + Vector3.up * (m_ballGroupColliderSize.y * 0.5f + m_ballHolder.transform.localScale.y * 0.5f);
-        m_ballGroupCollider.offset = Vector2.up * (0.5f * m_ballGroupCollider.size);
+            // scale the collider size to the total height of each of the balls in the ball stack
+            m_ballGroupColliderSize.y = m_BallOTronBallPrefab.transform.localScale.y * m_balls.Count;
+            // apply the collider scale
+            m_ballGroupCollider.size = m_ballGroupColliderSize;
+            // position the ball group to be on top of the ball holder
+            m_ballGroupCollider.offset = Vector2.up * (0.5f * m_ballGroupCollider.size);
+        }
     }
 
     void ConvertToPlaceholderBall()
@@ -96,7 +118,7 @@ public class BallOTron : MonoBehaviour
         // position the ball on the top of the ball group
         m_newBall.transform.position = transform.position + Vector3.up * ((m_balls.Count + 0.5f) * m_newBall.transform.localScale.y);
         // make the ball a child of the ball group
-        m_newBall.transform.parent = this.transform;
+        m_newBall.transform.parent = transform;
         // add the ball to the ball group stack
         m_balls.Push(m_newBall);
         // stop storing this ball as the new ball
@@ -122,6 +144,8 @@ public class BallOTron : MonoBehaviour
         m_ballGroupCollider.enabled = false;
         // store the default ball holder position
         m_holderDefaultPosition = m_ballHolder.transform.position;
+        // get the spring component from the ball holder
+        m_holderSpring = m_ballHolder.GetComponent<SpringJoint2D>();
     }
 
     // Update is called once per frame
@@ -135,6 +159,13 @@ public class BallOTron : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.L))
         {
             LaunchBall();
+        }
+
+        // if there is a launched ball and it has surpassed the destroy height
+        if (m_launchedBall != null && m_launchedBall.transform.position.y > m_destroyHeight)
+        {
+            // destroy the launched ball
+            Destroy(m_launchedBall.gameObject);
         }
 
         // if the launch state is Launching
@@ -152,8 +183,16 @@ public class BallOTron : MonoBehaviour
 
                 // make the ball group a child of its original parent again
                 m_ballGroupRigidbody.transform.parent = m_ballHolder.transform.parent;
-                // set the ball group to no longer be kinematic
-                m_ballGroupRigidbody.isKinematic = false;
+
+                // if there is still at least one ball in the ball group
+                if (m_balls.Count > 0)
+                {
+                    // set the ball group to be affected by physics again
+                    m_ballGroupRigidbody.isKinematic = false;
+                }
+
+                // enable the ball holder spring
+                m_holderSpring.enabled = true;
             }
         }
         // otherwise, if the launch state is Retracting
@@ -165,8 +204,38 @@ public class BallOTron : MonoBehaviour
             // if the ball holder has moved down enough
             if (m_ballHolder.transform.position.y <= m_holderDefaultPosition.y - m_holderDropDistance)
             {
+                // pop the top ball from the balls stack
+                m_launchedBall = m_balls.Pop();
+                // make the ball affected by physics
+                m_launchedBall.isKinematic = false;
+                // make the ball a child of the Ball-O-Tron rather than the ball group
+                m_launchedBall.transform.parent = transform.parent;
+                // apply an upwards impulse force to the top ball
+                m_launchedBall.AddForce(Vector3.up * m_topBallLaunchForce, ForceMode2D.Impulse);
+
+                // if there is a second ball
+                if (m_balls.Count > 0)
+                {
+                    // store the second ball as a new ball for the purposes of returning it to the ball stack
+                    m_newBall = m_balls.Pop();
+                    // make the ball affected by physics
+                    m_newBall.isKinematic = false;
+                    // get the balls collider
+                    m_newBallCollider = m_newBall.GetComponent<Collider2D>();
+                    // enable the balls collider
+                    m_newBallCollider.enabled = true;
+                    // make the ball a child of the Ball-O-Tron rather than the ball group
+                    m_launchedBall.transform.parent = transform.parent;
+                    // apply an upwards impulse force to the top ball
+                    m_launchedBall.AddForce(Vector3.up * m_secondBallLaunchForce, ForceMode2D.Impulse);
+                }
+
+                // resize the ball group to correspond to the new ball count
+                ResizeBallGroup();
+
                 // make the ball group a child of the ball holder
                 m_ballGroupRigidbody.transform.parent = m_ballHolder.transform;
+
                 // prevent the ball group from being affected by physics
                 m_ballGroupRigidbody.isKinematic = true;
 
@@ -174,12 +243,13 @@ public class BallOTron : MonoBehaviour
                 m_ballHolder.transform.position = m_holderDefaultPosition - Vector3.up * m_holderDropDistance;
                 // apply an upwards impulse force to the ball holder
                 m_ballHolder.AddForce(Vector3.up * m_holderLaunchForce, ForceMode2D.Impulse);
+
                 // store that the launch state is now Launching
                 m_launchState = LaunchState.Launching;
             }
         }
 
-        // if there are currently no balls in the stack, there is a new ball and it has stopped falling
+        // if there is a new ball and it has stopped falling
         if (m_newBall != null && Mathf.Abs(m_newBall.velocity.y) < m_lowestAllowedVerticalVelocity)
         {
             // increase the timer
@@ -197,7 +267,7 @@ public class BallOTron : MonoBehaviour
         // if the ball's velocity is high enough
         else
         {
-            // reest the timer
+            // reset the timer
             m_ballStopTimer = 0.0f;
         }
 
