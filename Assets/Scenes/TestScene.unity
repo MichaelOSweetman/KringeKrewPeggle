@@ -12703,6 +12703,7 @@ MonoBehaviour:
   m_holderLaunchForce: 10
   m_topBallLaunchForce: 3
   m_secondBallLaunchForce: 0.3
+  m_finalBallMass: 1.15
 --- !u!1 &784442101
 GameObject:
   m_ObjectHideFlags: 0
