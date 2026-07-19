@@ -7,21 +7,22 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 11/05/2026
+	Last Modified: 20/07/2026
 */
 public class SweetsPower : MagicPower
 {
+	public Texture m_hillsideOverlay;
+	Rigidbody2D m_ball;
 	MoveToPoints m_bucket;
 	GameObject m_victoryBuckets;
 	GameObject m_topWall;
 	LauncherRotation m_launcherRotation;
 	RawImage m_gameOverlay;
 	Texture m_defaultOverlay;
-	public Texture m_hillsideOverlay;
 
 	void ToggleHillside()
 	{
-		// flip the bucket around the x axis
+		// flip the bucket around the z axis
 		m_bucket.transform.position = new Vector3(m_bucket.transform.position.x, -m_bucket.transform.position.y);
 		m_bucket.transform.rotation = Quaternion.Euler(m_bucket.transform.rotation.eulerAngles.x, m_bucket.transform.rotation.eulerAngles.y, m_bucket.transform.rotation.eulerAngles.z + 180.0f);
 
@@ -30,29 +31,32 @@ public class SweetsPower : MagicPower
 		m_bucket.m_secondPosition.y *= -1.0f;
 		m_bucket.m_targetPosition.y *= -1.0f;
 
-		// flip the victory buckets around the x axis
+		// flip the victory buckets around the z axis
 		m_victoryBuckets.transform.position = new Vector3(m_victoryBuckets.transform.position.x, -m_victoryBuckets.transform.position.y);
 		m_victoryBuckets.transform.rotation = Quaternion.Euler(m_victoryBuckets.transform.rotation.eulerAngles.x, m_victoryBuckets.transform.rotation.eulerAngles.y, m_victoryBuckets.transform.rotation.eulerAngles.z + 180.0f);
 
-        // flip the Top Wall around the x axis
+        // flip the Top Wall around the z axis
         m_topWall.transform.position = new Vector3(m_topWall.transform.position.x, -m_topWall.transform.position.y);
         m_topWall.transform.rotation = Quaternion.Euler(m_topWall.transform.rotation.eulerAngles.x, m_topWall.transform.rotation.eulerAngles.y, m_topWall.transform.rotation.eulerAngles.z + 180.0f);
 		
-		// flip the launcher around the x axis
+		// flip the launcher around the z axis
 		m_launcherRotation.transform.parent.rotation = Quaternion.Euler(m_launcherRotation.transform.parent.rotation.eulerAngles.x, m_launcherRotation.transform.parent.rotation.eulerAngles.y, m_launcherRotation.transform.parent.rotation.eulerAngles.z + 180.0f);
 
 		// invert the rotation center of the launcher rotation component, keeping it within the range of 0° and 360°
 		m_launcherRotation.m_validRotationCentre = (m_launcherRotation.m_validRotationCentre < 180.0f) ? m_launcherRotation.m_validRotationCentre + 180.0f : m_launcherRotation.m_validRotationCentre - 180.0f;
 
-        // swap the texture of the game overlay
-        m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
+		// swap the texture of the game overlay
+		m_gameOverlay.texture = (m_gameOverlay.texture == m_defaultOverlay) ? m_hillsideOverlay : m_defaultOverlay;
 
-		// invert gravity
-		Physics2D.gravity *= -1;
+		// invert the effect of gravity on the ball
+		m_ball.gravityScale *= -1.0f;
 	}
 
 	public override void Initialize()
 	{
+		// get access to the rigidbody component of the ball via the game manager and player controls 
+		m_ball = m_gameManager.m_playerControls.m_ballPrefab.GetComponent<Rigidbody2D>();
+
 		// get access to the peg manager through the game manager and use it to access the bucket's MoveToPoints component and the victory buckets
         m_bucket = m_gameManager.m_pegManager.m_bucket.GetComponent<MoveToPoints>();
 		m_victoryBuckets = m_gameManager.m_pegManager.m_victoryBuckets;

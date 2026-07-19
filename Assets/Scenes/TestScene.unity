@@ -2732,8 +2732,8 @@ MonoBehaviour:
   m_uiManager: {fileID: 241605737}
   m_characterPortrait: {fileID: 1335586195}
   m_speakerText: {fileID: 555320079}
-  m_generationSpeed: 0.05
-  m_generateEachMessageOverSameDuration: 1
+  m_generationSpeed: 0.03
+  m_generateEachMessageOverSameDuration: 0
   m_characters:
   - m_title: Isaac
     m_expressions:
@@ -3577,7 +3577,7 @@ MonoBehaviour:
   m_gameOverlay: {fileID: 1636977273}
   m_ballCountWarningThreshold: 3
   m_powerUIContainer: {fileID: 770584478}
-  m_mainMenuSceneID: 1
+  m_mainMenuSceneID: 0
 --- !u!114 &241605738
 MonoBehaviour:
   m_ObjectHideFlags: 0

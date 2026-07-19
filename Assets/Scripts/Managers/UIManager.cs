@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 11/05/2026
+    Last Modified: 20/07/2026
 */
 
 public class Flicker
@@ -202,7 +202,7 @@ public class UIManager : MonoBehaviour
     public int m_ballCountWarningThreshold = 3;
     public Transform m_powerUIContainer;
     // TEMP put in category
-    public int m_mainMenuSceneID = 1;
+    public int m_mainMenuSceneID = 0;
 
     public GameObject LoadCharacter(GameObject a_characterPrefab)
     {

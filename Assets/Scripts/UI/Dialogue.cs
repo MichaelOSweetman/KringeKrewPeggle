@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 23/02/2026
+    Last Modified: 20/07/2026
 */
 public class Dialogue : MonoBehaviour
 {
@@ -66,7 +66,7 @@ public class Dialogue : MonoBehaviour
         m_characterIndex = 0;
 
         // determine the delay between characters appearing depending on if m_generationSpeed should represent the time for the full message to appear or each character
-        m_letterDelay = (m_generateEachMessageOverSameDuration) ? m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length / m_generationSpeed : m_generationSpeed;
+        m_letterDelay = (m_generateEachMessageOverSameDuration) ? m_generationSpeed / m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length : m_generationSpeed;
 
         // update the speaker text
         m_speakerText.text = m_characters[m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_characterID].m_title;
@@ -79,9 +79,6 @@ public class Dialogue : MonoBehaviour
     {
 		// get the text component on this textbox
 		m_dialogueTextBox = GetComponent<Text>();
-
-		// determine the delay between letters appearing depending on if m_generationSpeed should represent the time for the full message to appear or each character
-		m_letterDelay = (m_generateEachMessageOverSameDuration) ? m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length / m_generationSpeed : m_generationSpeed;
 	}
 
     // Update is called once per frame
@@ -91,7 +88,7 @@ public class Dialogue : MonoBehaviour
 		if (m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length > 0 && m_dialogueTextBox.text.Length < m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length)
 		{
 			// update the timer
-			m_timer += Time.fixedDeltaTime;
+			m_timer += Time.unscaledDeltaTime;
 			
 			// if enough time has passed
 			if (m_timer >= m_letterDelay)
