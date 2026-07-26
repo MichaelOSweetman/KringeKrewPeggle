@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 20/07/2026
+	Last Modified: 27/07/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -126,8 +126,8 @@ public class SweetsPower : MagicPower
 
     public override void Reload()
 	{
-		// if the power has flipped gravity to be positive
-		if (Physics2D.gravity.y > 0)
+		// if the power has flipped the effect of gravity on the ball
+		if (m_ball.gravityScale < 0.0f)
 		{
 			// flip the bucket, launcher and gravity back to default positions
 			ToggleHillside();

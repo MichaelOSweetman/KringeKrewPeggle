@@ -7,10 +7,11 @@ using UnityEngine.UI;
     File name: RoundScore.cs
     Summary: Manages the text display of the score gained in a round
     Creation Date: 29/12/2025
-    Last Modified: 01/06/2026
+    Last Modified: 27/07/2026
 */
 public class RoundScore : MonoBehaviour
 {
+    public PegManager m_pegManager;
     public Transform m_levelScoreText;
     public float m_openingDelay = 1.0f;
     public float m_increaseDuration = 0.4f;
@@ -122,6 +123,8 @@ public class RoundScore : MonoBehaviour
                 {
                     // disable the text
                     m_text.enabled = false;
+                    // prompt the peg manager to add the score to the total
+                    m_pegManager.AddShotScoreToTotal(m_score);
                 }
             }
         }

@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: LevelManager.cs
 	Summary: Manages the loading of specific levels and stages of the game
 	Creation Date: 27/04/2025
-	Last Modified: 06/07/2026
+	Last Modified: 27/07/2026
 */
 public class LevelManager : MonoBehaviour
 {
@@ -80,6 +80,9 @@ public class LevelManager : MonoBehaviour
         // make the current level active
         m_stages[a_stageID].m_levels[a_levelID].m_level.SetActive(true);
 
+        // have the game manager reset for the new level
+        m_gameManager.ResetLevel();
+
         // if the game is in adventure mode
         if (GlobalSettings.m_adventureMode)
         {
@@ -105,6 +108,9 @@ public class LevelManager : MonoBehaviour
 
         // have the UI Manager update the top score text
         m_uiManager.UpdateTopScoreText();
+
+        // have the UI Manager clear the screen of pop up texts
+        m_uiManager.DestroyPopUpTexts();
 
         // load the pegs of the level
         m_pegManager.LoadLevel(m_stages[a_stageID].m_levels[a_levelID].m_level.transform);

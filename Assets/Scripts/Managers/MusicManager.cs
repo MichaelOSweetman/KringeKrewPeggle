@@ -6,7 +6,7 @@ using UnityEngine;
     File name: MusicManager.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 09/03/2026
+    Last Modified: 27/07/2026
 */
 public class MusicManager : MonoBehaviour
 {
@@ -98,11 +98,20 @@ public class MusicManager : MonoBehaviour
             m_songIDs.Add(i);
         }
 
+        // initialise an integer variable to store random indices
+        int randomIndex = 0;
+
         // loop for each song
         for (int i = 0; i < m_songs.Count; ++i)
         {
-            // get a random index between of the song ID list
-            int randomIndex = Random.Range(0, m_songIDs.Count - 1);
+            do
+            {
+                // get a random index between of the song ID list
+                randomIndex = Random.Range(0, m_songIDs.Count - 1);
+            }
+            // repeat the random index generation if this will be the first song in the playlist and the song ID selected was for the song that had previously been playing
+            while (i == 0 && m_songs[randomIndex] == m_playlistSource.clip);
+
             // add the songID at this index to the playlist
             m_playlist.Enqueue(m_songIDs[randomIndex]);
             // remove this song ID from the song ID list

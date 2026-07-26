@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 20/07/2026
+    Last Modified: 27/07/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -398,9 +398,6 @@ public class GameManager : MonoBehaviour
                 }
                 break;
         }
-
-        // TEMP
-        print(m_gameState + " MP: " + m_magicPower.IsReady(GameState.Shooting) + " | UI: " + m_UIManager.IsClear());
     }
 }
 

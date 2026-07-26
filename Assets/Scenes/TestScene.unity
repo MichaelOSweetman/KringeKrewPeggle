@@ -11212,6 +11212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eaef7642a23d294993675bfc0e8d916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_pegManager: {fileID: 2117815010}
   m_levelScoreText: {fileID: 423325513}
   m_openingDelay: 1
   m_increaseDuration: 0.4
