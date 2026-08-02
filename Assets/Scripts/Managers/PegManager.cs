@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 27/07/2026
+	Last Modified: 03/08/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -77,6 +77,7 @@ public class PegManager : MonoBehaviour
     public AudioClip m_pegRemoveSound;
     int m_pegHitPitchIndex = 0;
 
+    // TEMP Unsorted
     [HideInInspector] public Transform m_currentPegContainer;
     [HideInInspector] public List<Peg> m_pegs;
     [HideInInspector] public Queue<GameObject> m_hitPegs;
@@ -86,6 +87,8 @@ public class PegManager : MonoBehaviour
     public float m_clearHitPegDelay = 0.25f;
     bool m_clearHitPegQueue = false;
     float m_clearHitPegQueueTimer = 0.0f;
+    public float m_maxDelaySincePegHit = 5.0f;
+    float m_pegDelayTimer = 0.0f;
 
     void SetPegType(Peg a_peg, PegType a_pegType, bool a_hit)
     {
@@ -227,6 +230,8 @@ public class PegManager : MonoBehaviour
             m_uiManager.FlickerFeverMeter(m_roundStartHitOrangePegs, m_hitOrangePegs);
             // store the current amount of hit orange pegs as the amount hit at the start of the next round
             m_roundStartHitOrangePegs = m_hitOrangePegs;
+            // reset the peg delay timer
+            m_pegDelayTimer = 0.0f;
             // reset the score trackers for the turn
             ResetTurnScore();
         }
@@ -307,7 +312,6 @@ public class PegManager : MonoBehaviour
             // set the peg's colour to the hit version of its colour
             SetPegType(m_pegs[a_pegID], m_pegs[a_pegID].m_pegType, true);
 
-
             // determine the points gained from hitting this peg with the current score multiplier
             switch (m_pegs[a_pegID].m_pegType)
             {
@@ -369,7 +373,7 @@ public class PegManager : MonoBehaviour
                     // update the fever meter
                     m_uiManager.UpdateFeverMeter(m_hitOrangePegs);
                     // TEMP
-                    Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" + m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
+                    //Debug.Log("Orange Hits: " + m_hitOrangePegs + " | " + "x" + m_scoreMultipliers[m_scoreMultiplierIndex] + " | " + "^ @" + m_multiplierIncreaseThresholds[m_scoreMultiplierIndex]);
                     break;
                 case PegType.Purple:
                     m_hitPegScore = m_basePurplePegScore * m_scoreMultipliers[m_scoreMultiplierIndex];
@@ -414,6 +418,9 @@ public class PegManager : MonoBehaviour
             // update the score for this shoot phase with the score gained from the hit peg
             UpdatePhaseScore(m_hitPegScore);
 
+            // reset the peg delay timer
+            m_pegDelayTimer = 0.0f;
+
             // set the value in this pegs position of the peg array to null to indicate it is no longer active
             m_pegs[a_pegID] = null;
         }
@@ -426,6 +433,8 @@ public class PegManager : MonoBehaviour
         {
             // set the clear hit peg queue flag to true so the queue starts emptying
             m_clearHitPegQueue = true;
+            // reset the peg delay timer
+            m_pegDelayTimer = 0.0f;
             // return true, as there were pegs to clear
             return true;
         }
@@ -599,6 +608,20 @@ public class PegManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // if the at least one peg has been hit this shot
+        if (m_roundHitPegs > 0)
+        {
+            // increase the timer
+            m_pegDelayTimer += Time.deltaTime;
+
+            // if the enough time has elapsed since a peg was last hit
+            if (m_pegDelayTimer >= m_maxDelaySincePegHit)
+            {
+                // clear the hit pegs
+                ClearHitPegs();
+            }
+        }
+
         // if the hit peg queue should be cleared
         if (m_clearHitPegQueue)
         {

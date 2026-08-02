@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 20/07/2026
+    Last Modified: 02/08/2026
 */
 public class Dialogue : MonoBehaviour
 {
@@ -44,6 +44,31 @@ public class Dialogue : MonoBehaviour
 	int m_messageIndex = 0;
 	int m_characterIndex = 0;
 	
+	public void ProgressDialogue()
+	{
+		// if the message isn't finished
+		if (m_dialogueTextBox.text.Length < m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length)
+		{
+			// instantly complete the message
+			m_dialogueTextBox.text = m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message;
+		}
+		// otherwise, if there are no more messages to display
+		else if (m_messageIndex == m_dialogueSets[m_dialogueIndex].m_messages.Length - 1)
+		{
+			// have the ui manager close this dialogue screen
+			m_uiManager.CloseDialogueScreen();
+		}
+		// otherwise, if there are more messages to display and the current message is finished
+		else
+		{
+			// get the next message
+			++m_messageIndex;
+			// reset the dialogue box for the next message
+			ResetForNewMessage();
+
+		}
+	}
+
 	public void Activate(int a_dialogueIndex)
 	{
 		// show the dialogue screen
@@ -99,32 +124,6 @@ public class Dialogue : MonoBehaviour
 				m_dialogueTextBox.text += m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message[m_characterIndex];
 				++m_characterIndex;
 			}
-		}
-		
-		// if the player presses the Shoot / Use Power button
-		if (Input.GetButtonDown("Shoot / Use Power"))
-		{
-			// if the message isn't finished
-			if (m_dialogueTextBox.text.Length < m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message.Length)
-			{
-				// instantly complete the message
-				m_dialogueTextBox.text = m_dialogueSets[m_dialogueIndex].m_messages[m_messageIndex].m_message;
-			}
-			// otherwise, if there are no more messages to display
-			else if (m_messageIndex == m_dialogueSets[m_dialogueIndex].m_messages.Length - 1)
-			{
-				// have the ui manager close this dialogue screen
-				m_uiManager.CloseDialogueScreen();
-			}
-			// otherwise, if there are more messages to display and the current message is finished
-			else
-			{
-                // get the next message
-                ++m_messageIndex;
-				// reset the dialogue box for the next message
-				ResetForNewMessage();
-
-            }
 		}
     }
 }

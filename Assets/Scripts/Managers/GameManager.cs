@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 27/07/2026
+    Last Modified: 03/08/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
     public void InitializeCharacter(int a_characterID = -1)
     {
         // determine the new character ID
-        int newCharacterID = 0;
+        int newCharacterID = -3;
 
         // if the argument ID is -1
         if (a_characterID == -1)

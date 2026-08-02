@@ -6,7 +6,7 @@ using UnityEngine;
     File name: MusicManager.cs
     Summary: Controls the music being played throughout the game
     Creation Date: 25/08/2025
-    Last Modified: 27/07/2026
+    Last Modified: 03/08/2026
 */
 public class MusicManager : MonoBehaviour
 {
@@ -131,13 +131,13 @@ public class MusicManager : MonoBehaviour
         // if two songs are presently fading from one to another
         if (m_fading)
         {
-            // stop the fade prematurely, updating the volume of the audio sources as part of the process
-            SwitchToPlaylist();
+            // have the timer fully elapse so the fade is resolved prematurely, updating the audio in the process
+            m_fadeTimer += m_fadeDuration;
         }
         // if fading is not currently occuring
         else
         {
-            // update both audio source volumes with the gloval settings stored music volume
+            // update both audio source volumes with the global settings stored music volume
             m_playlistSource.volume = m_secondarySource.volume = GlobalSettings.m_musicVolume;
         }
     }
@@ -193,6 +193,8 @@ public class MusicManager : MonoBehaviour
                 {
                     // store that the audio sources are not fading from one to the other
                     m_fading = false;
+                    // pause the playlist audio source
+                    m_playlistSource.Pause();
                     // ensure both audio sources are set to the correct volume
                     m_playlistSource.volume = m_secondarySource.volume = GlobalSettings.m_musicVolume;
                 }

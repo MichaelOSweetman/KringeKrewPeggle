@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 20/07/2026
+    Last Modified: 02/08/2026
 */
 
 public class Flicker
@@ -306,6 +306,12 @@ public class UIManager : MonoBehaviour
         ++m_activeNonPauseSubMenus;
     }
     */
+
+    public void DialogueContinue()
+    {
+        // have the dialogue progress
+        m_dialogue.ProgressDialogue();
+    }
 
     public void CloseDialogueScreen()
     {
