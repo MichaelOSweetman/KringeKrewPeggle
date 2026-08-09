@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: Dialogue.cs
     Summary: Procedurely fills a text box with a message, moving to the next message when prompted by the player
     Creation Date: 10/06/2024
-    Last Modified: 02/08/2026
+    Last Modified: 10/08/2026
 */
 public class Dialogue : MonoBehaviour
 {
@@ -71,8 +71,6 @@ public class Dialogue : MonoBehaviour
 
 	public void Activate(int a_dialogueIndex)
 	{
-		// show the dialogue screen
-		transform.parent.gameObject.SetActive(true);
 		// store the dialogue to be played
 		m_dialogueIndex = a_dialogueIndex;
 		// reset the message index so the first message is shown first

@@ -6,10 +6,11 @@ using UnityEngine;
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 04/08/2025
+    Last Modified: 10/08/2026
 */
 public class LauncherRotation : MonoBehaviour
 {
+	public GameManager m_gameManager;
     Vector3 m_mousePosition = Vector3.zero;
     public float m_rotationRange = 160.0f;
 	public float m_floatAccuracy = 0.001f;
@@ -41,31 +42,35 @@ public class LauncherRotation : MonoBehaviour
 
     void Update()
     {
-		// get the mouse position in world space
-		m_mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		// remove the z component of the mouse position
-		m_mousePosition.z = 0.0f;
-		
-		// if the mouse has moved this frame
-		if ((m_mousePosition - m_previousMousePosition).magnitude > m_floatAccuracy)
-		{
-			// rotate the game object to face the mouse
-			transform.up = m_mousePosition - transform.position;
+		// if the game is not in the Menu or Reloading game state
+		if (m_gameManager.m_gameState != GameManager.GameState.Menu && m_gameManager.m_gameState != GameManager.GameState.Reloading)
+		{ 
+			// get the mouse position in world space
+			m_mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			// remove the z component of the mouse position
+			m_mousePosition.z = 0.0f;
 
-            // clamp the rotation to the valid range
-            ClampRotation();
-        }
-		// otherwise, if the scroll wheel has moved
-		else if (Input.mouseScrollDelta.y > m_floatAccuracy || Input.mouseScrollDelta.y < -m_floatAccuracy)
-		{
-			// apply the rotation
-			transform.Rotate(Vector3.forward, Input.mouseScrollDelta.y * m_scrollRotationModifier);
+			// if the mouse has moved this frame
+			if ((m_mousePosition - m_previousMousePosition).magnitude > m_floatAccuracy)
+			{
+				// rotate the game object to face the mouse
+				transform.up = m_mousePosition - transform.position;
 
-			// clamp the rotation to the valid range
-			ClampRotation();
+				// clamp the rotation to the valid range
+				ClampRotation();
+			}
+			// otherwise, if the scroll wheel has moved
+			else if (Input.mouseScrollDelta.y > m_floatAccuracy || Input.mouseScrollDelta.y < -m_floatAccuracy)
+			{
+				// apply the rotation
+				transform.Rotate(Vector3.forward, Input.mouseScrollDelta.y * m_scrollRotationModifier);
+
+				// clamp the rotation to the valid range
+				ClampRotation();
+			}
+
+			// store this frame's mouse position for next frame
+			m_previousMousePosition = m_mousePosition;
 		}
-		
-		// store this frame's mouse position for next frame
-		m_previousMousePosition = m_mousePosition;
 	}
 }

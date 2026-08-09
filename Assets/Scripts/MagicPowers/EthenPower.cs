@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 25/05/2026
+	Last Modified: 10/08/2026
 */
 public class EthenPower : MagicPower
 {
@@ -103,8 +103,8 @@ public class EthenPower : MagicPower
 
     public override void Initialize()
     {
-        // get access to the ui manager through the game manager and use it to access and store the launcher's LauncherRotation component
-        m_launcherRotation = m_gameManager.m_UIManager.m_launcherRotation;
+        // get access to the LauncherRotation via the game manager
+        m_launcherRotation = m_gameManager.m_launcherRotation;
         // get access to the play area bounds through player controls
         m_playAreaBounds = m_playerControls.m_playAreaBounds;
         // get access to the peg manager through the game manager

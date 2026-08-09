@@ -6,7 +6,7 @@ using UnityEngine;
     File name: PlayerControls.cs
     Summary: Manages the player's ability to shoot the ball and speed up time, as well as to make use of the different powers
     Creation Date: 01/10/2023
-    Last Modified: 25/05/2026
+    Last Modified: 10/08/2026
 */
 public class PlayerControls : MonoBehaviour
 {
@@ -68,6 +68,13 @@ public class PlayerControls : MonoBehaviour
 
     void Update()
     {
+        // if the Toggle Menu button is pressed
+        if (Input.GetButtonDown("Toggle Menu"))
+        {
+            // have the game manager toggle the pause menu
+            m_gameManager.TogglePause();
+        }
+
         // if the game state is Mid Shot
         if (m_gameManager.m_gameState == GameManager.GameState.MidShot)
         {
@@ -77,7 +84,7 @@ public class PlayerControls : MonoBehaviour
                 // have the game manager remove the ball from play
                 m_gameManager.RemoveProjectile(m_ball);
             }
-            
+
         }
         // otherwise, if the game state is Shooting or Post Shot
         else if (m_gameManager.m_gameState == GameManager.GameState.Shooting || m_gameManager.m_gameState == GameManager.GameState.PostShot)

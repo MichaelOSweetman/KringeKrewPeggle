@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     public UIManager m_UIManager;
     public BallTrajectory m_ballTrajectory;
     public CameraZoom m_cameraZoom;
+    public LauncherRotation m_launcherRotation;
 
     [Header("Characters")]
     public CharacterAssets[] m_characters;
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     public AudioClip[] m_freeBallSounds;
 
-    bool m_paused = false;
+    [HideInInspector] public bool m_paused = false;
     [HideInInspector] public GameState m_gameState = GameState.Reloading;
 
     // Investigate potential issue with resolving power before setting up
@@ -67,7 +68,6 @@ public class GameManager : MonoBehaviour
     // The toggling of the peg launcher should perhaps be managed here instead of UI manager
     // UI manager next level toggles peg launcher and has level manager load next level
     // UI manager retry level toggles peg launcher and reloads current level
-    // toggle pause menu is in UI manager, maybe ought to be in player controls
     // pegmanager prompts music manager to play victory music when last peg is hit
 
     // new Power UI container can be used to reload, clear all children from it - look into if could be used in magic power reload functions
@@ -354,6 +354,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void TogglePause()
+    {
+        // have the UI Manager toggle the pause menu. If the menu was allowed to appear
+        if (m_UIManager.TogglePauseMenu())
+        {
+            // toggle the pause flag
+            m_paused = !m_paused;
+        }
+    }
+
     private void Awake()
     {
         // initialise the ball count
@@ -398,6 +408,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
         }
+        print(m_gameState);
     }
 }
 

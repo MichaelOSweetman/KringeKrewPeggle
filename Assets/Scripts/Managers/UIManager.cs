@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 02/08/2026
+    Last Modified: 10/08/2026
 */
 
 public class Flicker
@@ -114,8 +114,6 @@ public class Flicker
 
 public class UIManager : MonoBehaviour
 {
-    public PlayerControls m_playerControls;
-    public LauncherRotation m_launcherRotation;
     public LevelManager m_levelManager;
     public PegManager m_pegManager;
     public Dialogue m_dialogue;
@@ -217,13 +215,8 @@ public class UIManager : MonoBehaviour
 
     public void LockInCharacter()
     {
-        // enable the peg launcher
-        TogglePegLauncher(true);
-        // set the character select screen to be inactive if it was active
-        m_characterSelect.SetActive(false);
-        // store that this sub menu is no longer active
-        --m_activeNonPauseSubMenus;
-
+        // hide the character select submenu
+        HideSubmenu(m_characterSelect);
         // have the game manager initialise the corresponding character
         m_gameManager.InitializeCharacter(m_selectedCharacterID);
     }
@@ -243,32 +236,20 @@ public class UIManager : MonoBehaviour
 
     public void ShowCharacterSelectScreen()
     {
-        // show the character select menu
-        m_characterSelect.SetActive(true);
-        // add this screen to the sub menu count
-        ++m_activeNonPauseSubMenus;
-        // disable the peg launcher
-        TogglePegLauncher(false);
+        // show the character select sub menu
+        ShowSubmenu(m_characterSelect);
     }
 
     public void ShowLevelCompleteScreen()
     {
         // show the character select menu
-        m_levelComplete.SetActive(true);
-        // add this screen to the sub menu count
-        ++m_activeNonPauseSubMenus;
-        // disable the peg launcher
-        TogglePegLauncher(false);
+        ShowSubmenu(m_levelComplete);
     }
 
     public void ShowTryAgainScreen()
     {
         // show the character select menu
-        m_tryAgain.SetActive(true);
-        // add this screen to the sub menu count
-        ++m_activeNonPauseSubMenus;
-        // disable the peg launcher
-        TogglePegLauncher(false);
+        ShowSubmenu(m_tryAgain);
     }
 
 
@@ -315,16 +296,14 @@ public class UIManager : MonoBehaviour
 
     public void CloseDialogueScreen()
     {
-        // enable the peg launcher
-        TogglePegLauncher(true);
         // hide the dialogue screen
-        m_dialogueScreen.SetActive(false);
+        HideSubmenu(m_dialogueScreen);
     }
 
 	public void SwitchToDialogue(int a_dialogueIndex)
 	{
-        // disable the peg launcher
-        TogglePegLauncher(false);
+        // show the dialogue screen
+        ShowSubmenu(m_dialogueScreen);
         // activate the dialogue
         m_dialogue.Activate(a_dialogueIndex);
 	}
@@ -403,11 +382,12 @@ public class UIManager : MonoBehaviour
         // initialse the fever meter multiplier text array with the amount of score multipliers there are
         m_feverMeterMultiplierTexts = new Text[a_scoreMultipliers.Length];
 
+        // initialise a variable to store the bar lines
+        GameObject barLine = null;
+
         // loop for each orange peg
         for (int i = 1; i < a_orangePegCount; ++i)
         {
-            GameObject barLine = null;
-
             // if the current amount of orange pegs is the next multiplier increase threshold
             if (i == a_multiplierIncreaseThresholds[increaseThresholdIndex])
             {
@@ -545,29 +525,21 @@ public class UIManager : MonoBehaviour
 
     public void NextLevel()
     {
-        // enable the peg launcher
-        TogglePegLauncher(true);
         // load the next level
         m_levelManager.LoadNextLevel();
         // hide the level complete screen
-        m_levelComplete.SetActive(false);
-        // store that this sub menu is no longer active
-        --m_activeNonPauseSubMenus;
+        HideSubmenu(m_levelComplete);
     }
 
     public void RetryLevel()
     {
-        // enable the peg launcher
-        TogglePegLauncher(true);
         // reload the current level
         m_levelManager.LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
         // if this function was called by the try again submenu
         if (m_tryAgain.activeSelf)
         {
             // hide the try again screen
-            m_tryAgain.SetActive(false);
-            // store that the try again sub menu is no longer active
-            --m_activeNonPauseSubMenus;
+            HideSubmenu(m_tryAgain);
         }
         // if this function was instead called by the pause menu
         else
@@ -674,22 +646,34 @@ public class UIManager : MonoBehaviour
         m_pegManager.UpdateColorblindIcons();
     }
 
-    public void TogglePauseMenu()
+    public bool TogglePauseMenu()
     {
-        // if there are no other sub menus active
+        // if there are no other sub menus currently active
         if (m_activeNonPauseSubMenus == 0)
         {
-            // swap the active state of the peg launcher
-            TogglePegLauncher(!m_playerControls.enabled);
             // swap the active state of the pause menu
             m_pauseMenu.SetActive(!m_pauseMenu.activeSelf);
+            // return that the pause menu has been toggled
+            return true;
         }
+        // return false, as there are submenus and the game should therefore not be able to pause (and therefore should not be in a position where it would need to unpause)
+        return false;
     }
 
-    void TogglePegLauncher(bool a_enabled)
+    void ShowSubmenu(GameObject a_subMenu)
     {
-        m_playerControls.enabled = a_enabled;
-        m_launcherRotation.enabled = a_enabled;
+        // set the submenu to be active
+        a_subMenu.SetActive(true);
+        // update the active submenu count
+        ++m_activeNonPauseSubMenus;
+    }
+
+    void HideSubmenu(GameObject a_submenu)
+    {
+        // set the submenu to be inactive
+        a_submenu.SetActive(false);
+        // update the active submenu count
+        --m_activeNonPauseSubMenus;
     }
 
     void Awake()
@@ -731,11 +715,6 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Toggle Menu"))
-        {
-            TogglePauseMenu();
-        }
-
         // if the help screen should be moved
         if (m_moveHelpScreen)
         {
