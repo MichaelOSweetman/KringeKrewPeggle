@@ -6,15 +6,16 @@ using UnityEngine;
     File name: NearVictoryDetector.cs
     Summary: Prompts the camera to zoom in towards the ball when it is in the detector's space
     Creation Date: 04/12/2023
-    Last Modified: 20/04/2026
+    Last Modified: 17/08/2026
 */
 public class NearVictoryDetector : MonoBehaviour
 {
-    public PlayerControls m_playerControls;
+    public GameManager m_gameManager;
     public MusicManager m_musicManager;
     public CameraZoom m_cameraZoom;
     public AudioClip m_drumRoll;
     public float m_musicFadeDuration = 1.0f;
+    public float m_modifiedTimeScale = 0.25f;
     List<GameObject> m_ballsInRange;
 
     void Awake()
@@ -33,8 +34,8 @@ public class NearVictoryDetector : MonoBehaviour
             {
                 // tell the camera to zoom and track this ball
                 m_cameraZoom.ZoomAndTrack(a_collision.gameObject);
-                // slow down the time scale
-                m_playerControls.ModifyTimeScale(m_playerControls.m_nearVictoryTimeScale);
+                // have the game manager change the time scale to the modified value
+                m_gameManager.ModifyTimeScale(m_modifiedTimeScale);
                 // play the drum roll sound effect at the camera, using the sound effect volume
                 AudioSource.PlayClipAtPoint(m_drumRoll, m_cameraZoom.transform.position, GlobalSettings.m_soundEffectVolume);
             }
@@ -63,8 +64,8 @@ public class NearVictoryDetector : MonoBehaviour
             {
                 // tell the camera to return to its default zoom and position
                 m_cameraZoom.ReturnToDefault();
-                // reset the time scale
-                m_playerControls.ModifyTimeScale();
+                // have the game manager reset the time scale
+                m_gameManager.ModifyTimeScale();
 
                 // fade the music back
                 m_musicManager.FadeToActive(m_musicFadeDuration);

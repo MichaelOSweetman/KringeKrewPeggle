@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 03/08/2026
+    Last Modified: 17/08/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -53,8 +53,12 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     public AudioClip[] m_freeBallSounds;
 
-    [HideInInspector] public bool m_paused = false;
     [HideInInspector] public GameState m_gameState = GameState.Reloading;
+
+    //temp unsorted
+    float m_defaultTimeScale = 1.0f;
+    float m_defaultDeltaTime = 0.02f;
+    [HideInInspector] public float m_unpausedTimeScale = 0.02f;
 
     // Investigate potential issue with resolving power before setting up
     // Do consistency pass on terminology; shot vs turn vs phase
@@ -272,8 +276,8 @@ public class GameManager : MonoBehaviour
             Destroy(m_playerProjectilesContainer.GetChild(i).gameObject);
         }
 
-        // prompt the player controls to reload
-        m_playerControls.Reload();
+        // reset the time scale
+        ModifyTimeScale();
 
         // prompt the UI manager to reload the game UI
         m_UIManager.ReloadGameUI();
@@ -310,8 +314,8 @@ public class GameManager : MonoBehaviour
         // have the UI Manager update the ball count text
         m_UIManager.UpdateBallCountText();
 
-        // have the player controls reset the time scale
-        m_playerControls.ModifyTimeScale();
+        // reset the time scale
+        ModifyTimeScale();
 
         // disable the ball trajectory
         m_ballTrajectory.ShowLine(false);
@@ -354,20 +358,51 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ResetUnpausedTimeScale()
+    {
+        // set the unpaused time scale to the default time scale so when the game unpauses it will return to the default time scale
+        m_unpausedTimeScale = m_defaultTimeScale;
+    }
+
     public void TogglePause()
     {
-        // have the UI Manager toggle the pause menu. If the menu was allowed to appear
+        // have the UI Manager toggle the pause menu. If the menu was successfully toggled
         if (m_UIManager.TogglePauseMenu())
         {
-            // toggle the pause flag
-            m_paused = !m_paused;
+            // if the game is not paused
+            if (Time.timeScale > 0.0f)
+            {
+                // store the current time scale
+                m_unpausedTimeScale = Time.timeScale;
+                // set the time scale to be 0
+                Time.timeScale = 0.0f;
+            }
+            // if the game is paused
+            else
+            {
+                // return the time scale to its previous value
+                ModifyTimeScale(m_unpausedTimeScale);
+            }
         }
     }
+
+    public void ModifyTimeScale(float a_newTimeScale = -1.0f)
+    {
+        // set the time scale to the new value (use the default time scale if the value is below 0 or if no argument value has been provided)
+        Time.timeScale = (a_newTimeScale < 0.0f) ? m_defaultTimeScale : a_newTimeScale;
+        // ensure fixedUpdate is called with the same frequency regardless of time scale so physics remains smooth
+        Time.fixedDeltaTime = m_defaultDeltaTime * Time.timeScale;
+    }
+
 
     private void Awake()
     {
         // initialise the ball count
         m_ballCount = m_startingBallCount;
+
+        // initialise default time variables
+        m_defaultTimeScale = Time.timeScale;
+        m_defaultDeltaTime = Time.fixedDeltaTime;
     }
 
     // Start is called before the first frame update
@@ -408,7 +443,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
         }
-        print(m_gameState);
+        //print(m_gameState);
     }
 }
 

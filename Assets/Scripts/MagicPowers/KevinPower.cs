@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 25/05/2026
+	Last Modified: 17/08/2026
 */
 public class KevinPower : MagicPower
 {
@@ -23,7 +23,7 @@ public class KevinPower : MagicPower
         // hide the scope overlay
         m_scopeOverlay.SetActive(false);
         // reset the time scale
-        m_playerControls.ModifyTimeScale();
+        m_gameManager.ModifyTimeScale();
     }
 
     public override void Initialize()
@@ -97,7 +97,7 @@ public class KevinPower : MagicPower
                 // show the scope overlay
                 m_scopeOverlay.SetActive(true);
                 // set the time scale to the scoped time scale
-                m_playerControls.ModifyTimeScale(m_scopedTimeScale);
+                m_gameManager.ModifyTimeScale(m_scopedTimeScale);
             }
 
             // if the shoot / use power button has been pressed and the camera is at max zoom
