@@ -6,11 +6,11 @@ using UnityEngine;
     File name: RotateToBall.cs
     Summary: Rotates an object to face either the ball or optionally the cursor when there is no ball active
     Creation Date: 10/06/2024
-    Last Modified: 25/05/2026
+    Last Modified: 24/08/2026
 */
 public class RotateToBall : MonoBehaviour
 {
-	public PlayerControls m_playerControls;
+	public GameManager m_gameManager;
 	public bool m_targetCursorWithoutBall = false;
 	[HideInInspector] public bool m_targetingBall = true;
 	Vector3 m_transformToTarget = Vector3.zero;
@@ -39,10 +39,10 @@ public class RotateToBall : MonoBehaviour
     void Update()
     {
 		// if the ball is present
-        if (m_playerControls.m_ball != null)
+        if (m_gameManager.m_ball != null)
 		{
 			// rotate this transform to face the ball
-			RotateTowardsTarget(m_playerControls.m_ball.transform.position);
+			RotateTowardsTarget(m_gameManager.m_ball.transform.position);
 			
 			// store that the ball is the target
 			m_targetingBall = true;

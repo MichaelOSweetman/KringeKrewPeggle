@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 17/08/2026
+    Last Modified: 24/08/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
     float m_defaultTimeScale = 1.0f;
     float m_defaultDeltaTime = 0.02f;
     [HideInInspector] public float m_unpausedTimeScale = 0.02f;
+    [HideInInspector] public GameObject m_ball = null;
 
     // Investigate potential issue with resolving power before setting up
     // Do consistency pass on terminology; shot vs turn vs phase
@@ -120,8 +121,7 @@ public class GameManager : MonoBehaviour
             // have the UI manager load the character assets and get the magic power from the loaded prefab
             m_magicPower = m_UIManager.LoadCharacter(m_characters[m_characterID].m_playerIconPrefab).GetComponent<MagicPower>();
 
-            // give the magic power access to player controls, the UI manager and this
-            m_magicPower.m_playerControls = m_playerControls;
+            // give the magic power access to the UI manager and this
             m_magicPower.m_UIManager = m_UIManager;
             m_magicPower.m_gameManager = this;
 
@@ -303,11 +303,14 @@ public class GameManager : MonoBehaviour
         m_UIManager.SetUpShot(m_ballCount);
     }
 
-    public void OnShoot()
+    public void OnShoot(GameObject a_ball = null)
     {
         /// triggered by shooting the ball or possibly from magic power on shoot function
         /// switch GameState to MidShot
         /// have UIManager update ball count text
+
+        // store the created ball
+        m_ball = a_ball;
 
         // reduce the ball count by one as a ball has been expended
         --m_ballCount;

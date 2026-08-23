@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 17/08/2026
+	Last Modified: 24/08/2026
 */
 public class KevinPower : MagicPower
 {
@@ -31,8 +31,8 @@ public class KevinPower : MagicPower
         // have the UI Manager create the scope overlay
         m_scopeOverlay = m_UIManager.CreatePowerUIAsset(m_scopeOverlayPrefab);
 
-        // give the sniper ball indicator access to player controls so it can access the ball
-        m_scopeOverlay.transform.GetChild(0).GetComponent<RotateToBall>().m_playerControls = m_playerControls;
+        // give the sniper ball indicator access to the game manager so it can access the ball
+        m_scopeOverlay.transform.GetChild(0).GetComponent<RotateToBall>().m_gameManager = m_gameManager;
 
         // get access to the camera zoom component from the game manager
         m_cameraZoom = m_gameManager.m_cameraZoom;
@@ -113,10 +113,10 @@ public class KevinPower : MagicPower
                 }
 
                 // if the camera is looking at the ball
-                if (m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z)))
+                if (m_gameManager.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_gameManager.m_ball.transform.position.z)))
                 {
                     // shoot the ball in the direction opposite of where it got hit by this power, with a magnitude determined by m_forceToBall
-                    m_playerControls.m_ball.GetComponent<Rigidbody2D>().AddForce((m_playerControls.m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                    m_gameManager.m_ball.GetComponent<Rigidbody2D>().AddForce((m_gameManager.m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
                 }
             }
         }

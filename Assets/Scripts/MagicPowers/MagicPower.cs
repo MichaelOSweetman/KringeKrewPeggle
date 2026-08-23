@@ -6,13 +6,12 @@ using UnityEngine;
 	File name: MagicPower.cs
 	Summary: A base class used by classes that manage the magic power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 06/04/2026
+	Last Modified: 24/08/2026
 */
 public abstract class MagicPower : MonoBehaviour
 { 
 	public int m_gainedPowerCharges = 0;
 	[HideInInspector] public GameManager m_gameManager;
-	[HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public UIManager m_UIManager;
     [HideInInspector] public int m_powerCharges = 0;
 	[HideInInspector] public bool m_setUpNextTurn = false;
@@ -68,7 +67,7 @@ public abstract class MagicPower : MonoBehaviour
         return false;
     }
 
-	public virtual bool BallRemovalCheck(GameObject a_ball)
+	public virtual bool BallRemovalCheck(Ball a_ball)
 	{
 		// return that this function should not override the default ball removal check
 		return false;

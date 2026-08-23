@@ -6,7 +6,7 @@ using UnityEngine;
     File name: MoveToPoints.cs
     Summary: Automatically and repeatedly moves an object between 2 points
     Creation Date: 22/01/2024
-    Last Modified: 04/05/2025
+    Last Modified: 24/08/2026
 */
 public class MoveToPoints : MonoBehaviour
 {
@@ -53,7 +53,7 @@ public class MoveToPoints : MonoBehaviour
             m_speed = Mathf.Lerp(m_minSpeed, m_maxSpeed, (transform.position - ((transform.position - m_firstPosition).sqrMagnitude <= (transform.position - m_secondPosition).sqrMagnitude ? m_firstPosition : m_secondPosition)).sqrMagnitude / m_minSquareDistanceFromPointForMaxSpeed);
         }
 
-        // move the object towards the target position using its speed per second, modified by the player controls time scale and the direction
+        // move the object towards the target position using its speed per second, modified by the time scale and the direction
         transform.position = Vector3.MoveTowards(transform.position, m_targetPosition, m_speed * Time.deltaTime);
     }
 }

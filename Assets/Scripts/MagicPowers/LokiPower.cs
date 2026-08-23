@@ -7,7 +7,7 @@ using UnityEngine.PlayerLoop;
 	File name: LokiPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Loki
 	Creation Date: 27/01/2025
-	Last Modified: 04/05/2026
+	Last Modified: 24/08/2026
 */
 public class LokiPower : MagicPower
 {
@@ -101,13 +101,13 @@ public class LokiPower : MagicPower
                 {
                     // initialise the hook
                     m_hook.SetActive(true);
-                    m_hook.transform.position = m_playerControls.m_ball.transform.position;
+                    m_hook.transform.position = m_gameManager.m_ball.transform.position;
 
                     // have the end of the cord be the hook
                     m_connectionPoint = m_hook;
 
                     // shoot the hook towards the cursor
-                    m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_playerControls.m_ball.transform.position).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
+                    m_hook.GetComponent<Rigidbody2D>().AddForce((Camera.main.ScreenToWorldPoint(Input.mousePosition) - m_gameManager.m_ball.transform.position).normalized * m_hookLaunchSpeed, ForceMode2D.Impulse);
 
                     // have the cord be active
                     m_cord.gameObject.SetActive(true);
@@ -119,7 +119,7 @@ public class LokiPower : MagicPower
                 if (m_connectedToPeg)
                 {
                     // pull the ball towards the peg it is connected to
-                    m_playerControls.m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_playerControls.m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
+                    m_gameManager.m_ball.GetComponent<Rigidbody2D>().AddForce((m_connectionPoint.transform.position - m_gameManager.m_ball.transform.position).normalized * m_pullSpeed, ForceMode2D.Force);
                 }
 
 
@@ -127,7 +127,7 @@ public class LokiPower : MagicPower
                 if (m_cord.gameObject.activeSelf)
                 {
                     // if the connection point is null or inactive, or if the cord has gone beyond its max length
-                    if (m_connectionPoint == null || !m_connectionPoint.activeSelf || (m_playerControls.m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
+                    if (m_connectionPoint == null || !m_connectionPoint.activeSelf || (m_gameManager.m_ball.transform.position - m_hook.transform.position).sqrMagnitude >= m_maxCordLength * m_maxCordLength)
                     {
                         // make the cord and hook inactive
                         m_cord.gameObject.SetActive(false);
@@ -140,7 +140,7 @@ public class LokiPower : MagicPower
                     else
                     {
                         // draw a line between the ball and the connection point
-                        m_cord.SetPosition(0, m_playerControls.m_ball.transform.position);
+                        m_cord.SetPosition(0, m_gameManager.m_ball.transform.position);
                         m_cord.SetPosition(1, m_connectionPoint.transform.position);
                     }
                 }

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: Mateja.cs
     Summary: Launches the ball back up and sends it back down the first time it falls to the kill floor
     Creation Date: 25/12/2023
-    Last Modified: 27/04/2026
+    Last Modified: 24/08/2026
 */
 public class Mateja : MonoBehaviour
 {
@@ -19,7 +19,6 @@ public class Mateja : MonoBehaviour
     }
 
     [HideInInspector] public GameManager m_gameManager;
-    [HideInInspector] public PlayerControls m_playerControls;
     [HideInInspector] public GameObject m_bucket;
     [HideInInspector] public GameObject m_victoryBuckets;
     public Vector3 m_spawnPosition = Vector3.zero;

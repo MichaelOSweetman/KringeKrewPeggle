@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 438c881daa290e143b4ee2c5bc5d6dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_pegManager: {fileID: 0}
+  m_gameManager: {fileID: 0}
+  m_ballKillFloor: -7
   m_lowestAllowedVelocitySquared: 0.01
   m_maxLowVelocityDuration: 0.5
