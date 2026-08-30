@@ -6,7 +6,7 @@ using UnityEngine;
     File name: CameraZoom.cs
     Summary: Allows the camera to zoom in and track a target or return to its default state
     Creation Date: 04/12/2023
-    Last Modified: 04/05/2026
+    Last Modified: 31/08/2026
 */
 public class CameraZoom : MonoBehaviour
 {
@@ -91,53 +91,57 @@ public class CameraZoom : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if the camera should be tracking a target
-        if (m_tracking)
+        // if the game is not paused
+        if (Time.timeScale > 0.0f)
         {
-            // if the camera isn't fully zoomed in
-            if (m_camera.orthographicSize > m_maxZoom)
+            // if the camera should be tracking a target
+            if (m_tracking)
             {
-                // increase the camera zoom and clamp it to valid bounds
-                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize - m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
+                // if the camera isn't fully zoomed in
+                if (m_camera.orthographicSize > m_maxZoom)
+                {
+                    // increase the camera zoom and clamp it to valid bounds
+                    m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize - m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
+                }
+                // if the camera is fully zoomed in
+                else
+                {
+                    // store that the camera is at max zoom
+                    m_atMaxZoom = true;
+                }
+
+                // move the camera's x and y coordinates to the target if there is one, or move it based on the mouse movements this frame if there isn't
+                m_cameraPosition.x = Mathf.Clamp((m_target == null) ? m_cameraPosition.x + Input.GetAxis("Mouse X") : m_target.transform.position.x, m_minHorizontalCameraBounds, m_maxHorizontalCameraBounds);
+                m_cameraPosition.y = Mathf.Clamp((m_target == null) ? m_cameraPosition.y + Input.GetAxis("Mouse Y") : m_target.transform.position.y, m_minVerticalCameraBounds, m_maxVerticalCameraBounds);
+
+                // move the camera to its designated position
+                transform.position = m_cameraPosition;
             }
-            // if the camera is fully zoomed in
+            // if the camera shouldn't be tracking a target
             else
             {
-                // store that the camera is at max zoom
-                m_atMaxZoom = true;
-            }
-
-            // move the camera's x and y coordinates to the target if there is one, or move it based on the mouse movements this frame if there isn't
-            m_cameraPosition.x = Mathf.Clamp((m_target == null) ? m_cameraPosition.x + Input.GetAxis("Mouse X") : m_target.transform.position.x, m_minHorizontalCameraBounds, m_maxHorizontalCameraBounds);
-            m_cameraPosition.y = Mathf.Clamp((m_target == null) ? m_cameraPosition.y + Input.GetAxis("Mouse Y") : m_target.transform.position.y, m_minVerticalCameraBounds, m_maxVerticalCameraBounds);
-
-            // move the camera to its designated position
-            transform.position = m_cameraPosition;
-        }
-        // if the camera shouldn't be tracking a target
-        else
-        {
-            // if the camera isn't fully zoomed out
-            if (m_camera.orthographicSize < m_defaultZoom)
-            {
-                // reduce the camera zoom and clamp it to valid bounds
-                m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize + m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
-            }
-
-            // store that the camera is not at max zoom
-            m_atMaxZoom = false;
-
-            // if the camera hasn't returned to its default position
-            if ((transform.position - m_defaultCameraPosition).sqrMagnitude > m_maxValidSquaredDistanceFromDefaultPosition)
-            {
-                // move the camera towards its default position
-                transform.position = Vector3.MoveTowards(transform.position, m_defaultCameraPosition, m_returnMoveSpeed * Time.unscaledDeltaTime);
-
-                // if the camera is now close enough to the target position
-                if ((transform.position - m_defaultCameraPosition).sqrMagnitude <= m_maxValidSquaredDistanceFromDefaultPosition)
+                // if the camera isn't fully zoomed out
+                if (m_camera.orthographicSize < m_defaultZoom)
                 {
-                    // return the camera to the default position
-                    transform.position = m_defaultCameraPosition;
+                    // reduce the camera zoom and clamp it to valid bounds
+                    m_camera.orthographicSize = Mathf.Clamp(m_camera.orthographicSize + m_zoomSpeed * Time.unscaledDeltaTime, m_maxZoom, m_defaultZoom);
+                }
+
+                // store that the camera is not at max zoom
+                m_atMaxZoom = false;
+
+                // if the camera hasn't returned to its default position
+                if ((transform.position - m_defaultCameraPosition).sqrMagnitude > m_maxValidSquaredDistanceFromDefaultPosition)
+                {
+                    // move the camera towards its default position
+                    transform.position = Vector3.MoveTowards(transform.position, m_defaultCameraPosition, m_returnMoveSpeed * Time.unscaledDeltaTime);
+
+                    // if the camera is now close enough to the target position
+                    if ((transform.position - m_defaultCameraPosition).sqrMagnitude <= m_maxValidSquaredDistanceFromDefaultPosition)
+                    {
+                        // return the camera to the default position
+                        transform.position = m_defaultCameraPosition;
+                    }
                 }
             }
         }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 31/08/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -107,7 +107,7 @@ public class SweetsPower : MagicPower
             }
         }
 
-        // return that this function should not override the default ball removal check
+        // return that this function should not override the default shoot function
         return false;
     }
 

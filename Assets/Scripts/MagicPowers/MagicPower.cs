@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MagicPower.cs
 	Summary: A base class used by classes that manage the magic power gained by the green peg
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 31/08/2026
 */
 public abstract class MagicPower : MonoBehaviour
 { 
@@ -102,6 +102,11 @@ public abstract class MagicPower : MonoBehaviour
 	{
 		// store that the power is ready for the game to be in the pre shot state
 		m_powerState = GameManager.GameState.PreShot;
+	}
+
+	public virtual void OnUnpause()
+	{
+
 	}
 
 	public virtual bool IsReady(GameManager.GameState a_goalState)

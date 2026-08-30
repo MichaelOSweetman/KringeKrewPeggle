@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 24/08/2026
+    Last Modified: 31/08/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -385,6 +385,8 @@ public class GameManager : MonoBehaviour
             {
                 // return the time scale to its previous value
                 ModifyTimeScale(m_unpausedTimeScale);
+                // tell the magic power to perform any functionality that occurs on unpause
+                m_magicPower.OnUnpause();
             }
         }
     }

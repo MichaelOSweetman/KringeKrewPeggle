@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: KevinPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Kevin
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 31/08/2026
 */
 public class KevinPower : MagicPower
 {
@@ -71,57 +71,64 @@ public class KevinPower : MagicPower
         m_powerState = GameManager.GameState.PreShot;
     }
 
+    public override void OnUnpause()
+    {
+        // hide the sniper scope incase it had been active prior to pausing
+        HideSniperScope();
+    }
+
     public override void Update()
     {
-        // if the show sniper scope button has been released
-        if (Input.GetButtonUp("Show Sniper Scope"))
+        // if the game is not paused
+        if (Time.timeScale > 0.0f)
         {
-            // hide the sniper scope
-            HideSniperScope();
-        }
-
-        // if the game is in the mid shot state and there are power charges
-        if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
-		{
-            // TEMP
-            //print(m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z)));
-            //print((Camera.main.transform.position.x - m_playerControls.m_ball.transform.position.x) + ", " + (Camera.main.transform.position.y - m_playerControls.m_ball.transform.position.y));
-            //m_playerControls.m_ball.GetComponent<SpriteRenderer>().color = (m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z))) ? Color.blue : Color.red;
-            // TEMP
-
-            // if the show sniper scope button has been pressed
-            if (Input.GetButtonDown("Show Sniper Scope"))
+            // if the show sniper scope button has been released
+            if (Input.GetButtonUp("Show Sniper Scope"))
             {
-                // tell the camera to zoom and track the cursor
-                m_cameraZoom.ZoomAndTrack();
-                // show the scope overlay
-                m_scopeOverlay.SetActive(true);
-                // set the time scale to the scoped time scale
-                m_gameManager.ModifyTimeScale(m_scopedTimeScale);
+                // hide the sniper scope
+                HideSniperScope();
             }
 
-            // if the shoot / use power button has been pressed and the camera is at max zoom
-            if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
+            // if the game is in the mid shot state and there are power charges
+            if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
             {
-                // reduce the power charges by 1
-                ModifyPowerCharges(-1);
-                // if there are now 0 charges
-                if (m_powerCharges == 0)
+                // TEMP
+                //print(m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z)));
+                //print((Camera.main.transform.position.x - m_playerControls.m_ball.transform.position.x) + ", " + (Camera.main.transform.position.y - m_playerControls.m_ball.transform.position.y));
+                //m_playerControls.m_ball.GetComponent<SpriteRenderer>().color = (m_playerControls.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_playerControls.m_ball.transform.position.z))) ? Color.blue : Color.red;
+                // TEMP
+
+                // if the show sniper scope button has been pressed
+                if (Input.GetButtonDown("Show Sniper Scope"))
                 {
-                    // hide the sniper scope
-                    HideSniperScope();
+                    // tell the camera to zoom and track the cursor
+                    m_cameraZoom.ZoomAndTrack();
+                    // show the scope overlay
+                    m_scopeOverlay.SetActive(true);
+                    // set the time scale to the scoped time scale
+                    m_gameManager.ModifyTimeScale(m_scopedTimeScale);
                 }
 
-                // if the camera is looking at the ball
-                if (m_gameManager.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_gameManager.m_ball.transform.position.z)))
+                // if the shoot / use power button has been pressed and the camera is at max zoom
+                if (Input.GetButtonDown("Shoot / Use Power") && m_cameraZoom.m_atMaxZoom)
                 {
-                    // shoot the ball in the direction opposite of where it got hit by this power, with a magnitude determined by m_forceToBall
-                    m_gameManager.m_ball.GetComponent<Rigidbody2D>().AddForce((m_gameManager.m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                    // reduce the power charges by 1
+                    ModifyPowerCharges(-1);
+                    // if there are now 0 charges
+                    if (m_powerCharges == 0)
+                    {
+                        // hide the sniper scope
+                        HideSniperScope();
+                    }
+
+                    // if the camera is looking at the ball
+                    if (m_gameManager.m_ball.GetComponent<Collider2D>().bounds.Contains(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, m_gameManager.m_ball.transform.position.z)))
+                    {
+                        // shoot the ball in the direction opposite of where it got hit by this power, with a magnitude determined by m_forceToBall
+                        m_gameManager.m_ball.GetComponent<Rigidbody2D>().AddForce((m_gameManager.m_ball.transform.position - Camera.main.transform.position).normalized * m_forceToBall, ForceMode2D.Impulse);
+                    }
                 }
             }
         }
-
-
-
     }
 }

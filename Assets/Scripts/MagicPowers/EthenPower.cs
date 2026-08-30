@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 31/08/2026
 */
 public class EthenPower : MagicPower
 {
@@ -73,6 +73,25 @@ public class EthenPower : MagicPower
         // destroy all lines
         DestroyLines();
 
+    }
+
+    void FinalizeLine()
+    {
+        // add an edge collider to the line
+        EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
+
+        // convert the line renderer points to vector2
+        Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
+        for (int i = 0; i < points.Length; ++i)
+        {
+            points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
+        }
+
+        // give the vector2 line points to the collider
+        collider.points = points;
+
+        // stop storing this line's renderer as this line has finished being created
+        m_currentLineRenderer = null;
     }
 
     public void UpdateLine(Vector3 a_newLinePoint)
@@ -216,10 +235,20 @@ public class EthenPower : MagicPower
         m_powerState = GameManager.GameState.PreShot;
     }
 
+    public override void OnUnpause()
+    {
+        // if drawing mode is on and a line was being drawn
+        if (m_drawing && m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null)
+        {
+            // finalise the creation of the line
+            FinalizeLine();
+        }
+    }
+
     public override void Update()
     {
-        // if drawing mode is on
-        if (m_drawing)
+        // if the game is not paused and drawing mode is on
+        if (Time.timeScale > 0.0f && m_drawing)
         {
             // if there is ink remaining, the Shoot / Use Power input is currently pressed and the cursor is within the play area bounds
             if (m_ink > 0.0f && Input.GetButton("Shoot / Use Power") && m_playAreaBounds.CursorWithinPlayArea())
@@ -265,21 +294,8 @@ public class EthenPower : MagicPower
             // otherwise, if a line has been drawn, the line doesn't currently have a collider and either the Shoot / Use Power input was released or the cursor left the play area
             else if (m_currentLineRenderer != null && m_currentLineRenderer.gameObject.GetComponent<EdgeCollider2D>() == null && m_currentLineRenderer.positionCount > 0 && (Input.GetButtonUp("Shoot / Use Power") || !m_playAreaBounds.CursorWithinPlayArea()))
             {
-                // add an edge collider to the line
-                EdgeCollider2D collider = m_currentLineRenderer.gameObject.AddComponent<EdgeCollider2D>();
-
-                // convert the line renderer points to vector2
-                Vector2[] points = new Vector2[m_currentLineRenderer.positionCount];
-                for (int i = 0; i < points.Length; ++i)
-                {
-                    points[i] = new Vector2(m_currentLineRenderer.GetPosition(i).x, m_currentLineRenderer.GetPosition(i).y);
-                }
-
-                // give the vector2 line points to the collider
-                collider.points = points;
-
-                // stop storing this line's renderer as this line has finished being created
-                m_currentLineRenderer = null;
+                // finalise the creation of the line
+                FinalizeLine();
             }
 
             // store the mouse position for next frame
