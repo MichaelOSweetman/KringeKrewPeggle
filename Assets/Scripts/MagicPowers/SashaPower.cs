@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 24/08/2026
+    Last Modified: 07/09/2026
 */
 public class SashaPower : MagicPower
 {
@@ -158,127 +158,131 @@ public class SashaPower : MagicPower
 
     public override void Update()
     {
-        // if the pegs should be lerping
-        if (m_lerp)
+        // if the game is not paused
+        if (Time.timeScale > 0.0f)
         {
-            // increase the lerp timer
-            m_lerpTimer += Time.unscaledDeltaTime * m_moveSpeed;
-
-            // if the lerp timer has surpassed 1, the lerp is complete
-            if (m_lerpTimer >= 1.0f)
+            // if the pegs should be lerping
+            if (m_lerp)
             {
-                // set the peg container to its destination position
-                m_pegContainer.position = m_lerpTarget;
+                // increase the lerp timer
+                m_lerpTimer += Time.unscaledDeltaTime * m_moveSpeed;
 
-                // store that the lerp is complete
-                m_lerp = false;
+                // if the lerp timer has surpassed 1, the lerp is complete
+                if (m_lerpTimer >= 1.0f)
+                {
+                    // set the peg container to its destination position
+                    m_pegContainer.position = m_lerpTarget;
+
+                    // store that the lerp is complete
+                    m_lerp = false;
+                }
+                // if the lerp is ongoing
+                else
+                {
+                    // lerp the pegs from the default position to a point in the direction and a distance away as specified by m_direction and m_moveDistance, at a speed determined by m_moveSpeed
+                    m_pegContainer.position = Vector3.Lerp(m_startPosition, m_lerpTarget, m_lerpTimer);
+                }
+
             }
-            // if the lerp is ongoing
-            else
+
+            // reset the UI arrow texture to its active texture
+            m_UIArrow.texture = m_activeArrowTexture;
+
+            // determine the direction UI arrow should face
+            if (Input.GetButton("Use Power Up Primary") || Input.GetButton("Use Power Up Secondary"))
             {
-                // lerp the pegs from the default position to a point in the direction and a distance away as specified by m_direction and m_moveDistance, at a speed determined by m_moveSpeed
-                m_pegContainer.position = Vector3.Lerp(m_startPosition, m_lerpTarget, m_lerpTimer);
+                m_UIArrow.transform.up = Vector3.up;
             }
-
-        }
-
-        // reset the UI arrow texture to its active texture
-        m_UIArrow.texture = m_activeArrowTexture;
-
-        // determine the direction UI arrow should face
-        if (Input.GetButton("Use Power Up Primary") || Input.GetButton("Use Power Up Secondary"))
-        {
-            m_UIArrow.transform.up = Vector3.up;
-        }
-        else if (Input.GetButton("Use Power Down Primary") || Input.GetButton("Use Power Down Secondary"))
-        {
-            m_UIArrow.transform.up = Vector3.down;
-        }
-        else if (Input.GetButton("Use Power Left Primary") || Input.GetButton("Use Power Left Secondary"))
-        {
-            m_UIArrow.transform.up = Vector3.left;
-        }
-        else if (Input.GetButton("Use Power Right Primary") || Input.GetButton("Use Power Right Secondary"))
-        {
-            m_UIArrow.transform.up = Vector3.right;
-        }
-        else
-        {
-            // set the UI arrow texture to be the inactive texture if no input is detected
-            m_UIArrow.texture = m_inactiveArrowTexture;
-        }
-
-        // if the game is in the mid shot state and there are power charges
-        if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
-        {
-            // increase the timer
-            m_timer += Time.unscaledDeltaTime;
-
-            // determine the direction the pegs should move
-            if (Input.GetButtonDown("Use Power Up Primary") || Input.GetButtonDown("Use Power Up Secondary"))
+            else if (Input.GetButton("Use Power Down Primary") || Input.GetButton("Use Power Down Secondary"))
             {
-                m_direction = Vector3.up;
+                m_UIArrow.transform.up = Vector3.down;
             }
-            else if (Input.GetButtonDown("Use Power Down Primary") || Input.GetButtonDown("Use Power Down Secondary"))
+            else if (Input.GetButton("Use Power Left Primary") || Input.GetButton("Use Power Left Secondary"))
             {
-                m_direction = Vector3.down;
+                m_UIArrow.transform.up = Vector3.left;
             }
-            else if (Input.GetButtonDown("Use Power Left Primary") || Input.GetButtonDown("Use Power Left Secondary"))
+            else if (Input.GetButton("Use Power Right Primary") || Input.GetButton("Use Power Right Secondary"))
             {
-                m_direction = Vector3.left;
-            }
-            else if (Input.GetButtonDown("Use Power Right Primary") || Input.GetButtonDown("Use Power Right Secondary"))
-            {
-                m_direction = Vector3.right;
+                m_UIArrow.transform.up = Vector3.right;
             }
             else
             {
-                m_direction = Vector3.zero;
+                // set the UI arrow texture to be the inactive texture if no input is detected
+                m_UIArrow.texture = m_inactiveArrowTexture;
             }
 
-            // if the 'down beat' has just occured in the song, accounting for the grace period
-            if (m_timer >= m_beatDelay - (m_gracePeriod * 0.5f) || m_timer <= m_gracePeriod * 0.5f)
+            // if the game is in the mid shot state and there are power charges
+            if (m_gameManager.m_gameState == GameManager.GameState.MidShot && m_powerCharges > 0)
             {
-                // if the pegs are not already moving and the UI arrow has its active texture, meaning a direction has been supplied and the pegs should move
-                if (!m_lerp && m_UIArrow.texture == m_activeArrowTexture)
-                {
-                    // have the pegs lerp in the specified direction
-                    m_lerp = true;
-                    m_lerpTimer = 0.0f;
-                    m_startPosition = m_pegContainer.position;
-                    m_lerpTarget = m_containerDefaultPosition + m_direction * m_moveDistance;
+                // increase the timer
+                m_timer += Time.unscaledDeltaTime;
 
-                    // store that the pegs are not at their default position
-                    m_atDefaultPosition = false;
+                // determine the direction the pegs should move
+                if (Input.GetButtonDown("Use Power Up Primary") || Input.GetButtonDown("Use Power Up Secondary"))
+                {
+                    m_direction = Vector3.up;
+                }
+                else if (Input.GetButtonDown("Use Power Down Primary") || Input.GetButtonDown("Use Power Down Secondary"))
+                {
+                    m_direction = Vector3.down;
+                }
+                else if (Input.GetButtonDown("Use Power Left Primary") || Input.GetButtonDown("Use Power Left Secondary"))
+                {
+                    m_direction = Vector3.left;
+                }
+                else if (Input.GetButtonDown("Use Power Right Primary") || Input.GetButtonDown("Use Power Right Secondary"))
+                {
+                    m_direction = Vector3.right;
+                }
+                else
+                {
+                    m_direction = Vector3.zero;
                 }
 
-                // if the timer has surpassed the beat delay
-                if (m_timer > m_beatDelay)
+                // if the 'down beat' has just occured in the song, accounting for the grace period
+                if (m_timer >= m_beatDelay - (m_gracePeriod * 0.5f) || m_timer <= m_gracePeriod * 0.5f)
                 {
-                    // reset the timer
-                    m_timer -= m_beatDelay;
-                    // set the UI arrow to its downbeat colour
-                    m_UIArrow.color = m_downBeatColor;
+                    // if the pegs are not already moving and the UI arrow has its active texture, meaning a direction has been supplied and the pegs should move
+                    if (!m_lerp && m_UIArrow.texture == m_activeArrowTexture)
+                    {
+                        // have the pegs lerp in the specified direction
+                        m_lerp = true;
+                        m_lerpTimer = 0.0f;
+                        m_startPosition = m_pegContainer.position;
+                        m_lerpTarget = m_containerDefaultPosition + m_direction * m_moveDistance;
+
+                        // store that the pegs are not at their default position
+                        m_atDefaultPosition = false;
+                    }
+
+                    // if the timer has surpassed the beat delay
+                    if (m_timer > m_beatDelay)
+                    {
+                        // reset the timer
+                        m_timer -= m_beatDelay;
+                        // set the UI arrow to its downbeat colour
+                        m_UIArrow.color = m_downBeatColor;
+                    }
                 }
-            }
-            // if the 'up beat' has just occured in the song
-            else if (m_timer > m_beatDelay * 0.5f)
-            {
-                // if the pegs are not already moving and the pegs are not at their default position
-                if (!m_lerp && !m_atDefaultPosition)
+                // if the 'up beat' has just occured in the song
+                else if (m_timer > m_beatDelay * 0.5f)
                 {
-                    // have the pegs return to their default position
-                    m_lerp = true;
-                    m_lerpTimer = 0.0f;
-                    m_startPosition = m_pegContainer.position;
-                    m_lerpTarget = m_containerDefaultPosition;
+                    // if the pegs are not already moving and the pegs are not at their default position
+                    if (!m_lerp && !m_atDefaultPosition)
+                    {
+                        // have the pegs return to their default position
+                        m_lerp = true;
+                        m_lerpTimer = 0.0f;
+                        m_startPosition = m_pegContainer.position;
+                        m_lerpTarget = m_containerDefaultPosition;
 
-                    // store that the pegs are at their default position
-                    m_atDefaultPosition = true;
+                        // store that the pegs are at their default position
+                        m_atDefaultPosition = true;
+                    }
+
+                    // set the UI arrow to its up beat colour
+                    m_UIArrow.color = m_upBeatColor;
                 }
-
-                // set the UI arrow to its up beat colour
-                m_UIArrow.color = m_upBeatColor;
             }
         }
     }

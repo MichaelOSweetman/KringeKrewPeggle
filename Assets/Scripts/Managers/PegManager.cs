@@ -8,7 +8,7 @@ using UnityEngine.UI;
 	File name: PegManager.cs
 	Summary: Manages a set of pegs and determines which are orange, purple, green and blue. It also determines the amount of points they give, as well as when they are removed as a result of being hit
 	Creation Date: 09/10/2023
-	Last Modified: 24/08/2026
+	Last Modified: 07/09/2026
 */
 
 public class PegManager : MonoBehaviour
@@ -607,42 +607,46 @@ public class PegManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if the at least one peg has been hit this shot
-        if (m_roundHitPegs > 0)
+        // if the game is not paused
+        if (Time.timeScale > 0.0f)
         {
-            // increase the timer
-            m_pegDelayTimer += Time.deltaTime;
-
-            // if the enough time has elapsed since a peg was last hit
-            if (m_pegDelayTimer >= m_maxDelaySincePegHit)
+            // if the at least one peg has been hit this shot
+            if (m_roundHitPegs > 0)
             {
-                // clear the hit pegs
-                ClearHitPegs();
-            }
-        }
+                // increase the timer
+                m_pegDelayTimer += Time.unscaledDeltaTime;
 
-        // if the hit peg queue should be cleared
-        if (m_clearHitPegQueue)
-        {
-            // increase the timer
-            m_clearHitPegQueueTimer += Time.deltaTime;
-
-            // if the enough time has passed since the last peg was cleared from the queue
-            if (m_clearHitPegQueueTimer >= m_clearHitPegDelay)
-            {
-                // create a temporary audio source to play the peg remove sound at the position of the peg, using the sound effect volume
-                AudioSource.PlayClipAtPoint(m_pegRemoveSound, m_hitPegs.Peek().transform.position, GlobalSettings.m_soundEffectVolume);
-
-                // set the next peg in the queue to be inactive
-                m_hitPegs.Dequeue().gameObject.SetActive(false);
-                // reset the timer
-                m_clearHitPegQueueTimer = 0.0f;
-
-                // if there are no more hit pegs active
-                if (m_hitPegs.Count == 0)
+                // if the enough time has elapsed since a peg was last hit
+                if (m_pegDelayTimer >= m_maxDelaySincePegHit)
                 {
-                    // set the clear hit peg queue flag to false
-                    m_clearHitPegQueue = false;
+                    // clear the hit pegs
+                    ClearHitPegs();
+                }
+            }
+
+            // if the hit peg queue should be cleared
+            if (m_clearHitPegQueue)
+            {
+                // increase the timer
+                m_clearHitPegQueueTimer += Time.unscaledDeltaTime;
+
+                // if the enough time has passed since the last peg was cleared from the queue
+                if (m_clearHitPegQueueTimer >= m_clearHitPegDelay)
+                {
+                    // create a temporary audio source to play the peg remove sound at the position of the peg, using the sound effect volume
+                    AudioSource.PlayClipAtPoint(m_pegRemoveSound, m_hitPegs.Peek().transform.position, GlobalSettings.m_soundEffectVolume);
+
+                    // set the next peg in the queue to be inactive
+                    m_hitPegs.Dequeue().gameObject.SetActive(false);
+                    // reset the timer
+                    m_clearHitPegQueueTimer = 0.0f;
+
+                    // if there are no more hit pegs active
+                    if (m_hitPegs.Count == 0)
+                    {
+                        // set the clear hit peg queue flag to false
+                        m_clearHitPegQueue = false;
+                    }
                 }
             }
         }

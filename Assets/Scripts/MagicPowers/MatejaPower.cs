@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 07/09/2026
 */
 public class MatejaPower : MagicPower
 {
@@ -18,8 +18,8 @@ public class MatejaPower : MagicPower
         // if Mateja does not currently exist
         if (m_mateja == null)
         {
-            // create the mateja game object and add it to the player projectile container
-            m_mateja = Instantiate(m_matejaPrefab, m_gameManager.m_playerProjectilesContainer).GetComponent<Mateja>();
+            // create the mateja game object
+            m_mateja = Instantiate(m_matejaPrefab).GetComponent<Mateja>();
             // give it game manager, the bucket and the victory buckets
             m_mateja.m_gameManager = m_gameManager;
             m_mateja.m_bucket = m_gameManager.m_pegManager.m_bucket;
@@ -67,6 +67,8 @@ public class MatejaPower : MagicPower
         {
             // have mateja launch back up
             m_mateja.JiuJitsuBall(a_ball.gameObject);
+            // move mateja to the player projectiles container so the shoot phase doesn't end until it is destroyed
+            m_mateja.transform.parent = m_gameManager.m_playerProjectilesContainer;
             // have the game manager remove the ball
             m_gameManager.RemoveProjectile(a_ball.gameObject);
         }

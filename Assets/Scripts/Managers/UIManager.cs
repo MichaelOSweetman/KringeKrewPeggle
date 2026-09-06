@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 10/08/2026
+    Last Modified: 07/09/2026
 */
 
 public class Flicker
@@ -468,8 +468,8 @@ public class UIManager : MonoBehaviour
 
     public bool IsClear()
     {
-        // return whether the UI is clear of pop ups and the round score display
-        return m_popUpTextContainer.transform.childCount == 0 && !m_roundScore.IsActive();
+        // return whether the UI is clear of pop ups, the round score display and the dialogue screen
+        return m_popUpTextContainer.transform.childCount == 0 && !m_roundScore.IsActive() && !m_dialogueScreen.activeSelf;
     }
 
     public void DisplayPopUpText(TextFormat a_format, string a_text, Vector3 a_position, bool a_usePrefabOffset)

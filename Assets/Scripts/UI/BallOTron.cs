@@ -6,7 +6,7 @@ using UnityEngine;
     File name: BallOTron.cs
     Summary: Manages the balls within the Ball-O-Tron UI display
     Creation Date: 19/01/2026
-    Last Modified: 13/07/2026
+    Last Modified: 07/09/2026
 */
 public class BallOTron : MonoBehaviour
 {
@@ -212,126 +212,13 @@ public class BallOTron : MonoBehaviour
         }
         // TEMP
 
-        // if there is a launched ball and it has surpassed the destroy height
-        if (m_launchedBall != null && m_launchedBall.transform.position.y > m_destroyHeight)
+        if (Time.timeScale > 0.0f)
         {
-            // destroy the launched ball
-            Destroy(m_launchedBall.gameObject);
-
-            // if there are now 0 new balls and a ball was waiting to launch
-            if (m_newBalls.Count == 0 && m_waitingToLaunch > 0)
+            // if there is a launched ball and it has surpassed the destroy height
+            if (m_launchedBall != null && m_launchedBall.transform.position.y > m_destroyHeight)
             {
-                // launch it
-                LaunchBall();
-            }
-        }
-
-        // if the launch state is Launching
-        if (m_launchState == LaunchState.Launching)
-        {
-            // if the ball holder has returned to its default position
-            if (m_ballHolder.transform.position.y >= m_holderDefaultPosition.y)
-            {
-                // set the ball holder's position to its default position
-                m_ballHolder.transform.position = m_holderDefaultPosition;
-                // set the ball holder's velocity to 0
-                m_ballHolder.velocity = Vector3.zero;
-                // store that the launch state is now Idle
-                m_launchState = LaunchState.Idle;
-
-                // make the ball group a child of its original parent again
-                m_ballGroupRigidbody.transform.parent = m_ballHolder.transform.parent;
-
-                // if there is still at least one ball in the ball group
-                if (m_groupBalls.Count > 0)
-                {
-                    // set the ball group to be affected by physics again
-                    m_ballGroupRigidbody.isKinematic = false;
-                }
-
-                // enable the ball holder spring
-                m_holderSpring.enabled = true;
-            }
-        }
-        // otherwise, if the launch state is Retracting
-        else if (m_launchState == LaunchState.Retracting)
-        {
-            // move the ball holder down 
-            m_ballHolder.transform.position -= Vector3.up * m_holderDropSpeed * Time.unscaledDeltaTime;
-
-            // if the ball holder has moved down enough
-            if (m_ballHolder.transform.position.y <= m_holderDefaultPosition.y - m_holderDropDistance)
-            {
-                // pop the top ball from the group balls stack
-                m_launchedBall = m_groupBalls.Pop();
-                // make the ball affected by physics
-                m_launchedBall.isKinematic = false;
-                // make the ball a child of the Ball-O-Tron rather than the ball group
-                m_launchedBall.transform.parent = transform.parent;
-                // apply an upwards impulse force to the top ball
-                m_launchedBall.AddForce(Vector3.up * m_topBallLaunchForce, ForceMode2D.Impulse);
-
-                // if there is at least 1 other ball
-                if (m_groupBalls.Count > 0)
-                {
-                    // make the second ball affected by physics
-                    m_groupBalls.Peek().isKinematic = false;
-
-                    // if there is exactly one other ball
-                    if (m_groupBalls.Count == 1)
-                    {
-                        // set the ball's mass to the FinalBallMass so it's trajectory better matches the secondary ball trajectory at other ball counts
-                        m_groupBalls.Peek().mass = m_finalBallMass;
-                    }
-
-                    // enable the ball's collider
-                    m_groupBalls.Peek().GetComponent<Collider2D>().enabled = true;
-                    // make the ball a child of the Ball-O-Tron rather than the ball group
-                    m_groupBalls.Peek().transform.parent = transform.parent;
-                    // apply an upwards impulse force to the ball
-                    m_groupBalls.Peek().AddForce(Vector3.up * m_secondBallLaunchForce, ForceMode2D.Impulse);
-                    // store the ball as a new ball for the purposes of returning it to the group ball stack
-                    m_newBalls.Enqueue(m_groupBalls.Pop());
-                }
-
-                // resize the ball group to correspond to the new ball count
-                ResizeBallGroup();
-
-                // if there is still at least one ball in the ball group
-                if (m_groupBalls.Count > 0)
-                {
-                    // make the ball group a child of the ball holder
-                    m_ballGroupRigidbody.transform.parent = m_ballHolder.transform;
-
-                    // prevent the ball group from being affected by physics
-                    m_ballGroupRigidbody.isKinematic = true;
-                }
-
-                // position the ball holder exactly at its designated drop height
-                m_ballHolder.transform.position = m_holderDefaultPosition - Vector3.up * m_holderDropDistance;
-                // apply an upwards impulse force to the ball holder
-                m_ballHolder.AddForce(Vector3.up * m_holderLaunchForce, ForceMode2D.Impulse);
-
-                // store that the launch state is now Launching
-                m_launchState = LaunchState.Launching;
-            }
-        }
-
-        // if there is a new ball and it has stopped falling
-        if (m_newBalls.Count > 0 && Mathf.Abs(m_newBalls.Peek().velocity.y) < m_lowestAllowedVerticalVelocity)
-        {
-            // increase the timer
-            m_ballStopTimer += Time.unscaledDeltaTime;
-
-            // if the max time that the ball can be low velocity has been reached
-            if (m_ballStopTimer >= m_ballStationaryConversionDelay)
-            {
-                // convert the ball to a placeholder ball that is part of the main ball group
-                ConvertToPlaceholderBall();
-                // have the ball group collider resize to account for the new ball
-                ResizeBallGroup();
-                // reset the timer
-                m_ballStopTimer = 0.0f;
+                // destroy the launched ball
+                Destroy(m_launchedBall.gameObject);
 
                 // if there are now 0 new balls and a ball was waiting to launch
                 if (m_newBalls.Count == 0 && m_waitingToLaunch > 0)
@@ -339,15 +226,130 @@ public class BallOTron : MonoBehaviour
                     // launch it
                     LaunchBall();
                 }
+            }
 
+            // if the launch state is Launching
+            if (m_launchState == LaunchState.Launching)
+            {
+                // if the ball holder has returned to its default position
+                if (m_ballHolder.transform.position.y >= m_holderDefaultPosition.y)
+                {
+                    // set the ball holder's position to its default position
+                    m_ballHolder.transform.position = m_holderDefaultPosition;
+                    // set the ball holder's velocity to 0
+                    m_ballHolder.velocity = Vector3.zero;
+                    // store that the launch state is now Idle
+                    m_launchState = LaunchState.Idle;
+
+                    // make the ball group a child of its original parent again
+                    m_ballGroupRigidbody.transform.parent = m_ballHolder.transform.parent;
+
+                    // if there is still at least one ball in the ball group
+                    if (m_groupBalls.Count > 0)
+                    {
+                        // set the ball group to be affected by physics again
+                        m_ballGroupRigidbody.isKinematic = false;
+                    }
+
+                    // enable the ball holder spring
+                    m_holderSpring.enabled = true;
+                }
+            }
+            // otherwise, if the launch state is Retracting
+            else if (m_launchState == LaunchState.Retracting)
+            {
+                // move the ball holder down 
+                m_ballHolder.transform.position -= Vector3.up * m_holderDropSpeed * Time.unscaledDeltaTime;
+
+                // if the ball holder has moved down enough
+                if (m_ballHolder.transform.position.y <= m_holderDefaultPosition.y - m_holderDropDistance)
+                {
+                    // pop the top ball from the group balls stack
+                    m_launchedBall = m_groupBalls.Pop();
+                    // make the ball affected by physics
+                    m_launchedBall.isKinematic = false;
+                    // make the ball a child of the Ball-O-Tron rather than the ball group
+                    m_launchedBall.transform.parent = transform.parent;
+                    // apply an upwards impulse force to the top ball
+                    m_launchedBall.AddForce(Vector3.up * m_topBallLaunchForce, ForceMode2D.Impulse);
+
+                    // if there is at least 1 other ball
+                    if (m_groupBalls.Count > 0)
+                    {
+                        // make the second ball affected by physics
+                        m_groupBalls.Peek().isKinematic = false;
+
+                        // if there is exactly one other ball
+                        if (m_groupBalls.Count == 1)
+                        {
+                            // set the ball's mass to the FinalBallMass so it's trajectory better matches the secondary ball trajectory at other ball counts
+                            m_groupBalls.Peek().mass = m_finalBallMass;
+                        }
+
+                        // enable the ball's collider
+                        m_groupBalls.Peek().GetComponent<Collider2D>().enabled = true;
+                        // make the ball a child of the Ball-O-Tron rather than the ball group
+                        m_groupBalls.Peek().transform.parent = transform.parent;
+                        // apply an upwards impulse force to the ball
+                        m_groupBalls.Peek().AddForce(Vector3.up * m_secondBallLaunchForce, ForceMode2D.Impulse);
+                        // store the ball as a new ball for the purposes of returning it to the group ball stack
+                        m_newBalls.Enqueue(m_groupBalls.Pop());
+                    }
+
+                    // resize the ball group to correspond to the new ball count
+                    ResizeBallGroup();
+
+                    // if there is still at least one ball in the ball group
+                    if (m_groupBalls.Count > 0)
+                    {
+                        // make the ball group a child of the ball holder
+                        m_ballGroupRigidbody.transform.parent = m_ballHolder.transform;
+
+                        // prevent the ball group from being affected by physics
+                        m_ballGroupRigidbody.isKinematic = true;
+                    }
+
+                    // position the ball holder exactly at its designated drop height
+                    m_ballHolder.transform.position = m_holderDefaultPosition - Vector3.up * m_holderDropDistance;
+                    // apply an upwards impulse force to the ball holder
+                    m_ballHolder.AddForce(Vector3.up * m_holderLaunchForce, ForceMode2D.Impulse);
+
+                    // store that the launch state is now Launching
+                    m_launchState = LaunchState.Launching;
+                }
+            }
+
+            // if there is a new ball and it has stopped falling
+            if (m_newBalls.Count > 0 && Mathf.Abs(m_newBalls.Peek().velocity.y) < m_lowestAllowedVerticalVelocity)
+            {
+                // increase the timer
+                m_ballStopTimer += Time.unscaledDeltaTime;
+
+                // if the max time that the ball can be low velocity has been reached
+                if (m_ballStopTimer >= m_ballStationaryConversionDelay)
+                {
+                    // convert the ball to a placeholder ball that is part of the main ball group
+                    ConvertToPlaceholderBall();
+                    // have the ball group collider resize to account for the new ball
+                    ResizeBallGroup();
+                    // reset the timer
+                    m_ballStopTimer = 0.0f;
+
+                    // if there are now 0 new balls and a ball was waiting to launch
+                    if (m_newBalls.Count == 0 && m_waitingToLaunch > 0)
+                    {
+                        // launch it
+                        LaunchBall();
+                    }
+
+                }
+            }
+            // if the ball's velocity is high enough
+            else
+            {
+                // reset the timer
+                m_ballStopTimer = 0.0f;
             }
         }
-        // if the ball's velocity is high enough
-        else
-        {
-            // reset the timer
-            m_ballStopTimer = 0.0f;
-        }
-
     }
 }

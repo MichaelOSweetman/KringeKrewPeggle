@@ -6,12 +6,12 @@ using UnityEngine;
     File name: PlayAreaBounds.cs
     Summary: Determines if the cursor is within this object's bounds
     Creation Date: 23/03/2026
-    Last Modified: 23/03/2026
+    Last Modified: 07/09/2026
 */
 public class PlayAreaBounds : MonoBehaviour
 {
     Vector2 m_bottomLeft;
-    Vector3 m_topRight;
+    Vector2 m_topRight;
 
     public bool CursorWithinPlayArea()
     {

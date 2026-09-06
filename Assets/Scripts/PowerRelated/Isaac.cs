@@ -8,7 +8,7 @@ using UnityEngine.UI;
     File name: Isaac.cs
     Summary: Manages the Player's ability to control Isaac's movement, shooting and bomb placement, as well as managing its limited duration
     Creation Date: 20/05/2024
-    Last Modified: 24/08/2026
+    Last Modified: 07/09/2026
 */
 public class Isaac : MonoBehaviour
 {
@@ -55,134 +55,138 @@ public class Isaac : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		// increase the health timer
-		m_healthTimer += Time.unscaledDeltaTime;
-		
-		// if enough time has passed to reduce health
-		if (m_healthTimer >= m_timeBeforeHealthLoss)
+		// if the game is not paused
+		if (Time.timeScale > 0.0f)
 		{
-			// reset the health timer
-			m_healthTimer -= m_timeBeforeHealthLoss;
-			// reduce Isaac's health
-			--m_health;
-			
-			// if Isaac's health has reached 0
-			if (m_health == 0)
+			// increase the health timer
+			m_healthTimer += Time.deltaTime;
+
+			// if enough time has passed to reduce health
+			if (m_healthTimer >= m_timeBeforeHealthLoss)
 			{
-				// have the game manager destroy Isaac
-				m_gameManager.RemoveProjectile(gameObject);
+				// reset the health timer
+				m_healthTimer -= m_timeBeforeHealthLoss;
+				// reduce Isaac's health
+				--m_health;
+
+				// if Isaac's health has reached 0
+				if (m_health == 0)
+				{
+					// have the game manager destroy Isaac
+					m_gameManager.RemoveProjectile(gameObject);
+				}
 			}
-		}
-		
-		// reset the displacement vector
-		m_displacement = Vector2.zero;
-		
-		// determine the displacement of Isaac this frame
-        if (Input.GetButton("Use Power Up Primary"))
-		{
-			m_displacement += Vector3.up * m_moveSpeed;
-		}
-		else if (Input.GetButton("Use Power Down Primary"))
-        {
-			m_displacement -= Vector3.up * m_moveSpeed;
-		}
 
-		if (Input.GetButton("Use Power Left Primary"))
-        {
-			m_displacement -= Vector3.right * m_moveSpeed;
-		}
-		else if (Input.GetButton("Use Power Right Primary"))
-        {
-			m_displacement += Vector3.right * m_moveSpeed;
-		}
+			// reset the displacement vector
+			m_displacement = Vector2.zero;
 
-		// apply the displacement to Isaac
-		transform.position += m_displacement * Time.unscaledDeltaTime;
-		
-		// increase the fire rate timer
-		m_fireRateTimer += Time.unscaledDeltaTime;
+			// determine the displacement of Isaac this frame
+			if (Input.GetButton("Use Power Up Primary"))
+			{
+				m_displacement += Vector3.up * m_moveSpeed;
+			}
+			else if (Input.GetButton("Use Power Down Primary"))
+			{
+				m_displacement -= Vector3.up * m_moveSpeed;
+			}
 
-        // if Isaac should shoot a tear up
-        if (Input.GetButton("Use Power Up Secondary"))
-        {
-			// store the shoot direction as up
-			m_shootDirection = Vector2.up;
-			// store the look direction as up
-			m_currentLookDirection = m_up;
-        }
-        // otherwise, if Isaac should shoot a tear down
-        else if (Input.GetButton("Use Power Down Secondary"))
-        {
-            // store the shoot direction as down
-            m_shootDirection = Vector2.down;
-            // store the look direction as down
-            m_currentLookDirection = m_down;
-        }
-        // otherwise, if Isaac should shoot a tear left
-        else if (Input.GetButton("Use Power Left Secondary"))
-        {
-            // store the shoot direction as left
-            m_shootDirection = Vector2.left;
-            // store the look direction as side
-            m_currentLookDirection = m_side;
-        }
-        // otherwise, if Isaac should shoot a tear right
-        else if (Input.GetButton("Use Power Right Secondary"))
-        {
-            // store the shoot direction as right
-            m_shootDirection = Vector2.right;
-            // store the look direction as up
-            m_currentLookDirection = m_side;
-        }
-		else
-		{
-			// store the shoot direction as zero to indicate that a fire input has not been given
-			m_shootDirection = Vector2.zero;
-			// store the look direction as down
-			m_currentLookDirection = m_down;
-		}
+			if (Input.GetButton("Use Power Left Primary"))
+			{
+				m_displacement -= Vector3.right * m_moveSpeed;
+			}
+			else if (Input.GetButton("Use Power Right Primary"))
+			{
+				m_displacement += Vector3.right * m_moveSpeed;
+			}
 
-        // if enough time has passed for Isaac to shoot a tear and there was a shoot direction input
-        if (m_fireRateTimer >= m_fireRate && m_shootDirection != Vector2.zero)
-		{
-            // create a copy of the tear prefab and add it to the player projectiles container
-            GameObject tear = Instantiate(m_isaacTearPrefab, m_gameManager.m_playerProjectilesContainer);
-            // set the tear's position to Isaac's
-            tear.transform.position = transform.position;
-            // shoot the tear in the specified direction
-            tear.GetComponent<Rigidbody2D>().AddForce(m_shootDirection * m_tearSpeed, ForceMode2D.Impulse);
-            // tell the tear how long it should last
-            tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
-			// give the tear access to the game manager
-			tear.GetComponent<IsaacTear>().m_gameManager = m_gameManager;
-            // reset the fire rate timer
-            m_fireRateTimer = 0.0f;
-			// store that Isaac's eyes should be closed
-			m_eyesOpen = false;
-        }
-		// otherwise if Isaac's eyes should no longer be closed
-		else if (m_fireRateTimer >= m_eyeClosedDuration)
-		{
-			// store that Isaac's eyes should be open
-			m_eyesOpen = true;
-        }
+			// apply the displacement to Isaac
+			transform.position += m_displacement * Time.deltaTime;
 
-		// update Isaac's sprite
-		m_spriteRenderer.sprite = (m_eyesOpen) ? m_currentLookDirection.m_eyesOpen : m_currentLookDirection.m_eyesClosed;
-		// flip the sprite along the X axis if Isaac is looking left
-		m_spriteRenderer.flipX = (m_shootDirection == Vector2.left);
+			// increase the fire rate timer
+			m_fireRateTimer += Time.deltaTime;
 
-        // if Isaac has at least 1 bomb and the Place Bomb button was pressed
-        if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
-		{
-			// create a copy of the IsaacBomb prefab and add it to the player projectiles container
-			GameObject bomb = Instantiate(m_isaacBombPrefab, m_gameManager.m_playerProjectilesContainer);
-			// position the bomb on Isaac
-			bomb.transform.position = transform.position;
-			// give the bomb access to the game manager
-			bomb.GetComponent<IsaacBomb>().m_gameManager = m_gameManager;
-			// reduce the bomb count by 1
-			--m_bombCount;
+			// if Isaac should shoot a tear up
+			if (Input.GetButton("Use Power Up Secondary"))
+			{
+				// store the shoot direction as up
+				m_shootDirection = Vector2.up;
+				// store the look direction as up
+				m_currentLookDirection = m_up;
+			}
+			// otherwise, if Isaac should shoot a tear down
+			else if (Input.GetButton("Use Power Down Secondary"))
+			{
+				// store the shoot direction as down
+				m_shootDirection = Vector2.down;
+				// store the look direction as down
+				m_currentLookDirection = m_down;
+			}
+			// otherwise, if Isaac should shoot a tear left
+			else if (Input.GetButton("Use Power Left Secondary"))
+			{
+				// store the shoot direction as left
+				m_shootDirection = Vector2.left;
+				// store the look direction as side
+				m_currentLookDirection = m_side;
+			}
+			// otherwise, if Isaac should shoot a tear right
+			else if (Input.GetButton("Use Power Right Secondary"))
+			{
+				// store the shoot direction as right
+				m_shootDirection = Vector2.right;
+				// store the look direction as up
+				m_currentLookDirection = m_side;
+			}
+			else
+			{
+				// store the shoot direction as zero to indicate that a fire input has not been given
+				m_shootDirection = Vector2.zero;
+				// store the look direction as down
+				m_currentLookDirection = m_down;
+			}
+
+			// if enough time has passed for Isaac to shoot a tear and there was a shoot direction input
+			if (m_fireRateTimer >= m_fireRate && m_shootDirection != Vector2.zero)
+			{
+				// create a copy of the tear prefab and add it to the player projectiles container
+				GameObject tear = Instantiate(m_isaacTearPrefab, m_gameManager.m_playerProjectilesContainer);
+				// set the tear's position to Isaac's
+				tear.transform.position = transform.position;
+				// shoot the tear in the specified direction
+				tear.GetComponent<Rigidbody2D>().AddForce(m_shootDirection * m_tearSpeed, ForceMode2D.Impulse);
+				// tell the tear how long it should last
+				tear.GetComponent<IsaacTear>().m_duration = m_tearDuration;
+				// give the tear access to the game manager
+				tear.GetComponent<IsaacTear>().m_gameManager = m_gameManager;
+				// reset the fire rate timer
+				m_fireRateTimer = 0.0f;
+				// store that Isaac's eyes should be closed
+				m_eyesOpen = false;
+			}
+			// otherwise if Isaac's eyes should no longer be closed
+			else if (m_fireRateTimer >= m_eyeClosedDuration)
+			{
+				// store that Isaac's eyes should be open
+				m_eyesOpen = true;
+			}
+
+			// update Isaac's sprite
+			m_spriteRenderer.sprite = (m_eyesOpen) ? m_currentLookDirection.m_eyesOpen : m_currentLookDirection.m_eyesClosed;
+			// flip the sprite along the X axis if Isaac is looking left
+			m_spriteRenderer.flipX = (m_shootDirection == Vector2.left);
+
+			// if Isaac has at least 1 bomb and the Place Bomb button was pressed
+			if (m_bombCount > 0 && Input.GetButtonDown("Place Isaac's Bomb"))
+			{
+				// create a copy of the IsaacBomb prefab and add it to the player projectiles container
+				GameObject bomb = Instantiate(m_isaacBombPrefab, m_gameManager.m_playerProjectilesContainer);
+				// position the bomb on Isaac
+				bomb.transform.position = transform.position;
+				// give the bomb access to the game manager
+				bomb.GetComponent<IsaacBomb>().m_gameManager = m_gameManager;
+				// reduce the bomb count by 1
+				--m_bombCount;
+			}
 		}
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 31/08/2026
+    Last Modified: 07/09/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Other Scripts")]
-    public Dialogue m_dialogue;
     public LevelManager m_levelManager;
     public MusicManager m_musicManager;
     public PegManager m_pegManager;
@@ -425,28 +424,32 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        switch (m_gameState)
+        // if the game is not paused
+        if (Time.timeScale > 0.0f)
         {
-            // if the game state is Pre Shot
-            case GameState.PreShot:
-                // if the magic power is ready to be in the Shooting state and the UI manager is clear
-                if (m_magicPower.IsReady(GameState.Shooting) && m_UIManager.IsClear())
-                {
-                    // switch the game state to Shooting
-                    m_gameState = GameState.Shooting;
-                }
-                break;
-            // if the game state is Post Shot
-            case GameState.PostShot:
-                // if the magic power is ready to be in the Pre Shot state, the peg manager has finished resolving the camera is in its default state and the UI manager is clear
-                if (m_magicPower.IsReady(GameState.PreShot) && m_pegManager.ResolveComplete() && m_cameraZoom.CameraAtDefault() && m_UIManager.IsClear())
-                {
-                    // switch the game state to Pre Shot
-                    m_gameState = GameState.PreShot;
-                    // set up the next shot
-                    SetUpShot();
-                }
-                break;
+            switch (m_gameState)
+            {
+                // if the game state is Pre Shot
+                case GameState.PreShot:
+                    // if the magic power is ready to be in the Shooting state and the UI manager is clear
+                    if (m_magicPower.IsReady(GameState.Shooting) && m_UIManager.IsClear())
+                    {
+                        // switch the game state to Shooting
+                        m_gameState = GameState.Shooting;
+                    }
+                    break;
+                // if the game state is Post Shot
+                case GameState.PostShot:
+                    // if the magic power is ready to be in the Pre Shot state, the peg manager has finished resolving the camera is in its default state and the UI manager is clear
+                    if (m_magicPower.IsReady(GameState.PreShot) && m_pegManager.ResolveComplete() && m_cameraZoom.CameraAtDefault() && m_UIManager.IsClear())
+                    {
+                        // switch the game state to Pre Shot
+                        m_gameState = GameState.PreShot;
+                        // set up the next shot
+                        SetUpShot();
+                    }
+                    break;
+            }
         }
         //print(m_gameState);
     }
@@ -463,6 +466,7 @@ public class GameManager : MonoBehaviour
  *  Power Set Up -> shooting        [MatejaPower - Mateja needs to move to ground before set up is complete] [EthenPower - Drawing may need to be done first?]
  *  UI ball remaining pop up cleared
  *  ** Ball-O-Tron Settled
+ *  no dialogue
  *  
  * Shooting:
  *  Ball Shot
