@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: MatejaPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Mateja
 	Creation Date: 27/01/2025
-	Last Modified: 07/09/2026
+	Last Modified: 14/09/2026
 */
 public class MatejaPower : MagicPower
 {
@@ -22,8 +22,8 @@ public class MatejaPower : MagicPower
             m_mateja = Instantiate(m_matejaPrefab).GetComponent<Mateja>();
             // give it game manager, the bucket and the victory buckets
             m_mateja.m_gameManager = m_gameManager;
-            m_mateja.m_bucket = m_gameManager.m_pegManager.m_bucket;
-            m_mateja.m_victoryBuckets = m_gameManager.m_pegManager.m_victoryBuckets;
+            m_mateja.m_bucket = m_pegManager.m_bucket;
+            m_mateja.m_victoryBuckets = m_pegManager.m_victoryBuckets;
         }
         // if there is already a Mateja
         else

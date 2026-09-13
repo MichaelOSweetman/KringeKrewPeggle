@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 07/09/2026
+    Last Modified: 14/09/2026
 */
 
 public class Flicker
@@ -551,6 +551,9 @@ public class UIManager : MonoBehaviour
 
     public void MainMenu()
     {
+        // have the game manager reset the level to ensure any lasting modifications can be reset before leaving the scene
+        m_gameManager.ResetLevel();
+        // load the main menu scene
         SceneManager.LoadSceneAsync(m_mainMenuSceneID);
     }
 

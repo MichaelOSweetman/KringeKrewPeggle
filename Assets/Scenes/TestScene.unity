@@ -3640,7 +3640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2979d3bf509d2e4488c00538e460ac94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_dialogue: {fileID: 191030509}
   m_levelManager: {fileID: 241605739}
   m_musicManager: {fileID: 1676064810}
   m_pegManager: {fileID: 2117815010}
@@ -3679,7 +3678,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b7db013538a78e74e802187359810d0c, type: 3}
   - {fileID: 8300000, guid: f6e7000d7cccf934d8865fa879a78b23, type: 3}
   - {fileID: 8300000, guid: 27a93aacfc16bb44cb1948513b1dc13f, type: 3}
-  m_gameState: 1
+  m_gameState: 0
   m_unpausedTimeScale: 0.02
   m_ball: {fileID: 0}
 --- !u!1 &242558810
@@ -28058,7 +28057,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1716778640
 RectTransform:
   m_ObjectHideFlags: 0

@@ -7,11 +7,10 @@ using UnityEngine.UI;
 	File name: EthenPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Ethen
 	Creation Date: 27/01/2025
-	Last Modified: 31/08/2026
+	Last Modified: 14/09/2026
 */
 public class EthenPower : MagicPower
 {
-    public PegManager m_pegManager;
     public GameObject m_endDrawButtonPrefab;
     public GameObject m_clearButtonPrefab;
     public GameObject m_inkResourceBarPrefab;
@@ -126,8 +125,6 @@ public class EthenPower : MagicPower
         m_launcherRotation = m_gameManager.m_launcherRotation;
         // get access to the play area bounds through player controls via the game manager
         m_playAreaBounds = m_gameManager.m_playerControls.m_playAreaBounds;
-        // get access to the peg manager through the game manager
-        m_pegManager = m_gameManager.m_pegManager;
 
         // create an empty gameobject to store created lines and set its position to 0
         m_lines = new GameObject().transform;

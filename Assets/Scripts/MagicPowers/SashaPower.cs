@@ -7,7 +7,7 @@ using UnityEngine.UI;
     File name: SashaPower.cs
     Summary: Manages the magic power gained from the green peg when playing as Sasha
     Creation Date: 01/06/2025
-    Last Modified: 07/09/2026
+    Last Modified: 14/09/2026
 */
 public class SashaPower : MagicPower
 {
@@ -50,7 +50,7 @@ public class SashaPower : MagicPower
         m_UIArrow.gameObject.SetActive(false);
 
         // get the current level's peg container
-        m_pegContainer = m_gameManager.m_pegManager.m_currentPegContainer;
+        m_pegContainer = m_pegManager.m_currentPegContainer;
         // store its current position as the default position
         m_pegContainer.transform.position = m_containerDefaultPosition;
 

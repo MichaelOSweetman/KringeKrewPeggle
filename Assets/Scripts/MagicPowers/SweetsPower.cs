@@ -7,7 +7,7 @@ using UnityEngine.UI;
 	File name: SweetsPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Sweets
 	Creation Date: 27/01/2025
-	Last Modified: 31/08/2026
+	Last Modified: 14/09/2026
 */
 public class SweetsPower : MagicPower
 {
@@ -57,9 +57,9 @@ public class SweetsPower : MagicPower
 		// get access to the rigidbody component of the ball via the game manager and player controls 
 		m_ball = m_gameManager.m_playerControls.m_ballPrefab.GetComponent<Rigidbody2D>();
 
-		// get access to the peg manager through the game manager and use it to access the bucket's MoveToPoints component and the victory buckets
-        m_bucket = m_gameManager.m_pegManager.m_bucket.GetComponent<MoveToPoints>();
-		m_victoryBuckets = m_gameManager.m_pegManager.m_victoryBuckets;
+		// get the bucket's MoveToPoints component and the victory buckets via the peg manager
+        m_bucket = m_pegManager.m_bucket.GetComponent<MoveToPoints>();
+		m_victoryBuckets = m_pegManager.m_victoryBuckets;
 
         // get access to the LauncherRotation via the game manager
         m_launcherRotation = m_gameManager.m_launcherRotation;

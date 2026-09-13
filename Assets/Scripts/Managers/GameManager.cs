@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 07/09/2026
+    Last Modified: 14/09/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -20,11 +20,11 @@ public class GameManager : MonoBehaviour
     public enum GameState
     {
         Menu,
-        Reloading,
         PreShot,
         Shooting,
         MidShot,
-        PostShot
+        PostShot,
+        Over
     }
 
     [Header("Other Scripts")]
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     public AudioClip[] m_freeBallSounds;
 
-    [HideInInspector] public GameState m_gameState = GameState.Reloading;
+    [HideInInspector] public GameState m_gameState = GameState.Menu;
 
     //temp unsorted
     float m_defaultTimeScale = 1.0f;
@@ -120,9 +120,10 @@ public class GameManager : MonoBehaviour
             // have the UI manager load the character assets and get the magic power from the loaded prefab
             m_magicPower = m_UIManager.LoadCharacter(m_characters[m_characterID].m_playerIconPrefab).GetComponent<MagicPower>();
 
-            // give the magic power access to the UI manager and this
-            m_magicPower.m_UIManager = m_UIManager;
+            // give the magic power access to the this, the peg manager and the UI manager
             m_magicPower.m_gameManager = this;
+            m_magicPower.m_pegManager = m_pegManager;
+            m_magicPower.m_UIManager = m_UIManager;
 
             // initialise the power
             m_magicPower.Initialize();
@@ -150,8 +151,8 @@ public class GameManager : MonoBehaviour
         // destroy the projectile
         Destroy(a_projectile);
 
-        // if the projectile count is now equal to 0
-        if (m_playerProjectilesContainer.childCount == 0)
+        // if the projectile count is now equal to 0 and the gamestate is not over
+        if (m_playerProjectilesContainer.childCount == 0 && m_gameState != GameState.Over)
         {
             // if the ball count is over 0
             if (m_ballCount > 0)
@@ -164,8 +165,6 @@ public class GameManager : MonoBehaviour
             // if the player has run out of balls
             else
             {
-                // switch the game state to menu
-                m_gameState = GameState.Menu;
                 // have the player lose the level
                 LevelLost();
             }
@@ -212,8 +211,8 @@ public class GameManager : MonoBehaviour
 
         // have the UI Manager show the Try Again screen
         m_UIManager.ShowTryAgainScreen();
-        // switch the game state to menu
-        m_gameState = GameState.Menu;
+        // switch the game state to over
+        m_gameState = GameState.Over;
     }
 
     public void LevelWon()
@@ -238,8 +237,8 @@ public class GameManager : MonoBehaviour
 
         // have the UI Manager show the Level Complete screen
         m_UIManager.ShowLevelCompleteScreen();
-        // switch the game state to menu
-        m_gameState = GameState.Menu;
+        // switch the game state to over
+        m_gameState = GameState.Over;
     }
 
     public void ResetLevel()
@@ -424,6 +423,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // TEMP
+        //print(m_gameState + " | " + Time.timeScale);
         // if the game is not paused
         if (Time.timeScale > 0.0f)
         {
@@ -451,16 +452,11 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
-        //print(m_gameState);
     }
 }
 
 /*
  * Game State Checklist (to move to next phase): 
- * 
- * Reloading:
- *  Power Reloaded -> pre shot
- *  Ball-O-Tron Reset
  * 
  * PreShot:
  *  Power Set Up -> shooting        [MatejaPower - Mateja needs to move to ground before set up is complete] [EthenPower - Drawing may need to be done first?]

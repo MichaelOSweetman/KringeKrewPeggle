@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: JackPower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Jack
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 14/09/2026
 */
 public class JackPower : MagicPower
 {
@@ -19,10 +19,10 @@ public class JackPower : MagicPower
     public override void Initialize()
     {
         // store the base peg scores of each type
-        m_defaultBluePegScore = m_gameManager.m_pegManager.m_baseBluePegScore;
-        m_defaultOrangePegScore = m_gameManager.m_pegManager.m_baseOrangePegScore;
-        m_defaultPurplePegScore = m_gameManager.m_pegManager.m_basePurplePegScore;
-        m_defaultGreenPegScore = m_gameManager.m_pegManager.m_baseGreenPegScore;
+        m_defaultBluePegScore = m_pegManager.m_baseBluePegScore;
+        m_defaultOrangePegScore = m_pegManager.m_baseOrangePegScore;
+        m_defaultPurplePegScore = m_pegManager.m_basePurplePegScore;
+        m_defaultGreenPegScore = m_pegManager.m_baseGreenPegScore;
 
         // store that the power is ready for the game to be in the pre shot state
         m_powerState = GameManager.GameState.PreShot;
@@ -34,13 +34,13 @@ public class JackPower : MagicPower
         if (m_setUpNextTurn)
         {
             // get the average of the scores of all the active pegs
-            m_communistPegScore = m_gameManager.m_pegManager.GetAverageActivePegScore();
+            m_communistPegScore = m_pegManager.GetAverageActivePegScore();
 
             // replace the score gained from these pegs with this average
-            m_gameManager.m_pegManager.m_baseBluePegScore = m_communistPegScore;
-            m_gameManager.m_pegManager.m_baseOrangePegScore = m_communistPegScore;
-            m_gameManager.m_pegManager.m_basePurplePegScore = m_communistPegScore;
-            m_gameManager.m_pegManager.m_baseGreenPegScore = m_communistPegScore;
+            m_pegManager.m_baseBluePegScore = m_communistPegScore;
+            m_pegManager.m_baseOrangePegScore = m_communistPegScore;
+            m_pegManager.m_basePurplePegScore = m_communistPegScore;
+            m_pegManager.m_baseGreenPegScore = m_communistPegScore;
 
             // disable the set up power flag
             m_setUpNextTurn = false;
@@ -71,10 +71,10 @@ public class JackPower : MagicPower
     public override void Reload()
 	{
         // return the score gained from pegs to their default bases
-        m_gameManager.m_pegManager.m_baseBluePegScore = m_defaultBluePegScore;
-        m_gameManager.m_pegManager.m_baseOrangePegScore = m_defaultOrangePegScore;
-        m_gameManager.m_pegManager.m_basePurplePegScore = m_defaultPurplePegScore;
-        m_gameManager.m_pegManager.m_baseGreenPegScore = m_defaultGreenPegScore;
+        m_pegManager.m_baseBluePegScore = m_defaultBluePegScore;
+        m_pegManager.m_baseOrangePegScore = m_defaultOrangePegScore;
+        m_pegManager.m_basePurplePegScore = m_defaultPurplePegScore;
+        m_pegManager.m_baseGreenPegScore = m_defaultGreenPegScore;
 
         // reset the power charges
         ResetPowerCharges();

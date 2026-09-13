@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: PhoebePower.cs
 	Summary: Manages the magic power gained from the green peg when playing as Phoebe
 	Creation Date: 27/01/2025
-	Last Modified: 24/08/2026
+	Last Modified: 14/09/2026
 */
 public class PhoebePower : MagicPower
 {
@@ -22,7 +22,7 @@ public class PhoebePower : MagicPower
             m_bocconcinis = new List<Bocconcini>();
 
             // loop for each peg in the current level
-            foreach (Peg peg in m_gameManager.m_pegManager.m_pegs)
+            foreach (Peg peg in m_pegManager.m_pegs)
             {
                 // if the peg is not set to null, it is active
                 if (peg != null)

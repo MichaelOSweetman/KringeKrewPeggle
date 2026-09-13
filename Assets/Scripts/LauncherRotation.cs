@@ -6,7 +6,7 @@ using UnityEngine;
     File name: LauncherRotation.cs
     Summary: Rotates the launcher to face the cursor or via micro adjustments from player input
     Creation Date: 02/10/2023
-    Last Modified: 17/08/2026
+    Last Modified: 14/09/2026
 */
 public class LauncherRotation : MonoBehaviour
 {
@@ -42,8 +42,8 @@ public class LauncherRotation : MonoBehaviour
 
     void Update()
     {
-		// if the game is not paused, nor is it in the Menu or Reloading game state
-		if (Time.timeScale > 0.0f && m_gameManager.m_gameState != GameManager.GameState.Menu && m_gameManager.m_gameState != GameManager.GameState.Reloading)
+		// if the game is not paused, nor is it in the Menu or Over game state
+		if (Time.timeScale > 0.0f && m_gameManager.m_gameState != GameManager.GameState.Menu && m_gameManager.m_gameState != GameManager.GameState.Over)
 		{ 
 			// get the mouse position in world space
 			m_mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
