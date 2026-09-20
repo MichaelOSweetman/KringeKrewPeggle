@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 20/07/2026
+	Last Modified: 21/09/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -55,39 +55,6 @@ public class MainMenuManager : MonoBehaviour
 
     [Header("Other")]
     public int m_gameplaySceneID = 1;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        // loop for each save file
-        for (int i = 0; i < m_saveFile.m_maxSaves; ++i)
-        {
-            // get the file name for this save file
-            string fileName = m_saveFile.GetSaveFileName(i);
-
-            // if there is no file
-            if (fileName == "")
-            {
-                // set the save file button corresponding to this save file to be inactive
-                m_saveFileButtons[i].transform.gameObject.SetActive(false);
-            }
-            else
-            { 
-                // set the save file button's text to be the name of the file
-                UpdateSaveFileButtonText(i, m_saveFile.GetSaveFileName(i));
-            }
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //TEMP
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            print(GlobalSettings.m_currentSaveID);
-        }
-    }
 
     public void UpdateSaveFileButtonText(int a_saveFileID, string a_saveFileName)
     {
@@ -176,6 +143,8 @@ public class MainMenuManager : MonoBehaviour
     public void UpdateMusicVolume()
     {
         GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
+        // TEMP
+        print("MM CALLED: " + GlobalSettings.m_musicVolume);
     }
 
     public void UpdateFeverVolume()
@@ -292,6 +261,47 @@ public class MainMenuManager : MonoBehaviour
         m_speechBubbleText.text = m_quickPlayHoverText;
         // make the change save button inactive
         m_changeSaveButton.SetActive(false);
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // TEMP
+        print("MM start");
+
+        // initialise volume sliders
+        m_musicVolumeSlider.value = GlobalSettings.m_musicVolume;
+        m_feverVolumeSlider.value = GlobalSettings.m_feverVolume;
+        m_soundEffectVolumeSlider.value = GlobalSettings.m_soundEffectVolume;
+
+        // loop for each save file
+        for (int i = 0; i < m_saveFile.m_maxSaves; ++i)
+        {
+            // get the file name for this save file
+            string fileName = m_saveFile.GetSaveFileName(i);
+
+            // if there is no file
+            if (fileName == "")
+            {
+                // set the save file button corresponding to this save file to be inactive
+                m_saveFileButtons[i].transform.gameObject.SetActive(false);
+            }
+            else
+            {
+                // set the save file button's text to be the name of the file
+                UpdateSaveFileButtonText(i, m_saveFile.GetSaveFileName(i));
+            }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //TEMP
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            print(GlobalSettings.m_currentSaveID);
+        }
     }
 }
 

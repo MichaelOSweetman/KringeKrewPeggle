@@ -6,7 +6,7 @@ using UnityEngine;
 	File name: LevelManager.cs
 	Summary: Manages the loading of specific levels and stages of the game
 	Creation Date: 27/04/2025
-	Last Modified: 27/07/2026
+	Last Modified: 21/09/2026
 */
 public class LevelManager : MonoBehaviour
 {
@@ -119,6 +119,9 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // TEMP
+        print("Pre-Load");
+
         // load the current level
         LoadLevel(GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID);
     }
