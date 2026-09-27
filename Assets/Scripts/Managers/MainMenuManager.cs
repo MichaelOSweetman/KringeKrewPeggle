@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 21/09/2026
+	Last Modified: 27/09/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -143,8 +143,6 @@ public class MainMenuManager : MonoBehaviour
     public void UpdateMusicVolume()
     {
         GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
-        // TEMP
-        print("MM CALLED: " + GlobalSettings.m_musicVolume);
     }
 
     public void UpdateFeverVolume()
@@ -266,9 +264,6 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // TEMP
-        print("MM start");
-
         // initialise volume sliders
         m_musicVolumeSlider.value = GlobalSettings.m_musicVolume;
         m_feverVolumeSlider.value = GlobalSettings.m_feverVolume;

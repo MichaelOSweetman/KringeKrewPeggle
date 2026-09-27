@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 21/09/2026
+    Last Modified: 27/09/2026
 */
 
 public class Flicker
@@ -567,11 +567,8 @@ public class UIManager : MonoBehaviour
             // store the new music volume in the global variable
             GlobalSettings.m_musicVolume = m_musicVolumeSlider.value;
             // have the music manager update its audiosource's volume
-            // TEMP
-            //m_musicManager.SetVolume();
+            m_musicManager.SetVolume();
         }
-            // TEMP
-            print("CALLED: " + m_initializing + " | " + GlobalSettings.m_musicVolume);
     }
 
     public void UpdateFeverVolume()
@@ -690,9 +687,6 @@ public class UIManager : MonoBehaviour
 
     void Awake()
     {
-        // TEMP
-        print("Awake: " + GlobalSettings.m_musicVolume);
-
         // get the save file component
         m_saveFile = GetComponent<SaveFile>();
 
@@ -724,25 +718,17 @@ public class UIManager : MonoBehaviour
 
         // TEMP
         m_initializing = true;
-        print("Pre-Initialize: " + GlobalSettings.m_musicVolume);
 
         // initialise volume sliders
         m_musicVolumeSlider.value = GlobalSettings.m_musicVolume;
         m_feverVolumeSlider.value = GlobalSettings.m_feverVolume;
         m_soundEffectVolumeSlider.value = GlobalSettings.m_soundEffectVolume;
 
-        // TEMP
-        print("Set: " + GlobalSettings.m_musicVolume);
-
         // have the music manager update its audiosource's volume
-        // TEMP
-        // m_musicManager.SetVolume();
+        m_musicManager.SetVolume();
 
         // TEMP
         m_initializing = false;
-
-        // TEMP
-        print("Applied: " + GlobalSettings.m_musicVolume);
     }
 
     void Update()

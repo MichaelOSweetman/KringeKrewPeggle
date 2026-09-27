@@ -12,14 +12,14 @@ using UnityEngine.UI;
 	File name: SaveFile.cs
 	Summary: manages the storage and reading of the player's save file
 	Creation Date: 22/07/2024
-	Last Modified: 29/09/2025
+	Last Modified: 27/09/2026
 */
 public class SaveFile : MonoBehaviour
 {
     public string m_saveFilePath = "";
     public int m_maxSaves = 3;
     string m_fullSavePath = "";
-    [HideInInspector] public int m_SaveFileCount;
+    //[HideInInspector] public int m_SaveFileCount;
     [HideInInspector] public int[,] m_topScores;
     [HideInInspector] public int m_lastCompletedLevel = 0;
     StreamWriter m_streamWriter;
@@ -224,14 +224,6 @@ public class SaveFile : MonoBehaviour
         m_fullSavePath = Application.dataPath + "/" + m_saveFilePath;
         // initialise the high scores array to have an element for each level in the game
         m_topScores = new int[GlobalSettings.m_stageCount, GlobalSettings.m_levelsPerStage];
-
-        // read the current save, if it does not exist
-        if (!ReadSaveFile(GlobalSettings.m_currentSaveID))
-        {
-            // TEMP
-            print("could not read file");
-            // CREATE NEW SAVE
-        }
     }
 
     // Update is called once per frame
@@ -245,3 +237,23 @@ public class SaveFile : MonoBehaviour
     }
 }
 
+/*
+ - Open Game
+ - /Main Menu/
+ - Read most recently accessed save file
+ - Determine latest scored level to infer next level for adventure mode
+ - Apply saved settings
+ - If player opens the change save sub menu and selects a different save
+       - load selected save
+       - only update colourblind toggle (have inspector toggle for this "always update colourblind")
+ - /Game Scene/
+ if new high score or current level/stage changes
+    - save to file, including settings changes
+- when game closes
+       - save game changes
+
+ReadSaveFile needs optional applying settings
+Save File should maybe be split into a script for main menu and game scene 
+    - main menu reads and stores in global settings
+    - game scene updates new data and saves changes
+ */
