@@ -7,11 +7,11 @@ using UnityEngine;
     File name: GlobalSettings.cs
     Summary: Stores settings and variables that need to be passed between scenes
     Creation Date: 22/12/2024
-    Last Modified: 27/09/2026
+    Last Modified: 05/10/2026
 */
 public class GlobalSettings : MonoBehaviour
 {
-    public static int     m_currentSaveID = 0;
+    public static string  m_currentSavePath = "";
     public static string  m_saveName;
     public static int     m_currentLevelID = 0;
     public static int     m_currentStageID = 0;

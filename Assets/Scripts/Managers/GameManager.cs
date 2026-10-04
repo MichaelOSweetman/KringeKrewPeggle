@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 14/09/2026
+    Last Modified: 05/10/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public MusicManager m_musicManager;
     public PegManager m_pegManager;
     public PlayerControls m_playerControls;
-    public SaveFile m_saveFile;
+    public SaveWriter m_saveFile;
     public UIManager m_UIManager;
     public BallTrajectory m_ballTrajectory;
     public CameraZoom m_cameraZoom;
@@ -226,10 +226,10 @@ public class GameManager : MonoBehaviour
         /// show level complete screen
 
         // if the stored top score for this level is lower than or equal to the scored achieved
-        if (m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
+        if (GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] <= m_pegManager.m_score)
         {
             // update the top score
-            m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
+            GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] = m_pegManager.m_score;
 
             // have the update the top score text
             m_UIManager.UpdateTopScoreText();

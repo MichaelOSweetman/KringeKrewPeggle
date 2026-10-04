@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 27/09/2026
+    Last Modified: 05/10/2026
 */
 
 public class Flicker
@@ -176,7 +176,7 @@ public class UIManager : MonoBehaviour
     [Header("Score")]
     public Text m_levelScoreText;
     public Text m_topScoreText;
-    SaveFile m_saveFile;
+    SaveWriter m_saveFile;
     int m_selectedCharacterID = 0;
 
     [Header("Flickering")]
@@ -448,8 +448,18 @@ public class UIManager : MonoBehaviour
 
     public void UpdateTopScoreText()
     {
-        // set the text to be the top score stored for the current level
-        m_topScoreText.text = m_saveFile.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString("#,#");
+        // if there is not a valid score stored for this level
+        if (GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] < 0)
+        {
+            // display the score as 0
+            m_topScoreText.text = "0";
+        }
+        // if there is a valid score stored for this level
+        else
+        {
+            // set the text to be the top score stored for the current level
+            m_topScoreText.text = GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString("#,#");
+        }
     }
 
     public void UpdateLevelScoreText(int a_score)
@@ -688,7 +698,7 @@ public class UIManager : MonoBehaviour
     void Awake()
     {
         // get the save file component
-        m_saveFile = GetComponent<SaveFile>();
+        m_saveFile = GetComponent<SaveWriter>();
 
         // store the help screen's current position as the on screen position
         m_helpOnScreenPosition = m_helpScreen.transform.position;

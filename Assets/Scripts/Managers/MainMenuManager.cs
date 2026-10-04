@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 27/09/2026
+	Last Modified: 05/10/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -33,7 +33,7 @@ public class MainMenuManager : MonoBehaviour
     public Button m_navigateRight;
 
     [Header("Saves")]
-    public SaveFile m_saveFile;
+    public SaveReader m_saveReader;
     public Button[] m_saveFileButtons;
     public Color m_inactiveSaveFileButtonColor;
     public Color m_activeSaveFileButtonColor;
@@ -79,8 +79,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void SaveMenuOK()
     {
-        // read the selected save file selected
-        m_saveFile.ReadSaveFile(m_selectedSaveFile);
+        // read the selected save file without applying its stored settings
+        m_saveReader.ReadSaveFile(m_selectedSaveFile, false);
 
         // hide the change save menu
         m_changeSaveMenu.SetActive(false);
@@ -91,7 +91,7 @@ public class MainMenuManager : MonoBehaviour
         // set the button of the selected save file to be inactive
         m_saveFileButtons[m_selectedSaveFile].gameObject.SetActive(false);
         // have the save file script delete the corresponding save
-        m_saveFile.DeleteSaveFile(m_selectedSaveFile);
+        m_saveReader.DeleteSaveFile(m_selectedSaveFile);
     }
 
     public void SwitchSubMenu(GameObject a_activeSubMenu)
@@ -155,13 +155,23 @@ public class MainMenuManager : MonoBehaviour
         GlobalSettings.m_soundEffectVolume = m_soundEffectVolumeSlider.value;
     }
 
-    public void FullscreenToggle()
+    public void SetFullscreenToggle()
+    {
+        m_fullscreenToggle.isOn = (Screen.fullScreenMode == FullScreenMode.FullScreenWindow) ? true : false;
+    }
+
+    public void FullscreenToggleChanged()
     {
         // set the fullscreen mode to fullscreen or windowed, as per the toggle's value
         Screen.fullScreenMode = (m_fullscreenToggle.isOn) ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
     }
 
-    public void ColorblindToggle()
+    public void SetColorblindToggle()
+    {
+        m_colorblindToggle.isOn = GlobalSettings.m_colorblindMode;
+    }
+
+    public void ColorblindToggleChanged()
     {
         GlobalSettings.m_colorblindMode = m_colorblindToggle.isOn;
     }
@@ -270,10 +280,10 @@ public class MainMenuManager : MonoBehaviour
         m_soundEffectVolumeSlider.value = GlobalSettings.m_soundEffectVolume;
 
         // loop for each save file
-        for (int i = 0; i < m_saveFile.m_maxSaves; ++i)
+        for (int i = 0; i < m_saveReader.m_maxSaves; ++i)
         {
             // get the file name for this save file
-            string fileName = m_saveFile.GetSaveFileName(i);
+            string fileName = m_saveReader.GetSaveFileName(i);
 
             // if there is no file
             if (fileName == "")
@@ -284,7 +294,7 @@ public class MainMenuManager : MonoBehaviour
             else
             {
                 // set the save file button's text to be the name of the file
-                UpdateSaveFileButtonText(i, m_saveFile.GetSaveFileName(i));
+                UpdateSaveFileButtonText(i, fileName);
             }
         }
     }
@@ -295,7 +305,7 @@ public class MainMenuManager : MonoBehaviour
         //TEMP
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            print(GlobalSettings.m_currentSaveID);
+            print(GlobalSettings.m_currentSavePath);
         }
     }
 }
