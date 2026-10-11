@@ -6,7 +6,7 @@ using UnityEngine;
     File name: GameManager
     Summary: Manages the pacing of the game and oversees large game systems
     Creation Date: 16/03/2026
-    Last Modified: 05/10/2026
+    Last Modified: 12/10/2026
 */
 public class GameManager : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public MusicManager m_musicManager;
     public PegManager m_pegManager;
     public PlayerControls m_playerControls;
-    public SaveWriter m_saveFile;
+    public SaveWriter m_saveWriter;
     public UIManager m_UIManager;
     public BallTrajectory m_ballTrajectory;
     public CameraZoom m_cameraZoom;
@@ -235,6 +235,8 @@ public class GameManager : MonoBehaviour
             m_UIManager.UpdateTopScoreText();
         }
 
+        // save the game information
+        m_saveWriter.UpdateSaveFile();
         // have the UI Manager show the Level Complete screen
         m_UIManager.ShowLevelCompleteScreen();
         // switch the game state to over
@@ -396,7 +398,6 @@ public class GameManager : MonoBehaviour
         // ensure fixedUpdate is called with the same frequency regardless of time scale so physics remains smooth
         Time.fixedDeltaTime = m_defaultDeltaTime * Time.timeScale;
     }
-
 
     private void Awake()
     {

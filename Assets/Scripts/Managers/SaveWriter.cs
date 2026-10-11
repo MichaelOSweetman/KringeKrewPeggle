@@ -1,6 +1,3 @@
-
-
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,14 +9,14 @@ using UnityEngine.UI;
 	File name: SaveWriter.cs
 	Summary: writes to the save file in the gameplay scene
 	Creation Date: 22/07/2024
-	Last Modified: 05/10/2026
+	Last Modified: 12/10/2026
 */
 public class SaveWriter : MonoBehaviour
 {
     public int m_volumeSavePrecision = 2;
     StreamWriter m_streamWriter;
 
-    public void UpdateSaveFile(int a_saveID = 0)
+    public void UpdateSaveFile()
     {
         // create the save file, or open and clear it if it already exists
         m_streamWriter = File.CreateText(GlobalSettings.m_currentSavePath);
@@ -66,6 +63,18 @@ public class SaveWriter : MonoBehaviour
         print("File accessed and written to");
     }
 
+    private void OnApplicationQuit()
+    {
+        // save information to the current save ID
+        UpdateSaveFile();
+    }
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -76,24 +85,3 @@ public class SaveWriter : MonoBehaviour
         }
     }
 }
-
-/*
- X Open Game
- - /Main Menu/
- - Read most recently accessed save file
- X Determine latest scored level to infer next level for adventure mode
- X Apply saved settings
- X If player opens the change save sub menu and selects a different save
-       X load selected save
-       X only update colourblind toggle (have inspector toggle for this "always update colourblind")
- - /Game Scene/
- if new high score or current level/stage changes
-    - save to file, including settings changes
-- when game closes
-       - save game changes
-
-X ReadSaveFile needs optional applying settings
-X Save File should maybe be split into a script for main menu and game scene 
-    X main menu reads and stores in global settings
-    X game scene updates new data and saves changes
- */

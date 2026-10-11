@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 05/10/2026
+	Last Modified: 12/10/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -22,6 +22,7 @@ public class MainMenuManager : MonoBehaviour
     public GameObject m_quitMenu;
     public GameObject m_optionsMenu;
     public GameObject m_changeSaveMenu;
+    public GameObject m_certificate;
 
     [Header("UI Components")]
     public Slider m_musicVolumeSlider;
@@ -31,6 +32,7 @@ public class MainMenuManager : MonoBehaviour
     public Toggle m_colorblindToggle;
     public Button m_navigateLeft;
     public Button m_navigateRight;
+    public InputField m_certificateInputField;
 
     [Header("Saves")]
     public SaveReader m_saveReader;
@@ -92,6 +94,26 @@ public class MainMenuManager : MonoBehaviour
         m_saveFileButtons[m_selectedSaveFile].gameObject.SetActive(false);
         // have the save file script delete the corresponding save
         m_saveReader.DeleteSaveFile(m_selectedSaveFile);
+    }
+
+    public void CertificateOK()
+    {
+        // get input field
+        // determine if input is valid
+        // create save with input text as save name
+        // store new save as current save
+
+        // hide the certificate of admission
+        m_certificate.SetActive(false);
+    }
+
+    public void CreateNewUser()
+    {
+        // hide the change save menu
+        m_changeSaveMenu.SetActive(false);
+
+        // show the certificate of admission
+        m_certificate.SetActive(true);
     }
 
     public void SwitchSubMenu(GameObject a_activeSubMenu)

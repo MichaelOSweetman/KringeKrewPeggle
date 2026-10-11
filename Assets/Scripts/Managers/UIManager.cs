@@ -9,7 +9,7 @@ using UnityEngine.UI;
     File name: UIManager.cs
     Summary: Manages UI buttons and transitions
     Creation Date: 29/01/2024
-    Last Modified: 05/10/2026
+    Last Modified: 12/10/2026
 */
 
 public class Flicker
@@ -448,18 +448,8 @@ public class UIManager : MonoBehaviour
 
     public void UpdateTopScoreText()
     {
-        // if there is not a valid score stored for this level
-        if (GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID] < 0)
-        {
-            // display the score as 0
-            m_topScoreText.text = "0";
-        }
-        // if there is a valid score stored for this level
-        else
-        {
-            // set the text to be the top score stored for the current level
-            m_topScoreText.text = GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID].ToString("#,#");
-        }
+        // set the text to be the top score stored for the current level, or to 0 if no such valid score is stored
+        m_topScoreText.text = (Mathf.Max(0, GlobalSettings.m_topScores[GlobalSettings.m_currentStageID, GlobalSettings.m_currentLevelID])).ToString("#,#");
     }
 
     public void UpdateLevelScoreText(int a_score)

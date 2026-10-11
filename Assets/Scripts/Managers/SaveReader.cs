@@ -7,7 +7,7 @@ using UnityEngine;
 	File name: SaveReader.cs
 	Summary: reads the save file in the main menu
 	Creation Date: 22/07/2024
-	Last Modified: 05/10/2026
+	Last Modified: 12/10/2026
 */
 public class SaveReader : MonoBehaviour
 {
@@ -210,10 +210,29 @@ public class SaveReader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // determine most recently accessed save
-        // read most recently accessed save, apply saved settings
-        // TEMP
-        ReadSaveFile();
+        // create a integer to store the ID of the save file that was most recently written to
+        int mostRecentWrittenSaveID = 0;
+        // create a system date time variable to store the most recent time that a save file was written to
+        System.DateTime mostRecentWriteTime = System.DateTime.MinValue;
+
+        // loop for each save file
+        for (int i = 0; i < m_maxSaves; ++i)
+        {
+            // get the time the save file with this ID was last written to
+            System.DateTime fileLastWriteTime = File.GetLastWriteTime(m_fullSavePath + m_fileName + i + m_fileType);
+
+            // if the save file with this ID was edited more recently than the current mostRecentWrittenSaveTime
+            if (System.DateTime.Compare(fileLastWriteTime, mostRecentWriteTime) > 0)
+            {
+                // store this ID as the save file ID that was most recently written to
+                mostRecentWrittenSaveID = i;
+                // store this write time as the most recent write time
+                mostRecentWriteTime = fileLastWriteTime;
+            }
+        }
+
+        // read the most recently written to save file
+        ReadSaveFile(mostRecentWrittenSaveID);
     }
 
     // Update is called once per frame
