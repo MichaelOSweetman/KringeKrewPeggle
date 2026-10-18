@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 12/10/2026
+	Last Modified: 18/10/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -33,9 +33,11 @@ public class MainMenuManager : MonoBehaviour
     public Button m_navigateLeft;
     public Button m_navigateRight;
     public InputField m_certificateInputField;
+    public Text m_certificateDate;
 
     [Header("Saves")]
     public SaveReader m_saveReader;
+    public SaveWriter m_saveWriter;
     public Button[] m_saveFileButtons;
     public Color m_inactiveSaveFileButtonColor;
     public Color m_activeSaveFileButtonColor;
@@ -96,12 +98,35 @@ public class MainMenuManager : MonoBehaviour
         m_saveReader.DeleteSaveFile(m_selectedSaveFile);
     }
 
+    public void CertificateCancel()
+    {
+        // hide the certificate of admission
+        m_certificate.SetActive(false);
+    }
+
     public void CertificateOK()
     {
-        // get input field
-        // determine if input is valid
-        // create save with input text as save name
-        // store new save as current save
+        // save the text provided by the user as the save name
+        GlobalSettings.m_saveName = m_certificateInputField.text;
+
+        // loop for each save file
+        for (int i = 0; i < m_saveReader.m_maxSaves; ++i)
+        {
+            // if a valid save file with this ID is not already saved
+            if (m_saveReader.GetSaveFileName(i) == "")
+            {
+                // store this location as the save file's file path
+                GlobalSettings.m_currentSavePath = m_saveReader.GetFilePath(i);
+                // have the save writer create the save file
+                m_saveWriter.UpdateSaveFile();
+                // set the save file button corresponding to this save file to be active
+                m_saveFileButtons[i].transform.gameObject.SetActive(true);
+                // set the save file button's text to be the name of the file
+                UpdateSaveFileButtonText(i, GlobalSettings.m_saveName);
+                // exit the loop
+                break;
+            }
+        }
 
         // hide the certificate of admission
         m_certificate.SetActive(false);
@@ -301,6 +326,9 @@ public class MainMenuManager : MonoBehaviour
         m_feverVolumeSlider.value = GlobalSettings.m_feverVolume;
         m_soundEffectVolumeSlider.value = GlobalSettings.m_soundEffectVolume;
 
+        // track whether there are any stored save files
+        bool saveFileFound = false;
+
         // loop for each save file
         for (int i = 0; i < m_saveReader.m_maxSaves; ++i)
         {
@@ -317,7 +345,18 @@ public class MainMenuManager : MonoBehaviour
             {
                 // set the save file button's text to be the name of the file
                 UpdateSaveFileButtonText(i, fileName);
+                // store that a save file has been found
+                saveFileFound = true;
             }
+        }
+
+        // show the current date on the certificate of admission
+        m_certificateDate.text = System.DateTime.Today.ToString("d");
+
+        // if non save file was found, prompt the user to create a new save file
+        if (!saveFileFound)
+        {
+            CreateNewUser();
         }
     }
 

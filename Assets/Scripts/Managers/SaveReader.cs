@@ -7,7 +7,7 @@ using UnityEngine;
 	File name: SaveReader.cs
 	Summary: reads the save file in the main menu
 	Creation Date: 22/07/2024
-	Last Modified: 12/10/2026
+	Last Modified: 18/10/2026
 */
 public class SaveReader : MonoBehaviour
 {
@@ -20,6 +20,16 @@ public class SaveReader : MonoBehaviour
     string m_fullSavePath = "";
     StreamReader m_streamReader;
     int[,] m_readScores;
+
+    public string GetFilePath(int a_saveID)
+    {
+        return (m_fullSavePath + m_fileName + a_saveID + m_fileType);
+    }
+
+    public bool SaveFileExists(int a_saveID)
+    {
+        return File.Exists(m_fullSavePath + m_fileName + a_saveID + m_fileType);
+    }
 
     public string GetSaveFileName(int a_saveID)
     {
@@ -205,13 +215,19 @@ public class SaveReader : MonoBehaviour
                 m_readScores[i,j] = -1;
             }
         }
+        // if the top scores array in global settings has not yet been initialised
+        if (GlobalSettings.m_topScores == null)
+        {
+            // use the read scores array to initialise the global settings top scores array
+            GlobalSettings.m_topScores = m_readScores;
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
         // create a integer to store the ID of the save file that was most recently written to
-        int mostRecentWrittenSaveID = 0;
+        int mostRecentWrittenSaveID = -1;
         // create a system date time variable to store the most recent time that a save file was written to
         System.DateTime mostRecentWriteTime = System.DateTime.MinValue;
 
@@ -231,8 +247,12 @@ public class SaveReader : MonoBehaviour
             }
         }
 
-        // read the most recently written to save file
-        ReadSaveFile(mostRecentWrittenSaveID);
+        // if a save ID was found
+        if (mostRecentWrittenSaveID >= 0)
+        {
+            // read the most recently written to save file
+            ReadSaveFile(mostRecentWrittenSaveID);
+        }
     }
 
     // Update is called once per frame
