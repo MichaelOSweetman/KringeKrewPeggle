@@ -7,7 +7,7 @@ using UnityEngine;
 	File name: SaveReader.cs
 	Summary: reads the save file in the main menu
 	Creation Date: 22/07/2024
-	Last Modified: 18/10/2026
+	Last Modified: 25/10/2026
 */
 public class SaveReader : MonoBehaviour
 {
@@ -61,6 +61,7 @@ public class SaveReader : MonoBehaviour
     {
         // store that the active save file is now this file
         GlobalSettings.m_currentSavePath = m_fullSavePath + m_fileName + a_saveID + m_fileType;
+        GlobalSettings.m_currentSaveID = a_saveID;
 
         // if the save file exists
         if (File.Exists(GlobalSettings.m_currentSavePath))

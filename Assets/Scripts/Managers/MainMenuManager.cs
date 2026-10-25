@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 18/10/2026
+	Last Modified: 25/10/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -34,6 +34,9 @@ public class MainMenuManager : MonoBehaviour
     public Button m_navigateRight;
     public InputField m_certificateInputField;
     public Text m_certificateDate;
+    public Button m_createNewUserButton;
+    public GameObject m_cancelCertificateButton;
+    public Button m_certificateOKButton;
 
     [Header("Saves")]
     public SaveReader m_saveReader;
@@ -42,11 +45,13 @@ public class MainMenuManager : MonoBehaviour
     public Color m_inactiveSaveFileButtonColor;
     public Color m_activeSaveFileButtonColor;
     int m_selectedSaveFile = 0;
+    int m_storedSaveFiles = 0;
 
     [Header("Speech Bubble")]
     public GameObject m_changeSaveButton;
     public Text m_speechBubbleText;
-    public string m_defaultText = "Welcome Back Sweets!";
+    public string m_greetingTextStart = "Welcome Back ";
+    public string m_greetingTextEnd = "!";
     public string m_quitHoverText = "See you again soon!";
     public string m_optionsHoverText = "Change Settings";
     public string m_adventureHoverText = "Continue your adventure";
@@ -96,6 +101,41 @@ public class MainMenuManager : MonoBehaviour
         m_saveFileButtons[m_selectedSaveFile].gameObject.SetActive(false);
         // have the save file script delete the corresponding save
         m_saveReader.DeleteSaveFile(m_selectedSaveFile);
+
+        // decrease the stored save counter
+        --m_storedSaveFiles;
+
+        // ensure the create new user button can be interacted with
+        m_createNewUserButton.interactable = true;
+
+        // if there are now 0 save files
+        if (m_storedSaveFiles == 0)
+        {
+            // store nothing as the current save path for the event in which the user quits the game before making a save
+            GlobalSettings.m_currentSavePath = "";
+            // hide the change save menu
+            m_changeSaveMenu.SetActive(false);
+            // prompt the user to create a new save file, without the ability to cancel
+            CreateNewUser(false);
+        }
+        // if the selected save file was the current save file
+        else if (m_selectedSaveFile == GlobalSettings.m_currentSaveID)
+        {
+            // loop for each save file button
+            for (int i = 0; i < m_saveFileButtons.Length; ++i)
+            {
+                // if this save file button is active, its associated save file exists
+                if (m_saveFileButtons[i].IsActive())
+                {
+                    // read this save file to be used as the new current save, without changing settings with it
+                    m_saveReader.ReadSaveFile(i, false);
+                    // update the speech bubble text with the new save name
+                    m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+                    // exit the loop
+                    break;
+                }
+            }
+        }
     }
 
     public void CertificateCancel()
@@ -109,12 +149,14 @@ public class MainMenuManager : MonoBehaviour
         // save the text provided by the user as the save name
         GlobalSettings.m_saveName = m_certificateInputField.text;
 
-        // loop for each save file
-        for (int i = 0; i < m_saveReader.m_maxSaves; ++i)
+        // loop for each save file button
+        for (int i = 0; i < m_saveFileButtons.Length; ++i)
         {
-            // if a valid save file with this ID is not already saved
-            if (m_saveReader.GetSaveFileName(i) == "")
+            // if this save file button is inactive, its associated save file does not yet exist
+            if (!m_saveFileButtons[i].IsActive())
             {
+                // store this save as the current save's ID
+                GlobalSettings.m_currentSaveID = i;
                 // store this location as the save file's file path
                 GlobalSettings.m_currentSavePath = m_saveReader.GetFilePath(i);
                 // have the save writer create the save file
@@ -128,17 +170,42 @@ public class MainMenuManager : MonoBehaviour
             }
         }
 
+        // increase the stored save counter
+        ++m_storedSaveFiles;
+
+        // if the number of save files is now at the maximum
+        if (m_storedSaveFiles >= m_saveReader.m_maxSaves)
+        {
+            // prevent the create new user button from being interacted with
+            m_createNewUserButton.interactable = false;
+        }
+
+        // clear the text of the input field
+        m_certificateInputField.text = "";
+
+        // update the speech bubble text with the new save name
+        m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+
         // hide the certificate of admission
         m_certificate.SetActive(false);
     }
 
-    public void CreateNewUser()
+    public void CertificateInputChanged()
+    {
+        // make the certificate's OK button uninteractable if the input field is empty
+        m_certificateOKButton.interactable = (m_certificateInputField.text != "");
+    }
+
+    public void CreateNewUser(bool a_allowCancel = true)
     {
         // hide the change save menu
         m_changeSaveMenu.SetActive(false);
 
         // show the certificate of admission
         m_certificate.SetActive(true);
+
+        // make the cancel button on the certificate active if cancelling is allowed
+        m_cancelCertificateButton.SetActive(a_allowCancel);
     }
 
     public void SwitchSubMenu(GameObject a_activeSubMenu)
@@ -281,7 +348,7 @@ public class MainMenuManager : MonoBehaviour
     public void SpeechBubbleDefault()
     {
         // update the speech bubble text
-        m_speechBubbleText.text = m_defaultText;
+        m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
         // make the change save button active
         m_changeSaveButton.SetActive(true);
     }
@@ -326,9 +393,6 @@ public class MainMenuManager : MonoBehaviour
         m_feverVolumeSlider.value = GlobalSettings.m_feverVolume;
         m_soundEffectVolumeSlider.value = GlobalSettings.m_soundEffectVolume;
 
-        // track whether there are any stored save files
-        bool saveFileFound = false;
-
         // loop for each save file
         for (int i = 0; i < m_saveReader.m_maxSaves; ++i)
         {
@@ -346,18 +410,33 @@ public class MainMenuManager : MonoBehaviour
                 // set the save file button's text to be the name of the file
                 UpdateSaveFileButtonText(i, fileName);
                 // store that a save file has been found
-                saveFileFound = true;
+                ++m_storedSaveFiles;
             }
         }
 
         // show the current date on the certificate of admission
         m_certificateDate.text = System.DateTime.Today.ToString("d");
 
-        // if non save file was found, prompt the user to create a new save file
-        if (!saveFileFound)
+        // if no save file was found, prompt the user to create a new save file
+        if (m_storedSaveFiles == 0)
         {
-            CreateNewUser();
+            // prompt the user to create a new save file, without the ability to cancel
+            CreateNewUser(false);
         }
+        // if a save file was found
+        else
+        {
+            // if the number of save files is at the maximum
+            if (m_storedSaveFiles >= m_saveReader.m_maxSaves)
+            {
+                // prevent the create new user button from being interacted with
+                m_createNewUserButton.interactable = false;
+            }
+
+            // update the speech bubble text
+            m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+        }
+
     }
 
     // Update is called once per frame

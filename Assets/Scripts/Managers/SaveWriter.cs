@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: SaveWriter.cs
 	Summary: writes to the save file in the gameplay scene
 	Creation Date: 22/07/2024
-	Last Modified: 12/10/2026
+	Last Modified: 25/10/2026
 */
 public class SaveWriter : MonoBehaviour
 {
@@ -18,6 +18,13 @@ public class SaveWriter : MonoBehaviour
 
     public void UpdateSaveFile()
     {
+        // if there is no current save path
+        if (GlobalSettings.m_currentSavePath == "")
+        {
+            // exit the function
+            return;
+        }
+
         // create the save file, or open and clear it if it already exists
         m_streamWriter = File.CreateText(GlobalSettings.m_currentSavePath);
 
