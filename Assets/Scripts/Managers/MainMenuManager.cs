@@ -9,7 +9,7 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 25/10/2026
+	Last Modified: 02/01/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
@@ -23,6 +23,8 @@ public class MainMenuManager : MonoBehaviour
     public GameObject m_optionsMenu;
     public GameObject m_changeSaveMenu;
     public GameObject m_certificate;
+    public GameObject m_deleteSaveConfirmMenu;
+    public GameObject m_renameSaveMenu;
 
     [Header("UI Components")]
     public Slider m_musicVolumeSlider;
@@ -37,6 +39,9 @@ public class MainMenuManager : MonoBehaviour
     public Button m_createNewUserButton;
     public GameObject m_cancelCertificateButton;
     public Button m_certificateOKButton;
+    public Text m_deleteConfirmWarning;
+    public InputField m_renameInputField;
+    public Button m_renameOKButton;
 
     [Header("Saves")]
     public SaveReader m_saveReader;
@@ -64,6 +69,8 @@ public class MainMenuManager : MonoBehaviour
 
     [Header("Other")]
     public int m_gameplaySceneID = 1;
+    public string m_deleteConfirmWarningStart = "This will permanently remove '";
+    public string m_deleteConfirmWarningEnd = "' from the player roster!";
 
     public void UpdateSaveFileButtonText(int a_saveFileID, string a_saveFileName)
     {
@@ -86,6 +93,43 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    public void RenameCancel()
+    {
+        // hide the rename save menu
+        m_renameSaveMenu.SetActive(false);
+    }
+
+    public void RenameOK()
+    {
+        // if selected save file is not current save
+            // temporarily store current save ID here
+            // read selected save file, making it new current save
+        
+        // write to the save file, with the new save name
+
+        // read the stored current save file, if one was stored
+
+        // hide the rename save menu
+        m_renameSaveMenu.SetActive(false);
+    }
+
+    public void RenameInputChanged()
+    {
+        // make the rename menu's OK button uninteractable if the input field is empty
+        m_renameOKButton.interactable = (m_renameInputField.text != "");
+    }
+
+    public void SaveMenuRename()
+    {
+        // show the rename save menu
+        m_renameSaveMenu.SetActive(true);
+
+        // initialise the rename menu's input field with the save's current name
+        m_renameInputField.text = m_saveFileButtons[m_selectedSaveFile].GetComponentInChildren<Text>().text;
+        // have the input field selected
+        m_renameInputField.Select();
+    }
+
     public void SaveMenuOK()
     {
         // read the selected save file without applying its stored settings
@@ -95,7 +139,13 @@ public class MainMenuManager : MonoBehaviour
         m_changeSaveMenu.SetActive(false);
     }
 
-    public void SaveMenuDelete()
+    public void DeleteMenuCancel()
+    {
+        // hide the delete confirm menu
+        m_deleteSaveConfirmMenu.SetActive(false);
+    }
+
+    public void DeleteMenuConfirm()
     {
         // set the button of the selected save file to be inactive
         m_saveFileButtons[m_selectedSaveFile].gameObject.SetActive(false);
@@ -136,6 +186,17 @@ public class MainMenuManager : MonoBehaviour
                 }
             }
         }
+
+        // hide the delete confirm menu
+        m_deleteSaveConfirmMenu.SetActive(false);
+    }
+
+    public void SaveMenuDelete()
+    {
+        m_deleteConfirmWarning.text = m_deleteConfirmWarningStart + m_saveFileButtons[m_selectedSaveFile].GetComponentInChildren<Text>().text + m_deleteConfirmWarningEnd;
+
+        // show the delete confirm menu
+        m_deleteSaveConfirmMenu.SetActive(true);
     }
 
     public void CertificateCancel()
@@ -153,7 +214,7 @@ public class MainMenuManager : MonoBehaviour
         for (int i = 0; i < m_saveFileButtons.Length; ++i)
         {
             // if this save file button is inactive, its associated save file does not yet exist
-            if (!m_saveFileButtons[i].IsActive())
+            if (!m_saveFileButtons[i].gameObject.activeSelf)
             {
                 // store this save as the current save's ID
                 GlobalSettings.m_currentSaveID = i;
