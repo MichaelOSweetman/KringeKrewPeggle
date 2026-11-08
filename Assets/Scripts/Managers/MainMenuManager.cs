@@ -9,22 +9,30 @@ using UnityEngine.UI;
 	File name: MainMenuManager.cs
 	Summary: Manages the UI of the main menu screen
 	Creation Date: 03/11/2024
-	Last Modified: 02/01/2026
+	Last Modified: 09/11/2026
 */
 public class MainMenuManager : MonoBehaviour
 {
+    [System.Serializable]public struct PopUpMenu
+    {
+        public CanvasGroup m_canvasGroup;
+        public CursorMoveable m_cursorMoveable;
+    }
+
+
     [Header("Sub Menus")]
     public GameObject m_titleScreen;
     public GameObject m_mainMenu;
     public GameObject m_levelSelect;
 
     [Header("Pop Up Menus")]
-    public GameObject m_quitMenu;
-    public GameObject m_optionsMenu;
-    public GameObject m_changeSaveMenu;
-    public GameObject m_certificate;
-    public GameObject m_deleteSaveConfirmMenu;
-    public GameObject m_renameSaveMenu;
+    public PopUpMenu m_quitMenu;
+    public PopUpMenu m_optionsMenu;
+    public PopUpMenu m_changeSaveMenu;
+    public PopUpMenu m_certificate;
+    public PopUpMenu m_deleteSaveConfirmMenu;
+    public PopUpMenu m_renameSaveMenu;
+    Stack<PopUpMenu> m_popUpStack;
 
     [Header("UI Components")]
     public Slider m_musicVolumeSlider;
@@ -59,7 +67,9 @@ public class MainMenuManager : MonoBehaviour
     public string m_greetingTextEnd = "!";
     public string m_quitHoverText = "See you again soon!";
     public string m_optionsHoverText = "Change Settings";
-    public string m_adventureHoverText = "Continue your adventure";
+    public string m_adventureHoverTextStart = "Continue your adventure on Stage ";
+    public string m_adventureHoverTextDivider = "-";
+    public string m_adventureHoverTextEnd = "!";
     public string m_quickPlayHoverText = "Play individual levels that you have unlocked in Adventure!";
 
     [Header("Stage Text")]
@@ -71,7 +81,6 @@ public class MainMenuManager : MonoBehaviour
     public int m_gameplaySceneID = 1;
     public string m_deleteConfirmWarningStart = "This will permanently remove '";
     public string m_deleteConfirmWarningEnd = "' from the player roster!";
-
     public void UpdateSaveFileButtonText(int a_saveFileID, string a_saveFileName)
     {
         // ensure the corresponding save file button is active
@@ -93,24 +102,45 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
-    public void RenameCancel()
-    {
-        // hide the rename save menu
-        m_renameSaveMenu.SetActive(false);
-    }
-
     public void RenameOK()
     {
-        // if selected save file is not current save
-            // temporarily store current save ID here
-            // read selected save file, making it new current save
-        
-        // write to the save file, with the new save name
+        // store the current save ID
+        int currentSaveID = GlobalSettings.m_currentSaveID;
 
-        // read the stored current save file, if one was stored
+        // if the save to be renamed is not the current
+        if (currentSaveID != m_selectedSaveFile)
+        {
+            // load the save file selected to be renamed, without applying settings
+            m_saveReader.ReadSaveFile(m_selectedSaveFile, false);
+        }
+
+        // change the save name of the save using the input field on the rename pop up menu
+        GlobalSettings.m_saveName = m_renameInputField.text;
+
+        // update the save file with the new name
+        m_saveWriter.UpdateSaveFile();
+
+        // if the stored save ID is not the current save ID
+        if (currentSaveID != GlobalSettings.m_currentSaveID)
+        {
+            // load the stored save file, without reapplying its settings
+            m_saveReader.ReadSaveFile(currentSaveID, false);
+        }
+        else
+        // if the renamed save is the current save
+        {
+            // update the speech bubble text with the new save name
+            SpeechBubbleDefault();
+        }
+
+        // update the save's corresponding button with the new name
+        UpdateSaveFileButtonText(m_selectedSaveFile, m_renameInputField.text);
+
+        // clear the text of the input field
+        m_renameInputField.text = "";
 
         // hide the rename save menu
-        m_renameSaveMenu.SetActive(false);
+        ClosePopUpMenu();
     }
 
     public void RenameInputChanged()
@@ -121,8 +151,8 @@ public class MainMenuManager : MonoBehaviour
 
     public void SaveMenuRename()
     {
-        // show the rename save menu
-        m_renameSaveMenu.SetActive(true);
+        // show the rename save pop up menu
+        ShowPopUpMenu(m_renameSaveMenu);
 
         // initialise the rename menu's input field with the save's current name
         m_renameInputField.text = m_saveFileButtons[m_selectedSaveFile].GetComponentInChildren<Text>().text;
@@ -135,18 +165,18 @@ public class MainMenuManager : MonoBehaviour
         // read the selected save file without applying its stored settings
         m_saveReader.ReadSaveFile(m_selectedSaveFile, false);
 
-        // hide the change save menu
-        m_changeSaveMenu.SetActive(false);
-    }
+        // update the speech bubble text with the new save name
+        SpeechBubbleDefault();
 
-    public void DeleteMenuCancel()
-    {
-        // hide the delete confirm menu
-        m_deleteSaveConfirmMenu.SetActive(false);
+        // hide the change save menu
+        ClosePopUpMenu();
     }
 
     public void DeleteMenuConfirm()
     {
+        // hide the delete confirm menu
+        ClosePopUpMenu();
+
         // set the button of the selected save file to be inactive
         m_saveFileButtons[m_selectedSaveFile].gameObject.SetActive(false);
         // have the save file script delete the corresponding save
@@ -164,7 +194,7 @@ public class MainMenuManager : MonoBehaviour
             // store nothing as the current save path for the event in which the user quits the game before making a save
             GlobalSettings.m_currentSavePath = "";
             // hide the change save menu
-            m_changeSaveMenu.SetActive(false);
+            ClosePopUpMenu();
             // prompt the user to create a new save file, without the ability to cancel
             CreateNewUser(false);
         }
@@ -180,29 +210,20 @@ public class MainMenuManager : MonoBehaviour
                     // read this save file to be used as the new current save, without changing settings with it
                     m_saveReader.ReadSaveFile(i, false);
                     // update the speech bubble text with the new save name
-                    m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+                    SpeechBubbleDefault();
                     // exit the loop
                     break;
                 }
             }
         }
-
-        // hide the delete confirm menu
-        m_deleteSaveConfirmMenu.SetActive(false);
     }
 
     public void SaveMenuDelete()
     {
         m_deleteConfirmWarning.text = m_deleteConfirmWarningStart + m_saveFileButtons[m_selectedSaveFile].GetComponentInChildren<Text>().text + m_deleteConfirmWarningEnd;
 
-        // show the delete confirm menu
-        m_deleteSaveConfirmMenu.SetActive(true);
-    }
-
-    public void CertificateCancel()
-    {
-        // hide the certificate of admission
-        m_certificate.SetActive(false);
+        // show the options pop up menu
+        ShowPopUpMenu(m_deleteSaveConfirmMenu);
     }
 
     public void CertificateOK()
@@ -245,10 +266,10 @@ public class MainMenuManager : MonoBehaviour
         m_certificateInputField.text = "";
 
         // update the speech bubble text with the new save name
-        m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+        SpeechBubbleDefault();
 
         // hide the certificate of admission
-        m_certificate.SetActive(false);
+        ClosePopUpMenu();
     }
 
     public void CertificateInputChanged()
@@ -260,13 +281,45 @@ public class MainMenuManager : MonoBehaviour
     public void CreateNewUser(bool a_allowCancel = true)
     {
         // hide the change save menu
-        m_changeSaveMenu.SetActive(false);
+        ClosePopUpMenu();
 
-        // show the certificate of admission
-        m_certificate.SetActive(true);
+        // show the certificate of admission pop up menu
+        ShowPopUpMenu(m_certificate);
 
         // make the cancel button on the certificate active if cancelling is allowed
         m_cancelCertificateButton.SetActive(a_allowCancel);
+    }
+
+    public void ClosePopUpMenu()
+    {
+        // hide the stack's top pop up menu and remove it from the stack
+        m_popUpStack.Pop().m_canvasGroup.gameObject.SetActive(false);
+        // if the stack is not empty
+        if (m_popUpStack.Count > 0)
+        {
+            // make the pop up menu that is now at the top of the stack interactable and moveable
+            m_popUpStack.Peek().m_canvasGroup.interactable = true;
+            m_popUpStack.Peek().m_cursorMoveable.enabled = true;
+        }
+    }
+
+    public void ShowPopUpMenu(PopUpMenu a_popUpMenu)
+    {
+        // if the stack is not empty
+        if (m_popUpStack.Count > 0)
+        {
+            // make the pop up menu currently at the top of the stack uninteractable and unmoveable
+            m_popUpStack.Peek().m_canvasGroup.interactable = false;
+            m_popUpStack.Peek().m_cursorMoveable.enabled = false;
+        }
+        // make the argument pop up menu interactable
+        a_popUpMenu.m_canvasGroup.interactable = true;
+        // make the argument pop up menu cursor moveable
+        a_popUpMenu.m_cursorMoveable.enabled = true;
+        // add the argument pop up menu to the stack
+        m_popUpStack.Push(a_popUpMenu);
+        // show the argument pop up menu
+        a_popUpMenu.m_canvasGroup.gameObject.SetActive(true);
     }
 
     public void SwitchSubMenu(GameObject a_activeSubMenu)
@@ -282,20 +335,21 @@ public class MainMenuManager : MonoBehaviour
 
     public void ChangeSaveButton()
     {
-        // show the change save menu
-        m_changeSaveMenu.SetActive(true);
-    }
+        // if there are no pop up menus currently active
+        if (m_popUpStack.Count == 0)
+        {
+            // make the current save the selected save in the change save menu
+            ChooseSaveButton(GlobalSettings.m_currentSaveID);
 
-    public void CancelChangeSave()
-    {
-        // hide the change save menu
-        m_changeSaveMenu.SetActive(false);
+            // show the change save pop up menu
+            ShowPopUpMenu(m_changeSaveMenu);
+        }
     }
 
     public void QuitButton()
     {
-        // show the quit menu
-        m_quitMenu.SetActive(true);
+        // show the quit pop up menu
+        ShowPopUpMenu(m_quitMenu);
     }
 
     public void QuitGame()
@@ -304,15 +358,14 @@ public class MainMenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void QuitMenuBack()
-    {
-        // close the quit menu
-        m_quitMenu.SetActive(false);
-    }
-
     public void OptionsButton()
     {
-        m_optionsMenu.SetActive(true);
+        // if there are no pop up menus currently active
+        if (m_popUpStack.Count == 0)
+        {
+            // show the options pop up menu
+            ShowPopUpMenu(m_optionsMenu);
+        }
     }
 
     public void UpdateMusicVolume()
@@ -349,12 +402,6 @@ public class MainMenuManager : MonoBehaviour
     public void ColorblindToggleChanged()
     {
         GlobalSettings.m_colorblindMode = m_colorblindToggle.isOn;
-    }
-
-    public void OptionsMenuBack()
-    {
-        // close the options menu
-        m_optionsMenu.SetActive(false);
     }
 
     public void LoadGameplayScene(bool a_adventure)
@@ -409,7 +456,7 @@ public class MainMenuManager : MonoBehaviour
     public void SpeechBubbleDefault()
     {
         // update the speech bubble text
-        m_speechBubbleText.text = m_greetingTextStart + GlobalSettings.m_saveName + m_greetingTextEnd;
+        m_speechBubbleText.text = m_greetingTextStart + "\n" + GlobalSettings.m_saveName + m_greetingTextEnd;
         // make the change save button active
         m_changeSaveButton.SetActive(true);
     }
@@ -433,7 +480,7 @@ public class MainMenuManager : MonoBehaviour
     public void SpeechBubbleAdventure()
     {
         // update the speech bubble text
-        m_speechBubbleText.text = m_adventureHoverText;
+        m_speechBubbleText.text = m_adventureHoverTextStart + GlobalSettings.m_currentStageID + m_adventureHoverTextDivider + GlobalSettings.m_currentLevelID + m_adventureHoverTextEnd;
         // make the change save button inactive
         m_changeSaveButton.SetActive(false);
     }
@@ -444,6 +491,15 @@ public class MainMenuManager : MonoBehaviour
         m_speechBubbleText.text = m_quickPlayHoverText;
         // make the change save button inactive
         m_changeSaveButton.SetActive(false);
+    }
+
+    private void Awake()
+    {
+        // initialise the pop up menu stack
+        m_popUpStack = new Stack<PopUpMenu>();
+
+        // show the current date on the certificate of admission
+        m_certificateDate.text = System.DateTime.Today.ToString("d");
     }
 
     // Start is called before the first frame update
@@ -475,9 +531,6 @@ public class MainMenuManager : MonoBehaviour
             }
         }
 
-        // show the current date on the certificate of admission
-        m_certificateDate.text = System.DateTime.Today.ToString("d");
-
         // if no save file was found, prompt the user to create a new save file
         if (m_storedSaveFiles == 0)
         {
@@ -503,6 +556,13 @@ public class MainMenuManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // if the player presses the menu button
+        if (Input.GetButtonDown("Toggle Menu"))
+        {
+            // trigger the function triggered by pressing the quit button
+            QuitButton();
+        }
+
         //TEMP
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {

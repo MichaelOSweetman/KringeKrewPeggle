@@ -7,7 +7,7 @@ using UnityEngine;
 	File name: SaveReader.cs
 	Summary: reads the save file in the main menu
 	Creation Date: 22/07/2024
-	Last Modified: 25/10/2026
+	Last Modified: 08/11/2026
 */
 public class SaveReader : MonoBehaviour
 {
@@ -222,11 +222,7 @@ public class SaveReader : MonoBehaviour
             // use the read scores array to initialise the global settings top scores array
             GlobalSettings.m_topScores = m_readScores;
         }
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         // create a integer to store the ID of the save file that was most recently written to
         int mostRecentWrittenSaveID = -1;
         // create a system date time variable to store the most recent time that a save file was written to
@@ -254,6 +250,12 @@ public class SaveReader : MonoBehaviour
             // read the most recently written to save file
             ReadSaveFile(mostRecentWrittenSaveID);
         }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
